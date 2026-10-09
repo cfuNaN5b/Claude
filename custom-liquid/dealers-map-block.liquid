@@ -1,0 +1,415 @@
+{% capture dealer_data %}
+ILLUMS BOLIGHUS|Copenhagen, Denmark|https://www.illumsbolighus.dk/soeg?q=JALG&lang=da_DK|50.70452|14.03361~
+ESTONIAN DESIGN HOUSE|Tallinn, Estonia|https://www.estoniandesignhouse.ee/|55.43638|12.77311~
+FINNISH DESIGN SHOP|Turku, Finland|https://www.finnishdesignshop.com/|56.74027|8.82353~
+DESIGN WE LOVE|Weimar, Germany|https://www.designwe.love/collections/jalg|54.15352|21.84874~
+MOHD|Messina, Italy|https://shop.mohd.it/en/brands/jalg.html|57.20294|28.69748~
+STUDIO FRUYTS|Schlieren, Switzerland|https://www.studiofruyts.ch/|48.62250|25.96639~
+LIVINGTREE|Schlieren, Switzerland|https://livingtree.ch/en/?s=JALG|51.79811|28.57143~
+NORDIC LIVING|Edinburgh, United Kingdom|https://www.mynordicliving.co.uk/collections/jalg|45.00526|17.22689~
+HIMITSUKICHI|Tsukuba, Japan|https://www.himitsukichiii.com/|82.92324|23.69748~
+OUSIA INTERIOR|Kyoto, Japan|https://ousia-interior.com/en|78.92744|32.73109~
+N2 INTERIOR|Tokyo, Japan|https://n2-interior.com/|84.83701|31.21849~
+IKUS|Hiroshima, Japan|https://online.ikus.furniture/products/detail/2263|74.02734|34.11765~
+KOZLIFE|Tokyo, Japan|https://www.kozlife.com/shop/shopbrand.html?search=JALG|87.48686|26.05042~
+INNOMETSÄ|Seoul, South Korea|https://innometsa.com/product/list2.html?cate_no=1326|76.10936|27.31092
+{% endcapture %}
+{% assign dealers = dealer_data | strip | split: '~' %}
+
+<jalg-dealers>
+  <div class="jd-controls" role="group" aria-label="Map regions">
+    <button type="button" data-region=".51">Europe</button>
+    <button type="button" data-region=".81">East Asia</button>
+    <span>Swipe the map · Tap a number</span>
+  </div>
+
+  <div class="jd-view">
+    <div class="jd-map">
+      <img src="{{ 'JALG-dealers-world-map-2026.png' | file_url }}"
+        width="4755" height="3080"
+        alt="Numbered JALG dealers across Europe and East Asia. Details are listed below.">
+
+      {% for row in dealers %}
+        {% assign d = row | strip | split: '|' %}
+        <button type="button" class="jd-pin" data-index="{{ forloop.index0 }}"
+          style="left:{{ d[3] }}%;top:{{ d[4] }}%"
+          aria-label="{{ forloop.index }}: {{ d[0] | escape }} — {{ d[1] | escape }}"
+          aria-haspopup="dialog" aria-expanded="false"></button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="jd-pop" role="dialog" aria-label="Dealer details" hidden>
+    <button type="button" class="jd-close" aria-label="Close dealer details">×</button>
+    <strong></strong>
+    <p></p>
+    <a class="jd-line" target="_blank" rel="noopener noreferrer">
+      Visit website
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
+        stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+        <path d="M3 13 13 3M3 3h10v10"/>
+      </svg>
+    </a>
+  </div>
+
+  <ol class="jd-list" aria-label="JALG dealers">
+    {% for row in dealers %}
+      {% assign d = row | strip | split: '|' %}
+      <li>
+        <a class="jd-link jd-line" href="{{ d[2] | escape }}"
+          target="_blank" rel="noopener noreferrer">
+          <span class="jd-number" aria-hidden="true">{{ forloop.index }}</span>
+          <span>
+            <span class="jd-name">{{ d[0] | escape }}</span>
+            <span class="jd-location">{{ d[1] | escape }}</span>
+          </span>
+        </a>
+      </li>
+    {% endfor %}
+  </ol>
+</jalg-dealers>
+
+<style>
+jalg-dealers {
+  --green:#3d5640;
+  --line:#d6d6d1;
+  --paper:#f6f5f3;
+  display:block;
+  padding-bottom:40px;
+  background:var(--paper);
+  color:#222;
+}
+jalg-dealers, jalg-dealers * { box-sizing:border-box; }
+jalg-dealers button { font:inherit; color:inherit; cursor:pointer; }
+jalg-dealers .jd-controls { display:none; }
+
+/* Map */
+jalg-dealers .jd-map {
+  position:relative;
+  width:100%;
+  aspect-ratio:4755/2380;
+  overflow:hidden;
+}
+jalg-dealers .jd-map img {
+  position:absolute;
+  inset:0 auto auto 0;
+  display:block;
+  width:100%;
+  max-width:none;
+  height:auto;
+  margin:0;
+}
+jalg-dealers .jd-pin {
+  position:absolute;
+  z-index:1;
+  transform:translate(-50%,-50%);
+  width:1.43%;
+  min-width:0;
+  height:auto;
+  aspect-ratio:1;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:none;
+}
+jalg-dealers .jd-pin::after {
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:50%;
+}
+jalg-dealers .jd-pin:is([aria-expanded="true"],:focus-visible) {
+  outline:1px solid var(--green);
+  outline-offset:2px;
+}
+
+/* Shared underline */
+jalg-dealers a.jd-line {
+  position:relative;
+  border:0;
+  border-bottom:1px solid var(--line) !important;
+  text-decoration:none !important;
+  background-image:none !important;
+  box-shadow:none !important;
+}
+jalg-dealers a.jd-line::before { display:none !important; }
+jalg-dealers a.jd-line::after {
+  content:"";
+  display:block !important;
+  position:absolute;
+  inset:auto 0 -1px;
+  width:100%;
+  height:1px;
+  border:0 !important;
+  background:var(--green);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .35s ease;
+  pointer-events:none;
+}
+jalg-dealers a.jd-line:is(:hover,:focus-visible)::after {
+  transform:scaleX(1);
+}
+
+/* Dealer list */
+jalg-dealers .jd-list {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:32px 28px;
+  max-width:1440px;
+  margin:0 auto;
+  padding:24px 40px 0;
+  list-style:none;
+}
+jalg-dealers .jd-list li { margin:0; padding:0; }
+jalg-dealers .jd-list li, jalg-dealers .jd-link > span { min-width:0; }
+jalg-dealers .jd-link {
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  min-height:56px;
+  height:100%;
+  padding:5px 0 12px;
+  color:inherit;
+}
+jalg-dealers .jd-link:is(:hover,:focus-visible) .jd-name {
+  color:var(--green);
+}
+jalg-dealers .jd-link:focus-visible {
+  outline:1px solid var(--green);
+  outline-offset:5px;
+}
+jalg-dealers .jd-number {
+  display:inline-flex;
+  flex:0 0 28px;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--green);
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+  line-height:1;
+}
+jalg-dealers .jd-name {
+  display:block;
+  font-size:16px;
+  font-weight:500;
+  line-height:1.5;
+}
+jalg-dealers .jd-location {
+  display:block;
+  margin-top:4px;
+  color:#444;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* Popup */
+jalg-dealers .jd-pop {
+  position:fixed;
+  z-index:10000;
+  width:280px;
+  padding:24px;
+  overflow:auto;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  box-shadow:0 8px 28px #00000029;
+  text-align:left;
+  font-size:15px;
+  line-height:1.5;
+}
+jalg-dealers .jd-pop[hidden] { display:none !important; }
+jalg-dealers .jd-pop strong { display:block; padding-right:18px; font-size:16px; }
+jalg-dealers .jd-pop p { margin:8px 0 16px; }
+jalg-dealers .jd-pop a { display:inline-block; color:var(--green); }
+jalg-dealers .jd-pop svg { display:inline-block; vertical-align:middle; margin-left:3px; }
+jalg-dealers .jd-close {
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:32px;
+  height:32px;
+  padding:0;
+  border:0;
+  background:none;
+  font-size:24px;
+}
+.template--dealers #MainContent > .index-section:first-child { margin-bottom:40px; }
+
+@media(max-width:1099px) {
+  jalg-dealers .jd-list {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    padding-inline:24px;
+  }
+}
+@media(max-width:799px) {
+  jalg-dealers .jd-controls {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    padding:16px 20px;
+  }
+  jalg-dealers .jd-controls button {
+    padding:10px 16px;
+    border:1px solid var(--green);
+    border-radius:0;
+    background:none;
+    color:var(--green);
+  }
+  jalg-dealers .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
+  jalg-dealers .jd-view {
+    height:350px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    overscroll-behavior-x:contain;
+  }
+  jalg-dealers .jd-map { width:1800px; max-width:none; }
+  jalg-dealers .jd-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+}
+@media(max-width:589px) {
+  jalg-dealers { padding-bottom:25px; }
+  jalg-dealers .jd-list { grid-template-columns:1fr; gap:18px; padding-top:20px; }
+  .template--dealers #MainContent > .index-section:first-child { margin-bottom:25px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  jalg-dealers a.jd-line::after { transition:none; }
+}
+</style>
+
+<script>
+if (!customElements.get('jalg-dealers')) {
+  customElements.define('jalg-dealers', class extends HTMLElement {
+    connectedCallback() {
+      this.frame = requestAnimationFrame(() => this.init());
+    }
+
+    disconnectedCallback() {
+      cancelAnimationFrame(this.frame);
+      clearTimeout(this.timer);
+      this.events?.abort();
+    }
+
+    init() {
+      this.events?.abort();
+      this.events = new AbortController();
+
+      const on = (el, type, fn, capture = false) =>
+        el.addEventListener(type, fn, { signal:this.events.signal, capture });
+      const find = selector => this.querySelector(selector);
+      const pop = find('.jd-pop'), view = find('.jd-view'), map = find('.jd-map');
+      const links = this.querySelectorAll('.jd-link');
+      const title = pop.querySelector('strong'), place = pop.querySelector('p');
+      const website = pop.querySelector('a');
+      const mobile = matchMedia('(max-width:799px)');
+      const viewport = window.visualViewport;
+      let active, locked = false;
+
+      const close = (restore = false) => {
+        clearTimeout(this.timer);
+        const previous = active;
+        active?.setAttribute('aria-expanded', 'false');
+        active = null;
+        locked = false;
+        pop.hidden = true;
+        if (restore) previous?.focus();
+      };
+
+      const position = () => {
+        if (!active) return;
+        const x = viewport?.offsetLeft || 0, y = viewport?.offsetTop || 0;
+        const width = viewport?.width || innerWidth;
+        const height = viewport?.height || innerHeight;
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+        pop.style.maxWidth = Math.max(0, width - 24) + 'px';
+        pop.style.maxHeight = Math.max(0, height - 24) + 'px';
+
+        const r = active.getBoundingClientRect();
+        const w = pop.offsetWidth, h = pop.offsetHeight;
+        const top = r.bottom + h + 24 <= y + height ? r.bottom + 12 : r.top - h - 12;
+
+        pop.style.left = clamp(r.left + (r.width - w) / 2, x + 12, x + width - w - 12) + 'px';
+        pop.style.top = clamp(top, y + 12, y + height - h - 12) + 'px';
+      };
+
+      const show = (pin, lock = false) => {
+        clearTimeout(this.timer);
+        active?.setAttribute('aria-expanded', 'false');
+        active = pin;
+        locked = lock;
+
+        const link = links[Number(pin.dataset.index)];
+        title.textContent = link.querySelector('.jd-name').textContent;
+        place.textContent = link.querySelector('.jd-location').textContent;
+        website.href = link.href;
+        pin.setAttribute('aria-expanded', 'true');
+        pop.hidden = false;
+        position();
+      };
+
+      const region = center => {
+        close();
+        view.scrollLeft = map.clientWidth * center - view.clientWidth / 2;
+      };
+
+      on(this, 'click', e => {
+        const pin = e.target.closest('.jd-pin');
+        const button = e.target.closest('[data-region]');
+        if (pin) active === pin && locked ? close() : show(pin, true);
+        else if (button) region(Number(button.dataset.region));
+        else if (e.target.closest('.jd-close')) close(true);
+      });
+
+      on(this, 'pointerover', e => {
+        if (e.pointerType !== 'mouse') return;
+        const pin = e.target.closest('.jd-pin');
+        if (pin || pop.contains(e.target)) clearTimeout(this.timer);
+        if (pin && !locked && active !== pin) show(pin);
+      });
+
+      on(this, 'pointerout', e => {
+        if (e.pointerType !== 'mouse' || locked ||
+            pop.contains(document.activeElement) ||
+            !e.target.closest('.jd-pin,.jd-pop')) return;
+
+        const next = e.relatedTarget;
+        if (next instanceof Element && this.contains(next) &&
+            next.closest('.jd-pin,.jd-pop')) return;
+
+        clearTimeout(this.timer);
+        this.timer = setTimeout(close, 220);
+      });
+
+      on(document, 'pointerdown', e => {
+        if (!pop.contains(e.target) && e.target !== active) close();
+      });
+
+      on(document, 'focusin', e => {
+        if (active && e.target !== active && !pop.contains(e.target)) close();
+      });
+
+      on(document, 'keydown', e => {
+        if (!active) return;
+        if (e.key === 'Escape') close(true);
+        else if (e.key === 'Tab' && !e.shiftKey && e.target === active) {
+          e.preventDefault();
+          website.focus();
+        }
+      });
+
+      on(window, 'scroll', position, true);
+      on(window, 'resize', position);
+      if (viewport) ['scroll', 'resize'].forEach(type => on(viewport, type, position));
+      on(mobile, 'change', () => region(mobile.matches ? .51 : 0));
+      if (mobile.matches) region(.51);
+    }
+  });
+}
+</script>
