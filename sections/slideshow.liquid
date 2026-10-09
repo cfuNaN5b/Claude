@@ -76,6 +76,25 @@
             }
           }
         {%- endif %}
+        {% comment %}
+          Top-aligned text on the first section sits under the transparent
+          (overlay) menu; push it down by the same amount the theme uses for
+          centered text (110px desktop, 70px mobile).
+        {% endcomment %}
+        body:has(.header-wrapper--overlay) #MainContent > .shopify-section:first-child #Slideshow-{{ section.id }} .hero__text-content.vertical-top {
+          padding-top: 110px;
+        }
+        @media only screen and (max-width: 768px) {
+          body:has(.header-wrapper--overlay) #MainContent > .shopify-section:first-child #Slideshow-{{ section.id }} .hero__text-content.vertical-top {
+            padding-top: 70px;
+          }
+        }
+        @media only screen and (max-width: 589px) {
+          body:has(.header-wrapper--overlay) #MainContent > .shopify-section:first-child #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-top,
+          body:has(.header-wrapper--overlay) #MainContent > .shopify-section:first-child #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-center {
+            padding-top: 70px;
+          }
+        }
         @media only screen and (max-width: 589px) {
           #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-top {
             vertical-align: top;
