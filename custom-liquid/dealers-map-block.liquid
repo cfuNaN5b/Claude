@@ -29,6 +29,10 @@ INNOMETSÄ|Seoul, South Korea|https://innometsa.com/product/list2.html?cate_no=1
         width="4755" height="3080"
         alt="Numbered JALG dealers across Europe and East Asia. Details are listed below.">
 
+      {% comment %} City dots missing from the image: Tsukuba (9) and Tokyo (11, 13) {% endcomment %}
+      <span class="jd-dot" style="left:82.73833%;top:28.89766%" aria-hidden="true"></span>
+      <span class="jd-dot" style="left:82.70140%;top:29.12636%" aria-hidden="true"></span>
+
       {% for row in dealers %}
         {% assign d = row | strip | split: '|' %}
         <button type="button" class="jd-pin" data-index="{{ forloop.index0 }}"
@@ -113,6 +117,15 @@ jalg-dealers .jd-pin {
   border-radius:50%;
   background:transparent;
   box-shadow:none;
+}
+jalg-dealers .jd-dot {
+  position:absolute;
+  width:.2944%;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:var(--green);
+  transform:translate(-50%,-50%);
+  pointer-events:none;
 }
 jalg-dealers .jd-pin::after {
   content:"";

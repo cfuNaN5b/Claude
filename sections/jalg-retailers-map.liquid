@@ -226,11 +226,9 @@ if (!customElements.get('jalg-retailers')) {
 
       const dots = new Map();
       entries.forEach(({ x, y, bx, by }) => {
-        const near = entries.some(other => {
-          const d = Math.hypot(x-other.x, y-other.y);
-          return d > .01 && d < 18;
-        });
-        const r = near ? 2.4 : 7;
+        // Same dot size for every city. Close cities (e.g. Tokyo and Tsukuba)
+        // simply overlap; a smaller dot was too small to see.
+        const r = 7;
         dots.set(`${x.toFixed(3)},${y.toFixed(3)}`, { cx:x, cy:y, r });
 
         const distance = Math.hypot(bx-x, by-y);
