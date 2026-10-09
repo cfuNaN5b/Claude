@@ -55,13 +55,15 @@
   {%- if overlay_header -%}
     {%- if section.settings.overlay_menu_color != blank %}
       #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link),
-      #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover {
+      #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover,
+      #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link) .icon {
         color: {{ section.settings.overlay_menu_color }} !important;
       }
     {%- endif %}
     {%- if section.settings.sticky_menu_color != blank %}
       #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link),
-      #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover {
+      #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover,
+      #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link) .icon {
         color: {{ section.settings.sticky_menu_color }} !important;
       }
     {%- endif %}
