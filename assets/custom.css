@@ -160,9 +160,6 @@ a.pl-swatches__link span {
 .site-header__logo a {
   width: 110px;
 }
-svg.icon.icon-hamburger {
-  color: #000;
-}
 .grid-newsletter .footer__social {
   position: relative;
   /*padding-right: 70px;*/
