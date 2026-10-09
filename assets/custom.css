@@ -72,6 +72,10 @@ a.site-nav__link:hover {
 }
 .h1.hero__title {
   font-weight: 600;
+}
+/* Fixed hero title size; slideshows with "Use slide title sizes" enabled
+   (data-custom-title-size) use their own Title size settings instead */
+.h1.hero__title:not([data-custom-title-size] .hero__title) {
   font-size: 21px !important;
 }
 #Slideshow-template--17034586751287__16499939644a84e9fd .hero__text-content {
@@ -325,7 +329,7 @@ body > div:first-child + div {
   .site-header__logo a {
     width: 120px;
   }
-  .h1.hero__title {
+  .h1.hero__title:not([data-custom-title-size] .hero__title) {
     font-size: 28px !important;
   }
 }
@@ -846,54 +850,16 @@ body.template-product .page-container {
 
 
 /* Homepage full-height slideshow and header styling:
-   white hero text and buttons, responsive text alignment,
-   white non-sticky header elements, and language-selector sizing.
-   Added by Smartsy on 06-09-2026 */
+   white hero text by default, white non-sticky header elements,
+   and language-selector sizing.
+   Added by Smartsy on 06-09-2026
+   Updated 09-10-2026: text position, button position, mobile centering and
+   per-slide text/button colours are now settings in the Slideshow section
+   (sections/slideshow.liquid); a slide's "Text color" overrides this white. */
 
 .template-index .hero--100vh .slideshow__slide
 :is(.hero__title, .hero__subtitle) {
   color: #fff;
-}
-
-.template-index .hero--100vh .hero__link .btn {
-  color: #000;
-  background: #fff;
-  border-color: #fff;
-}
-
-.template-index .hero--100vh
-.hero__text-content.vertical-bottom {
-  padding-left: 0;
-}
-
-.template-index .hero--100vh
-.hero__text-content.horizontal-left {
-  text-align: left;
-}
-
-.template-index .hero--100vh
-.hero__text-content.horizontal-center {
-  text-align: center;
-}
-
-.template-index .hero--100vh
-.hero__text-content.horizontal-right {
-  text-align: right;
-}
-
-@media (min-width: 590px) {
-  .template-index .hero--100vh
-  .hero__text-content.horizontal-center {
-    padding-left: 50px;
-  }
-}
-
-@media (max-width: 589px) {
-  .template-index .hero--100vh .hero__text-content {
-    padding-right: 0 !important;
-    padding-left: 0 !important;
-    text-align: center !important;
-  }
 }
 
 /* Homepage header */

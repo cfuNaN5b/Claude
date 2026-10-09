@@ -49,9 +49,11 @@
         #Slideshow-{{ section.id }} .hero__text-content.horizontal-right {
           text-align: right;
         }
-        #Slideshow-{{ section.id }}[data-dots=true] .hero__text-content.horizontal-center {
-          padding-left: 50px;
-          padding-right: 50px;
+        @media only screen and (min-width: 590px) {
+          #Slideshow-{{ section.id }}[data-dots=true] .hero__text-content.horizontal-center {
+            padding-left: 50px;
+            padding-right: 50px;
+          }
         }
         #Slideshow-{{ section.id }} .hero__btn-wrap {
           margin-top: 20px;
@@ -130,6 +132,9 @@
           {% if section.settings.style == 'dots' %}
             data-dots="true"
           {% endif %}
+          {% if section.settings.custom_title_size %}
+            data-custom-title-size
+          {% endif %}
           data-slide-count="{{ section.blocks.size }}">
           {%- for block in section.blocks -%}
             <div
@@ -140,7 +145,7 @@
 
               {%- style -%}
                 .slideshow__slide--{{ block.id }} .hero__title {
-                  font-size: {{ block.settings.title_size | times: 0.5 }}px;
+                  font-size: {{ block.settings.title_size_mobile | default: 21 }}px;
                 }
                 @media only screen and (min-width: 769px) {
                   .slideshow__slide--{{ block.id }} .hero__title {
@@ -483,6 +488,13 @@
     },
     {
       "type": "checkbox",
+      "id": "custom_title_size",
+      "label": "Use slide title sizes",
+      "info": "Off: titles use the fixed 21px (mobile) / 28px (desktop) size from custom.css.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "first_title_h1",
       "label": "Use H1 for first slide title",
       "info": "Enable on only one section per page.",
@@ -505,8 +517,17 @@
           "id": "title_size",
           "label": "t:sections.slideshow.blocks.slide.settings.title_size.label",
           "default": 80,
-          "min": 40,
+          "min": 20,
           "max": 100,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "title_size_mobile",
+          "label": "Title size on mobile",
+          "default": 21,
+          "min": 12,
+          "max": 60,
           "unit": "px"
         },
         {
