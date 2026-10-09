@@ -45,6 +45,27 @@
       border-bottom-color: {{ settings.color_borders }};
     }
   {%- endif -%}
+
+  {% comment %}
+    Menu colours for the transparent (overlay) header on the homepage.
+    #HeaderWrapper.is-light is set in the HTML for the overlay header and removed
+    by the theme when the header sticks on scroll, so these rules do not depend
+    on the body class or on custom.css. An open dropdown keeps its own colour.
+  {% endcomment %}
+  {%- if overlay_header -%}
+    {%- if section.settings.overlay_menu_color != blank %}
+      #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link),
+      #HeaderWrapper.is-light #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover {
+        color: {{ section.settings.overlay_menu_color }} !important;
+      }
+    {%- endif %}
+    {%- if section.settings.sticky_menu_color != blank %}
+      #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link),
+      #HeaderWrapper.header-wrapper--overlay:not(.is-light) #SiteHeader .site-nav__link:not(.site-nav__details[open] > .site-nav__link):hover {
+        color: {{ section.settings.sticky_menu_color }} !important;
+      }
+    {%- endif %}
+  {%- endif -%}
 {%- endstyle -%}
 
 <div data-section-id="{{ section.id }}" data-section-type="header">
@@ -252,6 +273,26 @@
       "label": "t:sections.header.settings.sticky_collection.label",
       "info": "t:sections.header.settings.sticky_collection.info",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Menu colors over image"
+    },
+    {
+      "type": "paragraph",
+      "content": "Used when the menu is overlaid on the homepage image (\"Overlay header over home page\" enabled). Clear a color to use the theme default."
+    },
+    {
+      "type": "color",
+      "id": "overlay_menu_color",
+      "label": "Menu and icon color over image",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sticky_menu_color",
+      "label": "Menu and icon color after scrolling",
+      "default": "#000000"
     }
   ],
   "blocks": [

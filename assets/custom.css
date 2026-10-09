@@ -35,10 +35,10 @@
 }
 
 /* new */
-.template-index .logo--has-inverted {
+.header-wrapper--overlay .logo--has-inverted {
   display: block !important;
 }
-.template-index .logo--inverted {
+.header-wrapper--overlay .logo--inverted {
   display: none !important;
 }
 li.site-nav__item {
@@ -857,39 +857,26 @@ body.template-product .page-container {
    per-slide text/button colours are now settings in the Slideshow section
    (sections/slideshow.liquid); a slide's "Text color" overrides this white. */
 
-.template-index .hero--100vh .slideshow__slide
+.hero--100vh .slideshow__slide
 :is(.hero__title, .hero__subtitle) {
   color: #fff;
 }
 
-/* Homepage header */
+/* Homepage header: white logo and translation icon while the menu is overlaid
+   on the hero image (.is-light), original colours once it sticks on scroll.
+   Menu link and icon colours are set in the Header section settings
+   ("Menu colors over image"). */
 
-.template-index #SiteHeader:not(.site-header--stuck) .site-nav__link {
-  color: #fff !important;
-}
-
-.template-index #SiteHeader:not(.site-header--stuck)
-:is(.site-header__logo, .site-nav__link svg, .tl-icon) {
+.header-wrapper--overlay.is-light :is(.site-header__logo, .tl-icon) {
   filter: brightness(0) invert(1) !important;
 }
 
-.template-index #SiteHeader.site-header--stuck .site-nav__link {
-  color: #000 !important;
-}
-
-.template-index #SiteHeader.site-header--stuck
-:is(.site-header__logo, .site-nav__link svg, .tl-icon) {
+.header-wrapper--overlay:not(.is-light) :is(.site-header__logo, .tl-icon) {
   filter: none !important;
 }
 
-.template-index #SiteHeader
-.site-nav__details[open] > .site-nav__link {
+#SiteHeader .site-nav__details[open] > .site-nav__link {
   color: #000 !important;
-}
-
-.template-index #SiteHeader
-.site-nav__details[open] > .site-nav__link svg {
-  filter: none !important;
 }
 
 /* End: Homepage full-height slideshow and header styling */
