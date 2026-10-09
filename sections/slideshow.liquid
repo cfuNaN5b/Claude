@@ -26,49 +26,47 @@
       {%- endif -%}
 
       {% comment %}
-        Text position: lay the text out with flexbox, scoped to this section, so the
-        vertical/horizontal position chosen per slide is applied exactly and does not
-        depend on the theme's table-cell layout or on page-specific custom.css.
+        Text position fixes, scoped to this section (ID selectors so they win over
+        the generic .hero__text-content rules in custom.css):
+        - bottom positions: custom.css forces text-align: center and padding-left: 30%
+          on every bottom-aligned slide, so bottom left/right never worked
+        - centered text: the theme adds padding-right: 50px when dots are shown,
+          which pushes centered text off-center; balance it on the left
+        - "With text" button: the .hero__btn pill sits in the text flow instead of
+          being absolutely positioned over the slide
       {% endcomment %}
       {%- style -%}
-        .hero--{{ section.id }} .hero__text-wrap {
-          display: flex;
-          flex-direction: column;
+        #Slideshow-{{ section.id }} .hero__text-content.vertical-bottom {
+          padding-left: 0;
+          padding-right: 0;
         }
-        .hero--{{ section.id }} .hero__text-wrap > .page-width {
-          display: flex;
-          flex: 1 1 auto;
-          width: 100%;
-          height: auto;
-        }
-        .hero--{{ section.id }} .hero__text-content {
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-        }
-        .hero--{{ section.id }} .hero__text-content.vertical-center {
-          justify-content: center;
-        }
-        .hero--{{ section.id }} .hero__text-content.vertical-bottom {
-          justify-content: flex-end;
-        }
-        .hero--{{ section.id }} .hero__text-content.horizontal-left {
-          align-items: flex-start;
+        #Slideshow-{{ section.id }} .hero__text-content.horizontal-left {
           text-align: left;
         }
-        .hero--{{ section.id }} .hero__text-content.horizontal-center {
-          align-items: center;
+        #Slideshow-{{ section.id }} .hero__text-content.horizontal-center {
           text-align: center;
         }
-        .hero--{{ section.id }} .hero__text-content.horizontal-right {
-          align-items: flex-end;
+        #Slideshow-{{ section.id }} .hero__text-content.horizontal-right {
           text-align: right;
         }
+        #Slideshow-{{ section.id }}[data-dots=true] .hero__text-content.horizontal-center {
+          padding-left: 50px;
+          padding-right: 50px;
+        }
+        #Slideshow-{{ section.id }} .hero__btn-wrap {
+          margin-top: 20px;
+        }
+        #Slideshow-{{ section.id }} .hero__btn--inline {
+          position: static;
+          transform: none;
+          display: inline-block;
+        }
         {%- if section.settings.mobile_text_center %}
-          @media screen and (max-width: 768px) {
-            .hero--{{ section.id }} .hero__text-content.hero__text-content {
-              align-items: center;
+          @media only screen and (max-width: 589px) {
+            #Slideshow-{{ section.id }} .hero__text-content.hero__text-content {
               text-align: center;
+              padding-left: 0;
+              padding-right: 0;
             }
           }
         {%- endif %}
@@ -149,16 +147,23 @@
                     font-size: {{ block.settings.title_size }}px;
                   }
                 }
-                .slideshow__slide--{{ block.id }} .hero__text-content,
-                .slideshow__slide--{{ block.id }} .hero__title,
-                .slideshow__slide--{{ block.id }} .hero__subtitle {
-                  color: {{ block.settings.text_color }};
-                }
-                .slideshow__slide--{{ block.id }} .hero__link .btn {
-                  color: {{ block.settings.button_text_color }};
-                  background: {{ block.settings.button_color }};
-                  border-color: {{ block.settings.button_color }};
-                }
+                {%- if block.settings.text_color != blank %}
+                  #Slideshow-{{ section.id }} .slideshow__slide--{{ block.id }} .hero__text-content,
+                  #Slideshow-{{ section.id }} .slideshow__slide--{{ block.id }} .hero__title,
+                  #Slideshow-{{ section.id }} .slideshow__slide--{{ block.id }} .hero__subtitle {
+                    color: {{ block.settings.text_color }};
+                  }
+                {%- endif %}
+                {%- if block.settings.button_color != blank %}
+                  #Slideshow-{{ section.id }} .slideshow__slide--{{ block.id }} .hero__btn {
+                    background-color: {{ block.settings.button_color }};
+                  }
+                {%- endif %}
+                {%- if block.settings.button_text_color != blank %}
+                  #Slideshow-{{ section.id }} .slideshow__slide--{{ block.id }} .hero__btn {
+                    color: {{ block.settings.button_text_color }};
+                  }
+                {%- endif %}
                 {% if block.settings.overlay_opacity > 0 %}
                   .slideshow__slide--{{ block.id }} .hero__image-wrapper:after {
                     content: '';
@@ -271,6 +276,11 @@
 
               {%- if hero_text -%}
                 <div class="hero__text-wrap">
+                  {%- if block.settings.link_text != blank and section.settings.button_position == 'overlay' -%}
+                    <a href="{{ block.settings.link }}" class="hero__btn">
+                      {{ block.settings.link_text }}
+                    </a>
+                  {%- endif -%}
                   <div class="page-width">
                     <div class="hero__text-content {{ block.settings.text_align }}">
 
@@ -295,13 +305,23 @@
                         </div>
                       {%- endunless -%}
                       {%- if block.settings.link_text != blank -%}
-                        <div class="hero__link">
-                          <div class="animation-cropper"><div class="animation-contents">
-                            <a href="{{ block.settings.link }}" class="btn btn--inverse">
-                              {{ block.settings.link_text }}
-                            </a>
-                          </div></div>
-                        </div>
+                        {%- if section.settings.button_position == 'text' -%}
+                          <div class="hero__btn-wrap">
+                            <div class="animation-cropper"><div class="animation-contents">
+                              <a href="{{ block.settings.link }}" class="hero__btn hero__btn--inline">
+                                {{ block.settings.link_text }}
+                              </a>
+                            </div></div>
+                          </div>
+                        {%- else -%}
+                          <div class="hero__link">
+                            <div class="animation-cropper"><div class="animation-contents">
+                              <a href="{{ block.settings.link }}" class="btn btn--inverse">
+                                {{ block.settings.link_text }}
+                              </a>
+                            </div></div>
+                          </div>
+                        {%- endif -%}
                       {%- endif -%}
 
                     </div>
@@ -446,17 +466,27 @@
       "default": true
     },
     {
-      "type": "checkbox",
-      "id": "first_title_h1",
-      "label": "Use H1 for first slide title",
-      "info": "Enable on only one section per page.",
-      "default": false
+      "type": "select",
+      "id": "button_position",
+      "label": "Button position",
+      "default": "overlay",
+      "options": [
+        { "value": "overlay", "label": "Fixed over image" },
+        { "value": "text", "label": "With text (follows text alignment)" }
+      ]
     },
     {
       "type": "checkbox",
       "id": "mobile_text_center",
       "label": "Center text on mobile",
-      "default": true
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "first_title_h1",
+      "label": "Use H1 for first slide title",
+      "info": "Enable on only one section per page.",
+      "default": false
     }
   ],
   "blocks": [
@@ -532,19 +562,17 @@
           "type": "color",
           "id": "text_color",
           "label": "Text color",
-          "default": "#ffffff"
+          "info": "Leave empty to use the theme default."
         },
         {
           "type": "color",
           "id": "button_color",
-          "label": "Button color",
-          "default": "#ffffff"
+          "label": "Button color"
         },
         {
           "type": "color",
           "id": "button_text_color",
-          "label": "Button text color",
-          "default": "#000000"
+          "label": "Button text color"
         },
         {
           "type": "image_picker",
