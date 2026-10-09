@@ -62,6 +62,9 @@
         #Slideshow-{{ section.id }} .hero__btn-wrap {
           margin-top: 20px;
         }
+        [data-animate_sections=true] #Slideshow-{{ section.id }} .slideshow__slide.is-selected .hero__btn-wrap .animation-contents {
+          animation: fade-in 1.5s ease 1.5s forwards;
+        }
         #Slideshow-{{ section.id }} .hero__btn--inline {
           position: static;
           transform: none;
