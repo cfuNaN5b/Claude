@@ -125,6 +125,11 @@
           }
         }
         @media only screen and (max-width: 589px) {
+          /* top-aligned text on phones: 40px from the top edge (theme default 20px) */
+          #Slideshow-{{ section.id }} .hero__text-content.vertical-top:not(.mobile-vertical-center):not(.mobile-vertical-bottom),
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-top {
+            padding-top: 40px;
+          }
           #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-top {
             vertical-align: top;
           }
