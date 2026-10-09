@@ -156,11 +156,19 @@
 {%- if template_name == 'index' and section.settings.sticky_index -%}
   {%- style -%}
     /* Offset first hero's text to make room for overlaid navigation */
-    .shopify-section:first-child .hero__text-content.vertical-center {
+    .shopify-section:first-child .hero__text-content.vertical-center,
+    .shopify-section:first-child .hero__text-content.vertical-top {
       padding-top: 110px;
     }
     @media screen and (max-width: 768px) {
-      .shopify-section:first-child .hero__text-content.vertical-center {
+      .shopify-section:first-child .hero__text-content.vertical-center,
+      .shopify-section:first-child .hero__text-content.vertical-top {
+        padding-top: 70px;
+      }
+    }
+    @media screen and (max-width: 589px) {
+      .shopify-section:first-child .hero__text-content.mobile-vertical-center,
+      .shopify-section:first-child .hero__text-content.mobile-vertical-top {
         padding-top: 70px;
       }
     }

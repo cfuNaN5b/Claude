@@ -36,6 +36,10 @@
           being absolutely positioned over the slide
       {% endcomment %}
       {%- style -%}
+        #Slideshow-{{ section.id }} .hero__text-content.vertical-top {
+          vertical-align: top;
+        }
+        #Slideshow-{{ section.id }} .hero__text-content.vertical-top,
         #Slideshow-{{ section.id }} .hero__text-content.vertical-bottom {
           padding-left: 0;
           padding-right: 0;
@@ -73,6 +77,9 @@
           }
         {%- endif %}
         @media only screen and (max-width: 589px) {
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-top {
+            vertical-align: top;
+          }
           #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-center {
             vertical-align: middle;
           }
@@ -571,6 +578,18 @@
           "default": "vertical-bottom horizontal-left",
           "options": [
             {
+              "value": "vertical-top horizontal-left",
+              "label": "Top left"
+            },
+            {
+              "value": "vertical-top horizontal-center",
+              "label": "Top center"
+            },
+            {
+              "value": "vertical-top horizontal-right",
+              "label": "Top right"
+            },
+            {
               "value": "vertical-center horizontal-left",
               "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-left.label"
             },
@@ -604,6 +623,9 @@
           "default": "same",
           "options": [
             { "value": "same", "label": "Same as desktop" },
+            { "value": "vertical-top horizontal-left", "label": "Top left" },
+            { "value": "vertical-top horizontal-center", "label": "Top center" },
+            { "value": "vertical-top horizontal-right", "label": "Top right" },
             { "value": "vertical-center horizontal-left", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-left.label" },
             { "value": "vertical-center horizontal-center", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-center.label" },
             { "value": "vertical-center horizontal-right", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-right.label" },
