@@ -1,0 +1,432 @@
+{% comment %}JALG retailer map. Use the supplied 4755 × 2380 background image.{% endcomment %}
+<jalg-retailers data-editor="{{ request.design_mode }}">
+  {% if section.settings.show_heading %}
+    <header class="jr-heading">
+      {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
+      {% if section.settings.subtitle != blank %}<p>{{ section.settings.subtitle | escape }}</p>{% endif %}
+    </header>
+  {% endif %}
+
+  {% if section.settings.map != blank %}
+    <div class="jr-controls" role="group" aria-label="Map regions">
+      <button type="button" data-region=".51,.20">Europe</button>
+      <button type="button" data-region=".81,.29">East Asia</button>
+      <span>{{ section.settings.map_hint | escape }}</span>
+    </div>
+    <div class="jr-view" tabindex="0" role="region" aria-label="Retailer map. Scroll to explore.">
+      <div class="jr-map">
+        {{ section.settings.map | image_url: width: 4755 | image_tag: widths: '1200, 2400, 3600, 4755', sizes: '(max-width: 799px) 1800px, 100vw', width: 4755, height: 2380, loading: 'lazy', alt: 'World map. Retailer details are listed below.' }}
+        <svg class="jr-lines" viewBox="0 0 4755 2380" aria-hidden="true" focusable="false"></svg>
+      </div>
+    </div>
+  {% elsif request.design_mode %}
+    <p class="jr-notice">Select JALG-retailers-map-background.png in this section's settings.</p>
+  {% endif %}
+
+  <ol class="jr-list" aria-label="JALG retailers">
+    {% for block in section.blocks %}
+      {% assign retailer = block.settings %}
+      <li data-block="{{ block.id }}" data-coordinates="{{ retailer.coordinates | escape }}"
+        data-offset="{{ retailer.offset_x }},{{ retailer.offset_y }}" {{ block.shopify_attributes }}>
+        {% if retailer.url != blank %}
+          <a class="jr-link jr-line" href="{{ retailer.url | escape }}" target="_blank" rel="noopener noreferrer">
+        {% else %}
+          <div class="jr-link jr-line">
+        {% endif %}
+          <span class="jr-number" aria-hidden="true">{{ forloop.index }}</span>
+          <span>
+            <span class="jr-name">{{ retailer.title | escape }}</span>
+            <span class="jr-location">{{ retailer.location | escape }}</span>
+          </span>
+        {% if retailer.url != blank %}</a>{% else %}</div>{% endif %}
+        {% if request.design_mode %}<small class="jr-error" hidden>Enter valid latitude, longitude to show this retailer on the map.</small>{% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+
+  <div class="jr-pop" role="dialog" aria-label="Retailer details" id="RetailerPopup-{{ section.id }}" hidden>
+    <button type="button" class="jr-close" aria-label="Close retailer details">×</button>
+    <strong></strong><p></p>
+    <a class="jr-line" target="_blank" rel="noopener noreferrer">
+      {{ section.settings.visit_label | escape }}
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false"><path d="M3 13 13 3M3 3h10v10"/></svg>
+    </a>
+  </div>
+</jalg-retailers>
+
+{% stylesheet %}
+jalg-retailers { --green:#3d5640; --line:#d6d6d1; --paper:#f6f5f3; display:block; padding-bottom:40px; background:var(--paper); color:#222; }
+jalg-retailers, jalg-retailers * { box-sizing:border-box; }
+jalg-retailers [hidden] { display:none !important; }
+jalg-retailers button { font:inherit; color:inherit; cursor:pointer; }
+jalg-retailers .jr-heading { padding:32px 24px 24px; text-align:center; }
+jalg-retailers .jr-heading h2 { margin:0 0 24px; }
+jalg-retailers .jr-heading p { max-width:800px; margin:0 auto; }
+jalg-retailers .jr-controls { display:none; }
+jalg-retailers .jr-map { position:relative; width:100%; aspect-ratio:4755/2380; container-type:inline-size; }
+jalg-retailers .jr-map img, jalg-retailers .jr-lines { position:absolute; inset:0; display:block; width:100%; height:100%; margin:0; max-width:none; }
+jalg-retailers .jr-lines { pointer-events:none; overflow:visible; }
+jalg-retailers .jr-lines path { fill:none; stroke:var(--green); stroke-width:4; stroke-linecap:round; }
+jalg-retailers .jr-lines circle { fill:var(--green); }
+jalg-retailers .jr-pin { position:absolute; z-index:1; display:grid; place-items:center; transform:translate(-50%,-50%); width:1.43%; height:auto; min-width:0; min-height:0; aspect-ratio:1; margin:0; padding:0; border:0; border-radius:50%; background:var(--green); color:#fff; box-shadow:none; font-size:.631cqw; font-weight:600; line-height:1; }
+jalg-retailers .jr-pin::after { content:""; position:absolute; inset:-9px; border-radius:50%; }
+jalg-retailers .jr-pin:is([aria-expanded="true"],:focus-visible) { outline:1px solid var(--green); outline-offset:2px; }
+
+/* Shared underline animation */
+jalg-retailers .jr-line { position:relative; border:0; border-bottom:1px solid var(--line) !important; text-decoration:none !important; background-image:none !important; box-shadow:none !important; }
+jalg-retailers .jr-line::before { display:none !important; }
+jalg-retailers .jr-line::after { content:""; display:block !important; position:absolute; inset:auto 0 -1px; width:100%; height:1px; border:0 !important; background:var(--green); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; pointer-events:none; }
+jalg-retailers a.jr-line:is(:hover,:focus-visible)::after { transform:scaleX(1); }
+jalg-retailers .jr-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:32px 28px; max-width:1440px; margin:0 auto; padding:24px 40px 0; list-style:none; }
+jalg-retailers .jr-list li { margin:0; padding:0; }
+jalg-retailers .jr-list li, jalg-retailers .jr-link > span { min-width:0; }
+jalg-retailers .jr-link { display:flex; align-items:flex-start; gap:14px; min-height:56px; height:100%; padding:5px 0 12px; color:inherit; }
+jalg-retailers .jr-link:is(:hover,:focus-visible) .jr-name { color:var(--green); }
+jalg-retailers .jr-link:focus-visible { outline:1px solid var(--green); outline-offset:5px; }
+jalg-retailers .jr-number { display:inline-flex; flex:0 0 28px; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--green); color:#fff; font-size:13px; font-weight:600; line-height:1; }
+jalg-retailers .jr-name { display:block; font-size:16px; font-weight:500; line-height:1.5; }
+jalg-retailers .jr-location { display:block; margin-top:4px; color:#444; font-size:14px; line-height:1.5; }
+jalg-retailers .jr-pop { position:fixed; z-index:10000; width:280px; padding:24px; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
+jalg-retailers .jr-pop strong { display:block; padding-right:18px; font-size:16px; }
+jalg-retailers .jr-pop p { margin:8px 0 16px; }
+jalg-retailers .jr-pop a { display:inline-block; color:var(--green); }
+jalg-retailers .jr-pop svg { display:inline-block; vertical-align:middle; margin-left:3px; }
+jalg-retailers .jr-close { position:absolute; top:4px; right:4px; width:32px; height:32px; padding:0; border:0; background:none; font-size:24px; }
+jalg-retailers .jr-notice { padding:24px; text-align:center; }
+jalg-retailers .jr-error { display:block; color:#a12b22; }
+
+@media(max-width:1099px) {
+  jalg-retailers .jr-list { grid-template-columns:repeat(3,minmax(0,1fr)); padding-inline:24px; }
+}
+@media(max-width:799px) {
+  jalg-retailers.is-ready .jr-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
+  jalg-retailers .jr-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
+  jalg-retailers .jr-controls span { flex-basis:100%; text-align:center; font-size:13px; }
+  jalg-retailers .jr-view { height:350px; overflow:auto; overscroll-behavior-x:contain; }
+  jalg-retailers .jr-map { width:1800px; max-width:none; }
+  jalg-retailers .jr-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+}
+@media(max-width:589px) {
+  jalg-retailers { padding-bottom:25px; }
+  jalg-retailers .jr-heading p { max-width:85%; text-wrap:balance; }
+  jalg-retailers .jr-list { grid-template-columns:1fr; gap:18px; padding-top:20px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  jalg-retailers .jr-line::after { transition:none; }
+}
+{% endstylesheet %}
+
+{% javascript %}
+if (!customElements.get('jalg-retailers')) {
+  customElements.define('jalg-retailers', class extends HTMLElement {
+    connectedCallback() {
+      this.frame = requestAnimationFrame(() => this.init());
+    }
+
+    disconnectedCallback() {
+      cancelAnimationFrame(this.frame);
+      clearTimeout(this.timer);
+      this.events?.abort();
+    }
+
+    init() {
+      this.events?.abort();
+      this.events = new AbortController();
+
+      const on = (el, type, fn, capture = false) =>
+        el.addEventListener(type, fn, { signal:this.events.signal, capture });
+      const find = selector => this.querySelector(selector);
+      const map = find('.jr-map'), view = find('.jr-view'), pop = find('.jr-pop');
+      if (!map) return;
+
+      map.querySelectorAll('.jr-pin').forEach(pin => pin.remove());
+      const svg = find('.jr-lines');
+      svg.replaceChildren();
+
+      const title = pop.querySelector('strong');
+      const location = pop.querySelector('p');
+      const website = pop.querySelector('a');
+      const mobile = matchMedia('(max-width:799px)');
+      const viewport = window.visualViewport;
+      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+      let active, locked = false;
+
+      // Robinson projection matched to the supplied background.
+      const coefficients = [
+        [12.22222246,4.2710710326e-16,-0.00087451832549,3.801477834e-05,2.2414338494e-14,13.836089418,3.3438252554e-14,-9.4317942925e-08],
+        [12.205111423,-0.0058940811155,-0.0003042966615,-1.6266555589e-05,69.180443974,13.836089418,-1.4147735516e-06,4.7158970893e-07],
+        [12.166000377,-0.010157033753,-0.00054829499534,-1.2059679427e-05,138.36088795,13.836089418,5.6590833629e-06,-1.7920412901e-06],
+        [12.100000352,-0.016544489123,-0.00072919002279,4.4949668502e-05,207.54134024,13.835977187,-2.1221548079e-05,6.6965780056e-06],
+        [12.004667224,-0.020465133333,-5.4944633986e-05,-6.9961345763e-05,276.7217759,13.836311803,7.9227123038e-05,-2.4994225416e-05],
+        [11.892222331,-0.026261644017,-0.0011043645537,2.289955528e-07,345.90222818,13.835196761,-0.00029568726316,9.3280457445e-05],
+        [11.733333299,-0.037288167463,-0.0011009301399,2.015652299e-05,415.08268047,13.839324393,0.001103520653,-0.00034812715838],
+        [11.52188946,-0.046785689196,-0.00079858292172,-3.1966001051e-05,484.26309951,13.824150252,-0.0041183900524,-0.00048607183841],
+        [11.264000025,-0.05716895744,-0.0012780777702,5.8818587333e-05,553.22038529,13.746601263,-0.011409417236,-0.00038553927957],
+        [10.953555784,-0.065538366564,-0.00039579346333,-6.6419467634e-05,621.61977144,13.603553646,-0.017192568905,-0.00064972489835],
+        [10.607667043,-0.074477702688,-0.0013920867006,4.0636934229e-05,689.12652483,13.382845848,-0.026938419483,-0.00058616700702],
+        [10.205555492,-0.08535083394,-0.0007825314394,1.1427277117e-05,755.2942792,13.069525073,-0.035730919641,-0.00057621174847],
+        [9.7606670767,-0.092319090472,-0.00061112213467,1.1431738126e-05,819.67670154,12.669059499,-0.044374124601,-0.00067958851739],
+        [9.2852224062,-0.097572938883,-0.00043964555563,-2.7820955119e-05,881.82752534,12.174307865,-0.054567972404,-0.0011686920552],
+        [8.7828887554,-0.10405597376,-0.00085695986296,-0.00010548144426,941.18881773,11.540971902,-0.072098297923,-1.5663122129e-06],
+        [8.2280002975,-0.12053666353,-0.0024391766691,0.00023463488764,997.09104594,10.819888414,-0.072121728239,-0.0095368592209],
+        [7.5936665951,-0.12733110992,0.0010803503359,7.6272903614e-05,1048.195344,9.3834016099,-0.21517462264,-0.0046982447112],
+        [6.993555695,-0.11080678975,0.0022244445293,7.6272903614e-05,1089.1457157,6.8792925574,-0.28564828874,-0.0046982447112]
+      ];
+
+      const project = (lat, lon) => {
+        const i = Math.min(17, Math.floor(Math.abs(lat) / 5));
+        const t = Math.abs(lat) - i * 5;
+        const c = coefficients[i];
+        const polynomial = n =>
+          c[n] + t * (c[n+1] + t * (c[n+2] + t * c[n+3]));
+        return [
+          2327.5 + lon * polynomial(0),
+          1187 - Math.sign(lat) * polynomial(4)
+        ];
+      };
+
+      const entries = [...this.querySelectorAll('.jr-list li')].map((row, i) => {
+        const parts = row.dataset.coordinates.split(',').map(value => value.trim());
+        const [lat, lon] = parts.map(Number);
+        const valid = parts.length === 2 && parts.every(Boolean) &&
+          Number.isFinite(lat) && Number.isFinite(lon) &&
+          Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
+
+        const error = row.querySelector('.jr-error');
+        if (error) error.hidden = valid || !row.dataset.coordinates.trim();
+        if (!valid) return null;
+
+        const [x, y] = project(lat, lon);
+        const [dx, dy] = row.dataset.offset.split(',').map(Number);
+        const bx = clamp(x + dx, 45, 4710);
+        const by = clamp(y + dy, 45, 2335);
+        const pin = document.createElement('button');
+
+        pin.type = 'button';
+        pin.className = 'jr-pin';
+        pin.textContent = i + 1;
+        pin.style.left = bx / 4755 * 100 + '%';
+        pin.style.top = by / 2380 * 100 + '%';
+        pin.setAttribute('aria-label',
+          `${i+1}: ${row.querySelector('.jr-name').textContent} — ${row.querySelector('.jr-location').textContent}`);
+        pin.setAttribute('aria-haspopup', 'dialog');
+        pin.setAttribute('aria-controls', pop.id);
+        pin.setAttribute('aria-expanded', 'false');
+        map.append(pin);
+
+        return { row, pin, x, y, bx, by };
+      }).filter(Boolean);
+
+      const draw = (tag, attributes) => {
+        const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        Object.entries(attributes).forEach(([key, value]) =>
+          node.setAttribute(key, value));
+        svg.append(node);
+      };
+
+      const dots = new Map();
+      entries.forEach(({ x, y, bx, by }) => {
+        const near = entries.some(other => {
+          const d = Math.hypot(x-other.x, y-other.y);
+          return d > .01 && d < 18;
+        });
+        const r = near ? 2.4 : 7;
+        dots.set(`${x.toFixed(3)},${y.toFixed(3)}`, { cx:x, cy:y, r });
+
+        const distance = Math.hypot(bx-x, by-y);
+        if (distance > 65) {
+          const ux = (bx-x)/distance, uy = (by-y)/distance;
+          draw('path', {
+            d:`M${x+ux*(r+1)},${y+uy*(r+1)} L${bx-ux*60},${by-uy*60}`
+          });
+        }
+      });
+
+      dots.forEach(dot => draw('circle', dot));
+      const byPin = new Map(entries.map(entry => [entry.pin, entry]));
+
+      const close = (restore = false) => {
+        clearTimeout(this.timer);
+        const previous = active;
+        active?.setAttribute('aria-expanded', 'false');
+        active = null;
+        locked = false;
+        pop.hidden = true;
+        if (restore) previous?.focus();
+      };
+
+      const position = () => {
+        if (!active) return;
+        const x = viewport?.offsetLeft || 0;
+        const y = viewport?.offsetTop || 0;
+        const width = viewport?.width || innerWidth;
+        const height = viewport?.height || innerHeight;
+
+        pop.style.maxWidth = Math.max(0, width - 24) + 'px';
+        pop.style.maxHeight = Math.max(0, height - 24) + 'px';
+
+        const r = active.getBoundingClientRect();
+        const w = pop.offsetWidth, h = pop.offsetHeight;
+        const top = r.bottom + h + 24 <= y + height
+          ? r.bottom + 12 : r.top - h - 12;
+
+        pop.style.left = clamp(
+          r.left + (r.width-w)/2, x+12, x+width-w-12) + 'px';
+        pop.style.top = clamp(top, y+12, y+height-h-12) + 'px';
+      };
+
+      const show = (pin, lock = false) => {
+        clearTimeout(this.timer);
+        active?.setAttribute('aria-expanded', 'false');
+        active = pin;
+        locked = lock;
+
+        const { row } = byPin.get(pin);
+        const link = row.querySelector('a.jr-link');
+        title.textContent = row.querySelector('.jr-name').textContent;
+        location.textContent = row.querySelector('.jr-location').textContent;
+        website.hidden = !link;
+
+        if (link) website.href = link.href;
+        else website.removeAttribute('href');
+
+        pin.setAttribute('aria-expanded', 'true');
+        pop.hidden = false;
+        position();
+      };
+
+      const pan = (x, y) => {
+        view.scrollLeft = map.clientWidth*x - view.clientWidth/2;
+        view.scrollTop = map.clientHeight*y - view.clientHeight/2;
+      };
+
+      on(this, 'click', e => {
+        const pin = e.target.closest('.jr-pin');
+        const region = e.target.closest('[data-region]');
+
+        if (pin) active === pin && locked ? close() : show(pin, true);
+        else if (region) {
+          close();
+          pan(...region.dataset.region.split(',').map(Number));
+        } else if (e.target.closest('.jr-close')) close(true);
+      });
+
+      on(this, 'pointerover', e => {
+        if (e.pointerType !== 'mouse') return;
+        const pin = e.target.closest('.jr-pin');
+        if (pin || pop.contains(e.target)) clearTimeout(this.timer);
+        if (pin && !locked && pin !== active) show(pin);
+      });
+
+      on(this, 'pointerout', e => {
+        if (e.pointerType !== 'mouse' || locked ||
+            pop.contains(document.activeElement) ||
+            !e.target.closest('.jr-pin,.jr-pop')) return;
+
+        const next = e.relatedTarget;
+        if (next instanceof Element && this.contains(next) &&
+            next.closest('.jr-pin,.jr-pop')) return;
+
+        clearTimeout(this.timer);
+        this.timer = setTimeout(close, 220);
+      });
+
+      on(document, 'pointerdown', e => {
+        if (!pop.contains(e.target) && e.target !== active) close();
+      });
+
+      on(document, 'focusin', e => {
+        if (active && e.target !== active && !pop.contains(e.target)) close();
+      });
+
+      on(document, 'keydown', e => {
+        if (!active) return;
+
+        if (e.key === 'Escape') close(true);
+        else if (e.key === 'Tab' && !e.shiftKey && e.target === active) {
+          e.preventDefault();
+          pop.querySelector('.jr-close').focus();
+        } else if (e.key === 'Tab' && e.shiftKey &&
+                   e.target === pop.querySelector('.jr-close')) {
+          e.preventDefault();
+          active.focus();
+        }
+      });
+
+      on(window, 'scroll', position, true);
+      on(window, 'resize', position);
+
+      if (viewport) {
+        ['scroll', 'resize'].forEach(type => on(viewport, type, position));
+      }
+
+      on(mobile, 'change', () => {
+        close();
+        pan(mobile.matches ? .51 : 0, mobile.matches ? .20 : 0);
+      });
+
+      if (this.dataset.editor === 'true') {
+        on(this, 'shopify:block:select', e => {
+          const entry = entries.find(item =>
+            item.row.dataset.block === e.detail.blockId);
+          if (entry) {
+            if (mobile.matches) pan(entry.bx/4755, entry.by/2380);
+            show(entry.pin, true);
+          }
+        });
+        on(this, 'shopify:block:deselect', () => close());
+      }
+
+      this.classList.add('is-ready');
+      if (mobile.matches) pan(.51, .20);
+    }
+  });
+}
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "JALG retailers map",
+  "tag": "section",
+  "max_blocks": 50,
+  "settings": [
+    {"type": "image_picker", "id": "map", "label": "Map background", "info": "Select the supplied JALG-retailers-map-background.png. Other maps will not align with the city coordinates."},
+    {"type": "checkbox", "id": "show_heading", "label": "Show heading and introduction", "default": false},
+    {"type": "text", "id": "heading", "label": "Heading", "default": "JALG Retailers Worldwide"},
+    {"type": "text", "id": "subtitle", "label": "Introduction", "default": "Selected design destinations across Europe and East Asia"},
+    {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a number"},
+    {"type": "text", "id": "visit_label", "label": "Website link text", "default": "Visit website"}
+  ],
+  "blocks": [{
+    "type": "retailer",
+    "name": "Retailer",
+    "settings": [
+      {"type": "text", "id": "title", "label": "Retailer name", "default": "New retailer"},
+      {"type": "text", "id": "location", "label": "City and country"},
+      {"type": "url", "id": "url", "label": "Website"},
+      {"type": "text", "id": "coordinates", "label": "City coordinates (latitude, longitude)", "info": "Use decimal coordinates, separated by a comma. Example: 55.676098, 12.568337. Leave blank to show this retailer only in the list."},
+      {"type": "range", "id": "offset_x", "label": "Number position — left / right", "min": -500, "max": 500, "step": 10, "default": -140, "info": "Moves the numbered circle; the city dot stays fixed."},
+      {"type": "range", "id": "offset_y", "label": "Number position — up / down", "min": -400, "max": 400, "step": 10, "default": -100, "info": "Negative moves up. Positive moves down."}
+    ]
+  }],
+  "presets": [{
+    "name": "JALG Retailers Map",
+    "blocks": [
+      {"type": "retailer", "settings": {"title": "ILLUMS BOLIGHUS", "location": "Copenhagen, Denmark", "url": "https://www.illumsbolighus.dk/soeg?q=JALG&lang=da_DK", "coordinates": "55.676098,12.568337", "offset_x": -40, "offset_y": -90}},
+      {"type": "retailer", "settings": {"title": "ESTONIAN DESIGN HOUSE", "location": "Tallinn, Estonia", "url": "https://www.estoniandesignhouse.ee/", "coordinates": "59.436961,24.753574", "offset_x": 70, "offset_y": -70}},
+      {"type": "retailer", "settings": {"title": "FINNISH DESIGN SHOP", "location": "Turku, Finland", "url": "https://www.finnishdesignshop.com/", "coordinates": "60.451813,22.266630", "offset_x": 150, "offset_y": -150}},
+      {"type": "retailer", "settings": {"title": "DESIGN WE LOVE", "location": "Weimar, Germany", "url": "https://www.designwe.love/collections/jalg", "coordinates": "50.980300,11.329030", "offset_x": 130, "offset_y": 40}},
+      {"type": "retailer", "settings": {"title": "MOHD", "location": "Messina, Italy", "url": "https://shop.mohd.it/en/brands/jalg.html", "coordinates": "38.193814,15.554015", "offset_x": 220, "offset_y": 20}},
+      {"type": "retailer", "settings": {"title": "STUDIO FRUYTS", "location": "Schlieren, Switzerland", "url": "https://www.studiofruyts.ch/", "coordinates": "47.398261,8.448795", "offset_x": -110, "offset_y": 90}},
+      {"type": "retailer", "settings": {"title": "LIVINGTREE", "location": "Schlieren, Switzerland", "url": "https://livingtree.ch/en/?s=JALG", "coordinates": "47.398261,8.448795", "offset_x": 40, "offset_y": 150}},
+      {"type": "retailer", "settings": {"title": "NORDIC LIVING", "location": "Edinburgh, United Kingdom", "url": "https://www.mynordicliving.co.uk/collections/jalg", "coordinates": "55.953251,-3.188267", "offset_x": -160, "offset_y": -10}},
+      {"type": "retailer", "settings": {"title": "HIMITSUKICHI", "location": "Tsukuba, Japan", "url": "https://www.himitsukichiii.com/", "coordinates": "36.083472,140.076444", "offset_x": 10, "offset_y": -120}},
+      {"type": "retailer", "settings": {"title": "OUSIA INTERIOR", "location": "Kyoto, Japan", "url": "https://ousia-interior.com/en", "coordinates": "35.011564,135.768149", "offset_x": -140, "offset_y": 80}},
+      {"type": "retailer", "settings": {"title": "N2 INTERIOR", "location": "Tokyo, Japan", "url": "https://n2-interior.com/", "coordinates": "35.689487,139.691706", "offset_x": 100, "offset_y": 50}},
+      {"type": "retailer", "settings": {"title": "IKUS", "location": "Hiroshima, Japan", "url": "https://online.ikus.furniture/products/detail/2263", "coordinates": "34.385203,132.455293", "offset_x": -340, "offset_y": 100}},
+      {"type": "retailer", "settings": {"title": "KOZLIFE", "location": "Tokyo, Japan", "url": "https://www.kozlife.com/shop/shopbrand.html?search=JALG", "coordinates": "35.689487,139.691706", "offset_x": 230, "offset_y": -70}},
+      {"type": "retailer", "settings": {"title": "INNOMETSÄ", "location": "Seoul, South Korea", "url": "https://innometsa.com/product/list2.html?cate_no=1326", "coordinates": "37.566500,126.978000", "offset_x": -160, "offset_y": -20}}
+    ]
+  }]
+}
+{% endschema %}
