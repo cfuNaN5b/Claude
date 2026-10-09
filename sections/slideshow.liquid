@@ -72,6 +72,23 @@
             }
           }
         {%- endif %}
+        @media only screen and (max-width: 589px) {
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-center {
+            vertical-align: middle;
+          }
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-vertical-bottom {
+            vertical-align: bottom;
+          }
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-horizontal-left {
+            text-align: left;
+          }
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-horizontal-center {
+            text-align: center;
+          }
+          #Slideshow-{{ section.id }} .hero__text-content.mobile-horizontal-right {
+            text-align: right;
+          }
+        }
       {%- endstyle -%}
 
       {%- assign natural_height = false -%}
@@ -287,7 +304,7 @@
                     </a>
                   {%- endif -%}
                   <div class="page-width">
-                    <div class="hero__text-content {{ block.settings.text_align }}">
+                    <div class="hero__text-content {{ block.settings.text_align }}{% if block.settings.text_align_mobile != blank and block.settings.text_align_mobile != 'same' %} {{ block.settings.text_align_mobile | split: ' ' | join: ' mobile-' | prepend: 'mobile-' }}{% endif %}">
 
                       {%- unless block.settings.title == blank -%}
                         {%- if section.settings.first_title_h1 and forloop.first -%}
@@ -577,6 +594,22 @@
               "value": "vertical-bottom horizontal-right",
               "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-bottom_horizontal-right.label"
             }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "text_align_mobile",
+          "label": "Mobile text alignment",
+          "info": "Phones (up to 589px wide). Overrides \"Center text on mobile\".",
+          "default": "same",
+          "options": [
+            { "value": "same", "label": "Same as desktop" },
+            { "value": "vertical-center horizontal-left", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-left.label" },
+            { "value": "vertical-center horizontal-center", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-center.label" },
+            { "value": "vertical-center horizontal-right", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-center_horizontal-right.label" },
+            { "value": "vertical-bottom horizontal-left", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-bottom_horizontal-left.label" },
+            { "value": "vertical-bottom horizontal-center", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-bottom_horizontal-center.label" },
+            { "value": "vertical-bottom horizontal-right", "label": "t:sections.slideshow.blocks.slide.settings.text_align.options.vertical-bottom_horizontal-right.label" }
           ]
         },
         {
