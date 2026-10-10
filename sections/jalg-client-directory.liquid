@@ -372,7 +372,7 @@
     #JalgClientDirectory-{{ section.id }} .jalg-directory__cta { align-items: start; flex-direction: column; gap: 22px; }
   }
 
-  /* JALG heading sizes: same as the theme's h1 / h2 / h3, from
+  /* JALG heading sizes: title = theme h1, section headings = h2, entry names = h4, from
      Theme settings → Typography (size, letter spacing, line height) */
   #JalgClientDirectory-{{ section.id }} :is(.jalg-directory__title, .jalg-directory__section-title, .jalg-directory__item-name, .jalg-directory__cta h2) {
     letter-spacing: var(--typeHeaderSpacing);
@@ -381,13 +381,13 @@
   #JalgClientDirectory-{{ section.id }} .jalg-directory__title { font-size: calc(var(--typeHeaderSize) * .85); }
   #JalgClientDirectory-{{ section.id }} .jalg-directory__section-title,
   #JalgClientDirectory-{{ section.id }} .jalg-directory__cta h2 { font-size: calc(var(--typeHeaderSize) * .9 * .85); }
-  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name { font-size: calc(var(--typeHeaderSize) * .85 * .85); }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name { font-size: calc(var(--typeHeaderSize) * .61 * .85); }
   #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-copy { font-size: 17px; }
   @media screen and (min-width: 590px) {
     #JalgClientDirectory-{{ section.id }} .jalg-directory__title { font-size: var(--typeHeaderSize); }
     #JalgClientDirectory-{{ section.id }} .jalg-directory__section-title,
     #JalgClientDirectory-{{ section.id }} .jalg-directory__cta h2 { font-size: calc(var(--typeHeaderSize) * .9); }
-    #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name { font-size: calc(var(--typeHeaderSize) * .85); }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name { font-size: calc(var(--typeHeaderSize) * .61); }
     #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-copy { font-size: 18px; }
   }
 </style>
