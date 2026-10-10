@@ -1,0 +1,465 @@
+{% comment %}
+  JALG — Good places. Good company.
+  Add this file as: sections/jalg-client-directory.liquid
+  The entries below are based on the current Meet Our Clients page.
+  Review names, URLs, and classifications before publishing.
+{% endcomment %}
+
+<section id="JalgClientDirectory-{{ section.id }}" class="jalg-directory">
+  <div class="jalg-directory__intro">
+    {% if section.settings.eyebrow != blank %}
+      <p class="jalg-directory__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {% endif %}
+    <div class="jalg-directory__intro-grid">
+      <div>
+        <h1 class="jalg-directory__title">{{ section.settings.title | escape | newline_to_br }}</h1>
+        {% if section.settings.intro != blank %}
+          <div class="jalg-directory__intro-copy">{{ section.settings.intro | escape | newline_to_br }}</div>
+        {% endif %}
+      </div>
+      {% if section.settings.side_note != blank %}
+        <p class="jalg-directory__side-note">{{ section.settings.side_note | escape | newline_to_br }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% assign hospitality_count = 0 %}
+  {% assign trade_count = 0 %}
+  {% for block in section.blocks %}
+    {% if block.settings.category == 'hospitality' %}
+      {% assign hospitality_count = hospitality_count | plus: 1 %}
+    {% elsif block.settings.category == 'trade' %}
+      {% assign trade_count = trade_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="jalg-directory__section" id="JalgHospitality-{{ section.id }}">
+    <div class="jalg-directory__section-heading">
+      <div>
+        <p class="jalg-directory__eyebrow">{{ section.settings.hospitality_kicker | escape }}</p>
+        <h2 class="jalg-directory__section-title">{{ section.settings.hospitality_title | escape }}</h2>
+      </div>
+      {% if section.settings.hospitality_note != blank %}
+        <p class="jalg-directory__section-note">{{ section.settings.hospitality_note | escape }}</p>
+      {% endif %}
+    </div>
+
+    <div class="jalg-directory__list">
+      {% assign hospitality_index = 0 %}
+      {% for block in section.blocks %}
+        {% if block.settings.category == 'hospitality' %}
+          {% assign hospitality_index = hospitality_index | plus: 1 %}
+          <article class="jalg-directory__item" {{ block.shopify_attributes }}>
+            {% if block.settings.location != blank %}
+              <p class="jalg-directory__item-location">{{ block.settings.location | escape }}</p>
+            {% endif %}
+            <div class="jalg-directory__item-row">
+              <div>
+                <h3 class="jalg-directory__item-name">
+                  {% if block.settings.url != blank %}
+                    <a href="{{ block.settings.url }}" target="_blank" rel="noopener noreferrer">{{ block.settings.name | escape }}</a>
+                  {% else %}
+                    {{ block.settings.name | escape }}
+                  {% endif %}
+                </h3>
+                {% if block.settings.detail != blank %}
+                  <p class="jalg-directory__item-detail">{{ block.settings.detail | escape }}</p>
+                {% endif %}
+              </div>
+              {% if block.settings.url != blank %}
+                <a class="jalg-directory__arrow" href="{{ block.settings.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ section.settings.visit_label | escape }}: {{ block.settings.name | escape }}">
+                  <span aria-hidden="true">↗</span>
+                </a>
+              {% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if hospitality_count == 0 %}
+      <p class="jalg-directory__empty">Add hospitality entries in the section settings.</p>
+    {% endif %}
+    {% if section.settings.hospitality_caption != blank %}
+      <p class="jalg-directory__caption">{{ section.settings.hospitality_caption | escape }}</p>
+    {% endif %}
+  </div>
+
+  <div class="jalg-directory__section jalg-directory__section--trade" id="JalgTrade-{{ section.id }}">
+    <div class="jalg-directory__section-heading">
+      <div>
+        <p class="jalg-directory__eyebrow">{{ section.settings.trade_kicker | escape }}</p>
+        <h2 class="jalg-directory__section-title">{{ section.settings.trade_title | escape }}</h2>
+      </div>
+      {% if section.settings.trade_note != blank %}
+        <p class="jalg-directory__section-note">{{ section.settings.trade_note | escape }}</p>
+      {% endif %}
+    </div>
+
+    <div class="jalg-directory__list">
+      {% for block in section.blocks %}
+        {% if block.settings.category == 'trade' %}
+          <article class="jalg-directory__item" {{ block.shopify_attributes }}>
+            {% if block.settings.trade_type != blank %}
+              <p class="jalg-directory__item-location">{{ block.settings.trade_type | escape }}</p>
+            {% elsif block.settings.location != blank %}
+              <p class="jalg-directory__item-location">{{ block.settings.location | escape }}</p>
+            {% endif %}
+            <div class="jalg-directory__item-row">
+              <div>
+                <h3 class="jalg-directory__item-name">
+                  {% if block.settings.url != blank %}
+                    <a href="{{ block.settings.url }}" target="_blank" rel="noopener noreferrer">{{ block.settings.name | escape }}</a>
+                  {% else %}
+                    {{ block.settings.name | escape }}
+                  {% endif %}
+                </h3>
+                {% if block.settings.detail != blank %}
+                  <p class="jalg-directory__item-detail">{{ block.settings.detail | escape }}</p>
+                {% endif %}
+              </div>
+              {% if block.settings.url != blank %}
+                <a class="jalg-directory__arrow" href="{{ block.settings.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ section.settings.visit_label | escape }}: {{ block.settings.name | escape }}">
+                  <span aria-hidden="true">↗</span>
+                </a>
+              {% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if trade_count == 0 %}
+      <p class="jalg-directory__empty">Add design and trade entries in the section settings.</p>
+    {% endif %}
+    {% if section.settings.trade_caption != blank %}
+      <p class="jalg-directory__caption">{{ section.settings.trade_caption | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if section.settings.cta_text != blank %}
+    <div class="jalg-directory__cta">
+      <h2>{{ section.settings.cta_text | escape | newline_to_br }}</h2>
+      {% if section.settings.cta_label != blank and section.settings.cta_url != blank %}
+        <a class="jalg-directory__cta-link" href="{{ section.settings.cta_url }}">
+          {{ section.settings.cta_label | escape }} <span aria-hidden="true">⟶</span>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  #JalgClientDirectory-{{ section.id }} {
+    --jalg-cream: {{ section.settings.background }};
+    --jalg-green: {{ section.settings.text_color }};
+    --jalg-clay: {{ section.settings.accent_color }};
+    --jalg-rule: {{ section.settings.rule_color }};
+    background: var(--jalg-cream);
+    color: var(--jalg-green);
+    padding: 0;
+  }
+  #JalgClientDirectory-{{ section.id }} * { box-sizing: border-box; }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__intro,
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section,
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__cta {
+    padding-left: max(24px, calc((100vw - 1320px) / 2));
+    padding-right: max(24px, calc((100vw - 1320px) / 2));
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__intro {
+    padding-top: clamp(48px, 7vw, 96px);
+    padding-bottom: clamp(42px, 5vw, 70px);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__eyebrow {
+    margin: 0 0 14px;
+    color: var(--jalg-clay);
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 230px);
+    gap: 40px;
+    align-items: start;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__title {
+    max-width: 760px;
+    margin: 0;
+    color: var(--jalg-green);
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(42px, 6.2vw, 78px);
+    font-weight: 400;
+    letter-spacing: -.035em;
+    line-height: .99;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-copy {
+    max-width: 680px;
+    margin-top: 22px;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(17px, 2vw, 22px);
+    line-height: 1.4;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__side-note {
+    position: relative;
+    margin: 16px 0 0;
+    padding-left: 46px;
+    font-size: 10px;
+    line-height: 1.9;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__side-note:before {
+    position: absolute;
+    top: 9px;
+    left: 0;
+    width: 30px;
+    height: 1px;
+    background: var(--jalg-clay);
+    content: "";
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section {
+    padding-top: clamp(32px, 4vw, 54px);
+    padding-bottom: clamp(34px, 4vw, 54px);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section--trade {
+    background: {{ section.settings.trade_background }};
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--jalg-rule);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section-heading .jalg-directory__eyebrow {
+    margin-bottom: 7px;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section-title {
+    margin: 0;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(28px, 3.5vw, 40px);
+    font-weight: 400;
+    letter-spacing: -.025em;
+    line-height: 1.1;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__section-note {
+    max-width: 270px;
+    margin: 0 0 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    line-height: 1.7;
+    text-align: right;
+    text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(28px, 7vw, 100px);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item {
+    min-width: 0;
+    padding: 22px 0 20px;
+    border-bottom: 1px solid var(--jalg-rule);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-location {
+    margin: 0 0 7px;
+    color: var(--jalg-clay);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 16px;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name {
+    margin: 0;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 400;
+    letter-spacing: -.015em;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name a {
+    color: inherit;
+    text-decoration: none;
+    text-underline-offset: .18em;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name a:hover { text-decoration: underline; }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__item-detail {
+    margin: 5px 0 0;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: 15px;
+    line-height: 1.4;
+    opacity: .78;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__arrow {
+    flex: 0 0 auto;
+    padding-top: 3px;
+    color: var(--jalg-green);
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+    transition: transform .2s ease;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__arrow:hover { transform: translate(2px, -2px); }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__caption,
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__empty {
+    margin: 20px 0 0;
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: .035em;
+    opacity: .68;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    padding-top: 30px;
+    padding-bottom: 36px;
+    border-top: 1px solid var(--jalg-rule);
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__cta h2 {
+    max-width: 600px;
+    margin: 0;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 400;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    flex: 0 0 auto;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--jalg-clay);
+    color: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jalg-directory__cta-link span { color: var(--jalg-clay); font-size: 18px; }
+  @media screen and (max-width: 749px) {
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__intro,
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__section,
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__cta {
+      padding-left: 22px;
+      padding-right: 22px;
+    }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__intro { padding-top: 40px; padding-bottom: 38px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-grid { grid-template-columns: 1fr; gap: 20px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__title { font-size: clamp(42px, 12vw, 62px); }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__intro-copy { margin-top: 17px; font-size: 18px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__side-note { margin-top: 0; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__section-heading { align-items: start; flex-direction: column; gap: 12px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__section-note { text-align: left; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__list { grid-template-columns: 1fr; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__item { padding: 19px 0 17px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__item-name { font-size: 22px; }
+    #JalgClientDirectory-{{ section.id }} .jalg-directory__cta { align-items: start; flex-direction: column; gap: 22px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "JALG client directory",
+  "tag": "section",
+  "class": "section-jalg-client-directory",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Intro eyebrow", "default": "JALG · HOSPITALITY & DESIGN" },
+    { "type": "textarea", "id": "title", "label": "Main heading", "default": "Good places.\nGood company." },
+    { "type": "textarea", "id": "intro", "label": "Introduction", "default": "From distinctive city hotels to secluded retreats, JALG finds its place in hospitality spaces around the world." },
+    { "type": "textarea", "id": "side_note", "label": "Side note", "default": "Hotels / resorts /\nDesign professionals /\nTrade partners" },
+    { "type": "text", "id": "hospitality_kicker", "label": "Hospitality section label", "default": "01 / HOSPITALITY" },
+    { "type": "text", "id": "hospitality_title", "label": "Hospitality heading", "default": "Featured destinations" },
+    { "type": "text", "id": "hospitality_note", "label": "Hospitality heading note", "default": "A selection of places around the world" },
+    { "type": "text", "id": "hospitality_caption", "label": "Hospitality footnote", "default": "Visit each destination’s website to learn more." },
+    { "type": "text", "id": "trade_kicker", "label": "Trade section label", "default": "02 / DESIGN & TRADE" },
+    { "type": "text", "id": "trade_title", "label": "Trade heading", "default": "Creative partners" },
+    { "type": "text", "id": "trade_note", "label": "Trade heading note", "default": "Design professionals and trade partners" },
+    { "type": "text", "id": "trade_caption", "label": "Trade footnote", "default": "Visit each partner’s website to learn more." },
+    { "type": "textarea", "id": "cta_text", "label": "Closing message", "default": "Interested in bringing JALG into your hospitality project?" },
+    { "type": "text", "id": "cta_label", "label": "Closing link label", "default": "Get in touch" },
+    { "type": "url", "id": "cta_url", "label": "Closing link URL" },
+    { "type": "text", "id": "visit_label", "label": "Accessible external-link label", "default": "Visit website" },
+    { "type": "color", "id": "background", "label": "Main background", "default": "#F2EEE4" },
+    { "type": "color", "id": "trade_background", "label": "Trade section background", "default": "#EAE6DA" },
+    { "type": "color", "id": "text_color", "label": "Text colour", "default": "#22301F" },
+    { "type": "color", "id": "accent_color", "label": "Accent colour", "default": "#A4512D" },
+    { "type": "color", "id": "rule_color", "label": "Divider colour", "default": "#C9C6BA" }
+  ],
+  "blocks": [
+    {
+      "type": "client",
+      "name": "Client / partner",
+      "settings": [
+        { "type": "select", "id": "category", "label": "Section", "options": [
+          { "value": "hospitality", "label": "01 / Hospitality" },
+          { "value": "trade", "label": "02 / Design & Trade" }
+        ], "default": "hospitality" },
+        { "type": "text", "id": "name", "label": "Business name", "default": "Client name" },
+        { "type": "text", "id": "location", "label": "Country / location", "default": "Country" },
+        { "type": "text", "id": "detail", "label": "City / additional detail" },
+        { "type": "text", "id": "trade_type", "label": "Trade type (optional)", "info": "Used in the Design & Trade section instead of the location label." },
+        { "type": "url", "id": "url", "label": "Website URL" }
+      ]
+    }
+  ],
+  "max_blocks": 50,
+  "presets": [
+    {
+      "name": "JALG client directory",
+      "blocks": [
+        { "type": "client", "settings": { "category": "hospitality", "name": "Hôtel Balzac", "location": "FRANCE", "detail": "Paris", "url": "https://www.hotelbalzac.paris" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Estelle Manor", "location": "UNITED KINGDOM", "detail": "Oxfordshire", "url": "https://estellemanor.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Hôtel La Bastide", "location": "FRANCE", "detail": "Chaîne Thermale du Soleil", "url": "https://www.chainethermale.fr" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "La Bastide en Gascogne", "location": "FRANCE", "url": "https://www.bastide-gasconne.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Hotel Bommeljé", "location": "NETHERLANDS", "detail": "Domburg", "url": "https://hotelbommelje.zeayouzeeland.nl" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Regent Hong Kong", "location": "HONG KONG", "url": "https://hongkong.regenthotels.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "The Maybourne Riviera", "location": "FRANCE", "detail": "Roquebrune-Cap-Martin", "url": "https://www.maybourneriviera.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Château La Coste", "location": "FRANCE", "detail": "Provence", "url": "https://chateau-la-coste.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "AC Hotels by Marriott", "location": "WORLDWIDE", "url": "https://ac-hotels.marriott.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Franks Hotel", "location": "GERMANY", "url": "https://www.hotel-franks.de" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Octant Évora", "location": "PORTUGAL", "url": "https://www.mrandmrssmith.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Archway Hotel", "location": "UNITED STATES", "detail": "Philadelphia", "url": "https://archwayfishtown.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Les Étangs de Corot", "location": "FRANCE", "url": "https://www.etangs-corot.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Château Sainte Sabine", "location": "FRANCE", "url": "https://www.saintesabine.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Hostellerie de Levernois", "location": "FRANCE", "url": "https://www.levernois.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "One&Only", "location": "WORLDWIDE", "url": "https://www.oneandonlyresorts.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Stieg'nhaus", "location": "AUSTRIA" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Grand Hotel Flora", "location": "ITALY", "detail": "Sorrento", "url": "https://hotelflorasorrento.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Grand Hotel La Favorita", "location": "ITALY", "detail": "Sorrento, Naples", "url": "https://www.hotellafavorita.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "De Bergenske", "location": "NORWAY", "detail": "Bergen", "url": "https://www.debergenske.no" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "The Strand", "location": "TURKS & CAICOS", "url": "https://thestrandtci.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Homeclub", "location": "SPAIN", "url": "https://www.homeclub.com" } },
+        { "type": "client", "settings": { "category": "hospitality", "name": "Puro Hotels", "location": "POLAND", "url": "https://purohotel.pl" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Rembaum Interior Design", "location": "UNITED STATES", "trade_type": "INTERIOR DESIGN" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Style & Stage", "location": "UNITED KINGDOM", "trade_type": "DESIGN / STYLING" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Procurement Services Asia", "location": "HONG KONG", "trade_type": "PROCUREMENT", "url": "https://ps-asia.net" } },
+        { "type": "client", "settings": { "category": "trade", "name": "AT&C Professional Systems Ltd", "location": "UNITED KINGDOM", "trade_type": "AV / INTEGRATION", "url": "https://atandc.net" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Light Sound Television", "location": "FRANCE", "trade_type": "AV / INTEGRATION", "url": "https://www.lst.fr" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Designlager", "location": "GERMANY", "trade_type": "DESIGN / RETAIL", "url": "https://designlager.de" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Hifi Install", "location": "UNITED STATES", "trade_type": "AV / INTEGRATION", "url": "https://www.hifiinstall.com" } },
+        { "type": "client", "settings": { "category": "trade", "name": "The Parker Company", "location": "WORLDWIDE", "trade_type": "HOSPITALITY PROCUREMENT", "url": "https://www.parkerinternational.com" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Blue Genie Home Automation", "location": "CANADA", "trade_type": "HOME AUTOMATION", "url": "https://www.bluegeniehome.com" } },
+        { "type": "client", "settings": { "category": "trade", "name": "Viritao", "location": "PORTUGAL", "trade_type": "DESIGN / TRADE", "url": "https://viriato.eu" } },
+        { "type": "client", "settings": { "category": "trade", "name": "2arquitectos", "location": "SPAIN", "trade_type": "ARCHITECTURE", "url": "https://2arquitectos.com" } },
+        { "type": "client", "settings": { "category": "trade", "name": "studioRaum", "location": "GERMANY", "trade_type": "INTERIOR DESIGN", "url": "https://studioraum.net" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
