@@ -11,13 +11,17 @@
     {% if section.settings.eyebrow != blank %}
       <p class="jd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
     {% endif %}
-    <h1 class="h1 jd-title">{{ section.settings.title | escape | newline_to_br }}</h1>
-    {% if section.settings.intro != blank %}
-      <p class="jd-intro-copy">{{ section.settings.intro | escape | newline_to_br }}</p>
-    {% endif %}
-    {% if section.settings.side_note != blank %}
-      <p class="jd-side-note">{{ section.settings.side_note | escape | newline_to_br | replace: '<br />', ' ' }}</p>
-    {% endif %}
+    <div class="jd-intro-grid">
+      <div>
+        <h1 class="h1 jd-title">{{ section.settings.title | escape | newline_to_br }}</h1>
+        {% if section.settings.intro != blank %}
+          <p class="jd-intro-copy">{{ section.settings.intro | escape | newline_to_br }}</p>
+        {% endif %}
+      </div>
+      {% if section.settings.side_note != blank %}
+        <p class="jd-side-note">{{ section.settings.side_note | escape | newline_to_br }}</p>
+      {% endif %}
+    </div>
   </header>
 
   {%- for group in (1..2) -%}
@@ -53,11 +57,14 @@
           {%- if block.settings.category == category -%}
             {%- assign count = count | plus: 1 -%}
             {%- comment -%} Country in normal case ("UNITED KINGDOM" → "United Kingdom"), like the Dealers page {%- endcomment -%}
-            {%- capture country -%}
-              {%- assign words = block.settings.location | downcase | split: ' ' -%}
-              {%- for word in words -%}{{ word | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}
-            {%- endcapture -%}
             {%- liquid
+              assign country = ''
+              assign words = block.settings.location | downcase | split: ' '
+              for word in words
+                assign word_cap = word | capitalize
+                assign country = country | append: ' ' | append: word_cap
+              endfor
+              assign country = country | strip
               if category == 'trade' and block.settings.trade_type != blank
                 assign meta = block.settings.trade_type
                 if country != blank
@@ -99,14 +106,21 @@
   {%- endfor -%}
 
   {% if section.settings.cta_text != blank %}
-    <div class="jd-cta">
-      <h2 class="h2 jd-cta-title">{{ section.settings.cta_text | escape | newline_to_br }}</h2>
-      {% if section.settings.cta_label != blank and section.settings.cta_url != blank %}
-        <a class="jd-cta-link jd-line" href="{{ section.settings.cta_url }}">
-          {{ section.settings.cta_label | escape }}
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false"><path d="M3 13 13 3M3 3h10v10"/></svg>
-        </a>
-      {% endif %}
+    <div class="jd-cta-band">
+      <div class="jd-cta">
+        <p class="jd-cta-title">{{ section.settings.cta_text | escape }}</p>
+        <div class="jd-cta-actions">
+          {% if section.settings.cta_label != blank %}
+            <a class="btn jd-cta-button" href="{{ section.settings.cta_url | default: '/pages/contact' }}">{{ section.settings.cta_label | escape }}</a>
+          {% endif %}
+          {% if section.settings.cta2_label != blank and section.settings.cta2_url != blank %}
+            <a class="jd-cta-link jd-line" href="{{ section.settings.cta2_url }}">
+              {{ section.settings.cta2_label | escape }}
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false"><path d="M3 13 13 3M3 3h10v10"/></svg>
+            </a>
+          {% endif %}
+        </div>
+      </div>
     </div>
   {% endif %}
 </section>
@@ -123,21 +137,38 @@
   }
   #JalgClientDirectory-{{ section.id }}, #JalgClientDirectory-{{ section.id }} * { box-sizing: border-box; }
 
-  /* Intro: centred, like the Dealers page heading */
+  /* Intro: heading and introduction on the left, side note on the right */
   #JalgClientDirectory-{{ section.id }} .jd-intro {
-    max-width: 800px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 40px 24px 40px;
-    text-align: center;
+    padding: clamp(48px, 7vw, 96px) 40px clamp(32px, 4vw, 56px);
   }
-  #JalgClientDirectory-{{ section.id }} .jd-title { margin: 0 0 20px; }
-  #JalgClientDirectory-{{ section.id }} .jd-intro-copy { margin: 0; text-wrap: balance; }
+  #JalgClientDirectory-{{ section.id }} .jd-intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 260px);
+    gap: 40px;
+    align-items: start;
+  }
+  #JalgClientDirectory-{{ section.id }} .jd-title { max-width: 760px; margin: 0 0 20px; }
+  #JalgClientDirectory-{{ section.id }} .jd-intro-copy { max-width: 680px; margin: 0; font-size: 18px; line-height: 1.5; }
   #JalgClientDirectory-{{ section.id }} .jd-side-note {
-    margin: 16px 0 0;
+    position: relative;
+    margin: 12px 0 0;
+    padding-left: 46px;
     color: #444;
     font-size: 12px;
+    line-height: 1.9;
     letter-spacing: .12em;
     text-transform: uppercase;
+  }
+  #JalgClientDirectory-{{ section.id }} .jd-side-note::before {
+    content: "";
+    position: absolute;
+    top: 11px;
+    left: 0;
+    width: 30px;
+    height: 1px;
+    background: var(--green);
   }
   #JalgClientDirectory-{{ section.id }} .jd-eyebrow {
     margin: 0 0 10px;
@@ -154,7 +185,7 @@
   #JalgClientDirectory-{{ section.id }} .jd-cta {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 24px 40px;
+    padding: clamp(48px, 6vw, 80px) 40px;
   }
   #JalgClientDirectory-{{ section.id }} .jd-group--trade { background: {{ section.settings.trade_background }}; }
   #JalgClientDirectory-{{ section.id }} .jd-group-heading {
@@ -246,26 +277,42 @@
     line-height: 1.5;
   }
 
-  /* Closing message */
+  /* Closing message: one line with a button to the contact page */
+  #JalgClientDirectory-{{ section.id }} .jd-cta-band { border-top: 1px solid var(--line); }
   #JalgClientDirectory-{{ section.id }} .jd-cta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 30px;
-    padding-top: 40px;
+    gap: 24px 40px;
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
-  #JalgClientDirectory-{{ section.id }} .jd-cta-title { max-width: 640px; margin: 0; }
+  #JalgClientDirectory-{{ section.id }} .jd-cta-title {
+    margin: 0;
+    font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+    font-size: calc(var(--typeHeaderSize) * .61);
+    line-height: var(--typeHeaderLineHeight);
+    letter-spacing: var(--typeHeaderSpacing);
+  }
+  #JalgClientDirectory-{{ section.id }} .jd-cta-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+  }
+  #JalgClientDirectory-{{ section.id }} .jd-cta-button { margin: 0; }
   #JalgClientDirectory-{{ section.id }} .jd-cta-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    flex: 0 0 auto;
     padding-bottom: 4px;
     color: var(--green);
   }
 
   @media (max-width: 1099px) {
     #JalgClientDirectory-{{ section.id }} .jd-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #JalgClientDirectory-{{ section.id }} .jd-intro,
     #JalgClientDirectory-{{ section.id }} .jd-group,
     #JalgClientDirectory-{{ section.id }} .jd-cta { padding-inline: 24px; }
   }
@@ -273,12 +320,15 @@
     #JalgClientDirectory-{{ section.id }} .jd-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
     #JalgClientDirectory-{{ section.id }} .jd-group-heading { flex-direction: column; align-items: start; gap: 8px; }
     #JalgClientDirectory-{{ section.id }} .jd-group-note { text-align: left; }
-    #JalgClientDirectory-{{ section.id }} .jd-cta { flex-direction: column; align-items: start; gap: 20px; }
+    #JalgClientDirectory-{{ section.id }} .jd-cta { flex-direction: column; align-items: start; }
+    #JalgClientDirectory-{{ section.id }} .jd-intro-grid { grid-template-columns: 1fr; gap: 20px; }
+    #JalgClientDirectory-{{ section.id }} .jd-side-note { margin-top: 0; }
   }
   @media (max-width: 589px) {
     #JalgClientDirectory-{{ section.id }} { padding-bottom: 25px; }
-    #JalgClientDirectory-{{ section.id }} .jd-intro { padding-top: 30px; padding-bottom: 25px; }
-    #JalgClientDirectory-{{ section.id }} .jd-intro-copy { max-width: 85%; margin-inline: auto; }
+    #JalgClientDirectory-{{ section.id }} .jd-intro { padding-top: 40px; padding-bottom: 24px; }
+    #JalgClientDirectory-{{ section.id }} .jd-intro-copy { font-size: 17px; }
+    #JalgClientDirectory-{{ section.id }} .jd-group { padding-block: 40px; }
     #JalgClientDirectory-{{ section.id }} .jd-list { grid-template-columns: 1fr; gap: 18px; padding-top: 20px; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -304,9 +354,11 @@
     { "type": "text", "id": "trade_title", "label": "Trade heading", "default": "Creative partners" },
     { "type": "text", "id": "trade_note", "label": "Trade heading note", "default": "Design professionals and trade partners" },
     { "type": "text", "id": "trade_caption", "label": "Trade footnote", "default": "Visit each partner’s website to learn more." },
-    { "type": "textarea", "id": "cta_text", "label": "Closing message", "default": "Interested in bringing JALG into your hospitality project?" },
-    { "type": "text", "id": "cta_label", "label": "Closing link label", "default": "Get in touch" },
-    { "type": "url", "id": "cta_url", "label": "Closing link URL" },
+    { "type": "text", "id": "cta_text", "label": "Closing message", "default": "Bringing JALG into your hospitality project?" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Contact us" },
+    { "type": "url", "id": "cta_url", "label": "Button link", "info": "Leave empty to link to the contact page (/pages/contact)." },
+    { "type": "text", "id": "cta2_label", "label": "Second link label (optional)", "default": "Trade enquiries" },
+    { "type": "url", "id": "cta2_url", "label": "Second link URL", "info": "For example your Trade page. The link only shows when a URL is set." },
     { "type": "text", "id": "visit_label", "label": "Accessible external-link label", "default": "Visit website" },
     { "type": "color", "id": "background", "label": "Main background", "default": "#F6F5F3" },
     { "type": "color", "id": "trade_background", "label": "Trade section background", "default": "#F6F5F3" },
