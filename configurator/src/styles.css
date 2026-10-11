@@ -1,0 +1,185 @@
+/* Scoped to the configurator layout; the rest of the theme's CSS isn't loaded on this page. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#configurator-root {
+  height: 100%;
+}
+
+.cfg {
+  --cfg-ink: #1c1b19;
+  --cfg-muted: #6b6862;
+  --cfg-line: #e3dfd8;
+  --cfg-bg: #fff;
+  --cfg-stage: #f2f0ec;
+
+  display: grid;
+  /* minmax(0, …) so the canvas can't widen its column past the viewport. */
+  grid-template-columns: minmax(0, 1fr) 360px;
+  height: 100%;
+  font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--cfg-ink);
+  background: var(--cfg-bg);
+}
+
+.cfg-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--cfg-stage);
+}
+
+.cfg-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--cfg-stage);
+  color: var(--cfg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cfg-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 24px;
+  overflow-y: auto;
+  border-left: 1px solid var(--cfg-line);
+}
+
+.cfg-heading {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.cfg-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.cfg-group legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cfg-muted);
+}
+
+.cfg-group legend strong {
+  color: var(--cfg-ink);
+  font-weight: 500;
+}
+
+.cfg-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--cfg-line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cfg-option:has(input:checked) {
+  border-color: var(--cfg-ink);
+}
+
+.cfg-option input {
+  margin: 0;
+  accent-color: var(--cfg-ink);
+}
+
+.cfg-price {
+  margin-left: auto;
+  color: var(--cfg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cfg-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cfg-swatch {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgb(0 0 0 / 0.15);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.cfg-swatch[aria-pressed='true'] {
+  outline: 2px solid var(--cfg-ink);
+  outline-offset: 3px;
+}
+
+.cfg-footer {
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--cfg-line);
+}
+
+.cfg-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+}
+
+.cfg-button {
+  padding: 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--cfg-ink);
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cfg-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cfg-link {
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--cfg-muted);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cfg-error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 14px;
+}
+
+/* Phone: model on top, options scroll underneath. */
+@media (max-width: 800px) {
+  .cfg {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 45vh minmax(0, 1fr);
+  }
+
+  .cfg-panel {
+    border-left: 0;
+    border-top: 1px solid var(--cfg-line);
+    padding: 20px 16px;
+  }
+}

@@ -1,0 +1,83 @@
+<!doctype html>
+<!-- Local development only (`npm run dev`). On the store, sections/configurator.liquid renders this data. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configurator (dev)</title>
+  </head>
+  <body>
+    <div id="configurator-root"></div>
+    <script type="application/json" id="configurator-data">
+      {
+        "locale": "en",
+        "currency": "EUR",
+        "colorOption": "Color",
+        "tintMaterial": "Body",
+        "cartUrl": "/cart",
+        "cartAddUrl": "/cart/add.js",
+        "strings": {
+          "heading": "Build your stand",
+          "stands": "Stand",
+          "color": "Colour",
+          "accessories": "Accessories",
+          "total": "Total",
+          "addToCart": "Add to cart",
+          "soldOut": "Sold out",
+          "share": "Copy link to this setup",
+          "copied": "Link copied"
+        },
+        "colors": [
+          { "name": "Oat", "swatch": "#d9cfbf" },
+          { "name": "Pearl", "swatch": "#f1efe9" },
+          { "name": "Black", "swatch": "#2a2a2a" }
+        ],
+        "stands": [
+          {
+            "id": "regular", "label": "Regular", "height": 100, "model": null,
+            "product": {
+              "handle": "stand-regular", "title": "Stand Regular", "options": ["Color"],
+              "variants": [
+                { "id": 1001, "title": "Oat", "price": 59900, "available": true, "options": ["Oat"] },
+                { "id": 1002, "title": "Pearl", "price": 59900, "available": true, "options": ["Pearl"] },
+                { "id": 1003, "title": "Black", "price": 59900, "available": true, "options": ["Black"] }
+              ]
+            }
+          },
+          {
+            "id": "tall", "label": "Tall", "height": 130, "model": null,
+            "product": {
+              "handle": "stand-tall", "title": "Stand Tall", "options": ["Color"],
+              "variants": [
+                { "id": 1011, "title": "Oat", "price": 69900, "available": true, "options": ["Oat"] },
+                { "id": 1012, "title": "Pearl", "price": 69900, "available": false, "options": ["Pearl"] },
+                { "id": 1013, "title": "Black", "price": 69900, "available": true, "options": ["Black"] }
+              ]
+            }
+          }
+        ],
+        "accessories": [
+          {
+            "id": "shelf", "label": "Shelf", "kind": "shelf", "model": null,
+            "product": {
+              "handle": "shelf", "title": "Shelf", "options": ["Color"],
+              "variants": [
+                { "id": 2001, "title": "Oat", "price": 9900, "available": true, "options": ["Oat"] },
+                { "id": 2002, "title": "Pearl", "price": 9900, "available": true, "options": ["Pearl"] },
+                { "id": 2003, "title": "Black", "price": 9900, "available": true, "options": ["Black"] }
+              ]
+            }
+          },
+          {
+            "id": "wheels", "label": "Wheels", "kind": "wheels", "model": null,
+            "product": {
+              "handle": "wheels", "title": "Wheels", "options": ["Title"],
+              "variants": [{ "id": 3001, "title": "Default Title", "price": 4900, "available": true, "options": ["Default Title"] }]
+            }
+          }
+        ]
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{%- comment -%}
+  Full-screen layout for the 3D configurator (templates/page.configurator.json).
+  It leaves out the theme's header, footer and CSS/JS so the app owns the page.
+  The app is built from configurator/ into assets/configurator.{js,css}.
+{%- endcomment -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>{{ page_title }} &ndash; {{ shop.name }}</title>
+    {%- if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif %}
+    {{ 'configurator.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'configurator.js' | asset_url }}" type="module"></script>
+    {{ content_for_header }}
+  </head>
+  <body>
+    {{ content_for_layout }}
+  </body>
+</html>

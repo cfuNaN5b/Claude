@@ -1,0 +1,54 @@
+{%- comment -%}
+  JSON for one configurator part (a stand or accessory block).
+  The model is the block's theme-asset GLB if one is named, otherwise the
+  product's first 3D model media (GLB), otherwise null (placeholder shape).
+
+  Accepts:
+  - block: the section block
+{%- endcomment -%}
+{%- liquid
+  assign product = block.settings.product
+  assign model_url = ''
+  if block.settings.model != blank
+    assign model_url = block.settings.model | asset_url
+  elsif product != blank
+    assign model_media = product.media | where: 'media_type', 'model' | first
+    for source in model_media.sources
+      if source.format == 'glb'
+        assign model_url = source.url
+        break
+      endif
+    endfor
+  endif
+-%}
+{
+  "id": {{ block.id | json }},
+  "label": {{ block.settings.label | default: product.title | json }},
+  "model": {% if model_url != blank %}{{ model_url | json }}{% else %}null{% endif %},
+  {%- if block.type == 'stand' %}
+  "height": {{ block.settings.height }},
+  {%- else %}
+  "kind": {{ block.settings.kind | json }},
+  {%- endif %}
+  "product": {% if product != blank -%}
+  {
+    "handle": {{ product.handle | json }},
+    "title": {{ product.title | json }},
+    "options": {{ product.options | json }},
+    "variants": [
+      {%- for variant in product.variants -%}
+        {
+          "id": {{ variant.id }},
+          "title": {{ variant.title | json }},
+          "price": {{ variant.price }},
+          "available": {{ variant.available | json }},
+          "options": {{ variant.options | json }}
+        }
+        {%- unless forloop.last %},{% endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  {%- else -%}
+  null
+  {%- endif %}
+}

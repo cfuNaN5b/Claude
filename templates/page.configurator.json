@@ -1,0 +1,28 @@
+{
+  "layout": "configurator",
+  "sections": {
+    "main": {
+      "type": "configurator",
+      "blocks": {
+        "stand_regular": { "type": "stand", "settings": { "label": "Regular", "height": 100 } },
+        "stand_tall": { "type": "stand", "settings": { "label": "Tall", "height": 130 } },
+        "color_oat": { "type": "color", "settings": { "name": "Oat", "swatch": "#d9cfbf" } },
+        "color_pearl": { "type": "color", "settings": { "name": "Pearl", "swatch": "#f1efe9" } },
+        "color_black": { "type": "color", "settings": { "name": "Black", "swatch": "#2a2a2a" } },
+        "accessory_shelf": { "type": "accessory", "settings": { "label": "Shelf", "kind": "shelf" } },
+        "accessory_wheels": { "type": "accessory", "settings": { "label": "Wheels", "kind": "wheels" } }
+      },
+      "block_order": [
+        "stand_regular",
+        "stand_tall",
+        "color_oat",
+        "color_pearl",
+        "color_black",
+        "accessory_shelf",
+        "accessory_wheels"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
