@@ -8172,7 +8172,9 @@ document.addEventListener('DOMContentLoaded', function() {
       $(this).attr('src', $(this).attr('data-src'))
     }
   })
-  $('[data-quick-add]').click(function(e) {
+  // Delegated, so buttons added after page load (e.g. the Complementary
+  // products block, filled in by product-recommendations) also add to cart
+  $(document).on('click', '[data-quick-add]', function(e) {
     e.preventDefault();
     let id = +$(this).attr('data-quick-add');
     ajaxAddToCart({
