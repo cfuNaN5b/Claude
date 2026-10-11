@@ -1,0 +1,71 @@
+{% if product.metafields.custom.extra_products != blank and product.selected_or_first_available_variant.available %}
+    <div class="freq">
+        <div class="freq__title">
+            Frequently bought together
+        </div>
+        <div class="freq__list">
+            <div class="freq__item">
+                <input type="checkbox"
+                       class="freq__check"
+                       id="freqProd--{{ product.id }}"
+                       checked
+                       data-price="{{ product.price }}"
+                        {% if product.compare_at_price > product.price %}
+                            data-price-compare="{{ product.compare_at_price }}"
+                        {% else %}
+                            data-price-compare="{{ product.price }}"
+                        {% endif %}
+                       data-id="{{ product.selected_or_first_available_variant.id }}">
+                <label for="freqProd--{{ product.id }}">
+                    <span style="font-weight: 600">This item:</span> {{ product.title }}
+                    <span class="freq__item-price">{{ product.price | money }}</span>
+                </label>
+            </div>
+            {% for prod in product.metafields.custom.extra_products.value %}
+                {% if prod.selected_or_first_available_variant.available %}
+                    <div class="freq__item">
+                        <input type="checkbox"
+                               class="freq__check"
+                               id="freqProd--{{ prod.id }}"
+                               data-price="{{ prod.price }}"
+                               {% if prod.compare_at_price > prod.price %}
+                                   data-price-compare="{{ prod.compare_at_price }}"
+                               {% else %}
+                                   data-price-compare="{{ prod.price }}"
+                               {% endif %}
+                               data-id="{{ prod.selected_or_first_available_variant.id }}">
+                        <a href="{{ prod.url }}" target="_blank">
+                            {{ prod.title }}
+                            <span class="freq__item-price">
+  {{ prod.price | money }}
+  {% if prod.compare_at_price > prod.price %}
+    {% assign discount_percentage = prod.compare_at_price | minus: prod.price | times: 100.0 | divided_by: prod.compare_at_price | round %}
+    <span class="freq__discount-percentage">-{{ discount_percentage }}%</span>
+  {% endif %}
+</span>
+
+{% if prod.compare_at_price > prod.price %}
+  <span class="freq__item-price-compare">
+    {{ prod.compare_at_price | money }}
+  </span>
+{% endif %}
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="freq__total">
+            Total price: <span class="freq__total-price" data-freq-total>{{ product.price | money }}</span>
+            <span data-freq-total-compare style="text-decoration: line-through">
+                {% if product.compare_at_price > product.price %}
+                    {{ product.compare_at_price | money }}
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="freq__add btn">
+            Add selected items to cart
+        </div>
+    </div>
+{% endif %}
