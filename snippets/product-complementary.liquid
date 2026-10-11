@@ -13,8 +13,105 @@
   endif
 -%}
 
+{%- if type == 'block' -%}
+  {% comment %}
+    "Pairs well with" block styled like the "Included with your JALG TV stand"
+    callout: light green panel with a green line on the left, green 15px title,
+    compact product row and an outlined button that doesn't compete with the
+    main Add to cart / Preorder button.
+  {% endcomment %}
+  <style>
+    product-recommendations.jalg-addon[data-intent=complementary] {
+      padding: 18px 20px;
+      background: rgba(61, 86, 64, .05);
+      border-left: 2px solid #3d5640;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .product-recommendations__title {
+      max-width: none;
+      margin: 0 0 14px;
+      color: #3d5640;
+      font-family: var(--typeBasePrimary), var(--typeBaseFallback);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.4;
+      text-transform: none;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid__item {
+      margin-bottom: 14px;
+      padding-bottom: 0;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid__item:last-child { margin-bottom: 0; }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__content { margin: 0; }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link { gap: 16px; }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__image-mask,
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .image-wrap {
+      flex: 0 0 72px;
+      width: 72px;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__meta {
+      display: grid;
+      flex: 1 1 auto;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 16px;
+      width: auto;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__title {
+      grid-column: 1;
+      grid-row: 1;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__price {
+      grid-column: 1;
+      grid-row: 2;
+      margin: 2px 0 0;
+      color: #444;
+      font-size: 15px;
+    }
+    /* the reviews app's badge would otherwise take an empty grid row */
+    product-recommendations.jalg-addon[data-intent=complementary] .stamped-product-reviews-badge { display: none !important; }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__meta .btn {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      width: auto;
+      min-width: 0;
+      margin: 0;
+      padding: 9px 18px;
+      border: 1px solid #3d5640;
+      /* !important: the theme's animated-button style would otherwise fill it */
+      background-color: transparent !important;
+      color: #3d5640 !important;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__meta .btn:hover,
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__meta .btn.is-added {
+      background-color: #3d5640 !important;
+      color: #fff !important;
+    }
+    @media only screen and (max-width: 589px) {
+      product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__meta {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      product-recommendations.jalg-addon[data-intent=complementary] .grid-product__meta .btn {
+        grid-column: 1;
+        grid-row: 3;
+        justify-self: start;
+        margin-top: 10px;
+      }
+    }
+  </style>
+{%- endif -%}
+
 <product-recommendations
   id="Recommendations-{{ section.id }}"
+  {% if type == 'block' %}class="jalg-addon"{% endif %}
   data-section-id="{{ section.id }}"
   data-section-type="product-recommendations"
   data-enable="{{ recommend_products }}"
