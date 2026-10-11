@@ -8301,9 +8301,4 @@ document.addEventListener('DOMContentLoaded', function() {
     return elementBottom > viewportTop;
     // return elementBottom > viewportTop && elementTop < viewportBottom;
   };
-  $(document).on('click', '.product-single__meta .stamped-product-reviews-badge', function() {
-    $([document.documentElement, document.body]).animate({
-      scrollTop: $('#stamped-main-widget').offset().top - 100
-    }, 2000);
-  })
 })
