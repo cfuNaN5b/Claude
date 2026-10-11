@@ -8206,14 +8206,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   })
+  // Frequently bought together
   let freqItems = {items:[]};
-  $('.freq__check:checked').each(function() {
-    freqItems.items.push({
-      id: +$(this).attr('data-id'),
-      quantity: 1
-    })
-  })
-  $('.freq__check').change(function() {
+
+  function updateFreqTotal() {
     let totalPrice = 0;
     let comparePrice = 0;
     freqItems = {items:[]};
@@ -8240,7 +8236,33 @@ document.addEventListener('DOMContentLoaded', function() {
       $('.freq__total').hide();
       $('.freq__add').hide();
     }
-  })
+  }
+
+  // "This item" (the first item) follows the variant picked on the page, so
+  // its price, the total and what gets added to the cart match the selection.
+  function syncFreqMainItem(variant) {
+    const $main = $('.freq__item').first().find('.freq__check');
+    if (!variant || !$main.length) return;
+    $main.attr({
+      'data-id': variant.id,
+      'data-price': variant.price,
+      'data-price-compare': Math.max(variant.compare_at_price || 0, variant.price)
+    });
+    // a sold-out variant can't be added, so take it out of the bundle
+    const wasDisabled = $main.prop('disabled');
+    $main.prop('disabled', !variant.available);
+    if (!variant.available || wasDisabled) $main.prop('checked', variant.available);
+    $main.closest('.freq__item').find('.freq__item-price')
+      .html(theme.Currency.formatMoney(variant.price, theme.settings.moneyFormat));
+    updateFreqTotal();
+  }
+
+  updateFreqTotal();
+  document.addEventListener('variant:change', function(evt) {
+    syncFreqMainItem(evt.detail && evt.detail.variant);
+  });
+
+  $(document).on('change', '.freq__check', updateFreqTotal);
   $('.freq__add').click(function() {
     ajaxAddToCart(freqItems);
   })

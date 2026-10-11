@@ -1,4 +1,10 @@
-{% if product.metafields.custom.extra_products != blank and product.selected_or_first_available_variant.available %}
+{%- comment -%}
+  "This item" uses the selected variant (not product.price, which is the lowest
+  price of all variants). theme.js updates it when another variant is picked.
+  Extra products also use the price of the variant that gets added to the cart.
+{%- endcomment -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{% if product.metafields.custom.extra_products != blank and current_variant.available %}
     <div class="freq">
         <div class="freq__title">
             Frequently bought together
@@ -9,44 +15,45 @@
                        class="freq__check"
                        id="freqProd--{{ product.id }}"
                        checked
-                       data-price="{{ product.price }}"
-                        {% if product.compare_at_price > product.price %}
-                            data-price-compare="{{ product.compare_at_price }}"
+                       data-price="{{ current_variant.price }}"
+                        {% if current_variant.compare_at_price > current_variant.price %}
+                            data-price-compare="{{ current_variant.compare_at_price }}"
                         {% else %}
-                            data-price-compare="{{ product.price }}"
+                            data-price-compare="{{ current_variant.price }}"
                         {% endif %}
-                       data-id="{{ product.selected_or_first_available_variant.id }}">
+                       data-id="{{ current_variant.id }}">
                 <label for="freqProd--{{ product.id }}">
                     <span style="font-weight: 600">This item:</span> {{ product.title }}
-                    <span class="freq__item-price">{{ product.price | money }}</span>
+                    <span class="freq__item-price">{{ current_variant.price | money }}</span>
                 </label>
             </div>
             {% for prod in product.metafields.custom.extra_products.value %}
-                {% if prod.selected_or_first_available_variant.available %}
+                {%- assign prod_variant = prod.selected_or_first_available_variant -%}
+                {% if prod_variant.available %}
                     <div class="freq__item">
                         <input type="checkbox"
                                class="freq__check"
                                id="freqProd--{{ prod.id }}"
-                               data-price="{{ prod.price }}"
-                               {% if prod.compare_at_price > prod.price %}
-                                   data-price-compare="{{ prod.compare_at_price }}"
+                               data-price="{{ prod_variant.price }}"
+                               {% if prod_variant.compare_at_price > prod_variant.price %}
+                                   data-price-compare="{{ prod_variant.compare_at_price }}"
                                {% else %}
-                                   data-price-compare="{{ prod.price }}"
+                                   data-price-compare="{{ prod_variant.price }}"
                                {% endif %}
-                               data-id="{{ prod.selected_or_first_available_variant.id }}">
+                               data-id="{{ prod_variant.id }}">
                         <a href="{{ prod.url }}" target="_blank">
                             {{ prod.title }}
                             <span class="freq__item-price">
-  {{ prod.price | money }}
-  {% if prod.compare_at_price > prod.price %}
-    {% assign discount_percentage = prod.compare_at_price | minus: prod.price | times: 100.0 | divided_by: prod.compare_at_price | round %}
+  {{ prod_variant.price | money }}
+  {% if prod_variant.compare_at_price > prod_variant.price %}
+    {% assign discount_percentage = prod_variant.compare_at_price | minus: prod_variant.price | times: 100.0 | divided_by: prod_variant.compare_at_price | round %}
     <span class="freq__discount-percentage">-{{ discount_percentage }}%</span>
   {% endif %}
 </span>
 
-{% if prod.compare_at_price > prod.price %}
+{% if prod_variant.compare_at_price > prod_variant.price %}
   <span class="freq__item-price-compare">
-    {{ prod.compare_at_price | money }}
+    {{ prod_variant.compare_at_price | money }}
   </span>
 {% endif %}
                         </a>
@@ -56,10 +63,10 @@
         </div>
 
         <div class="freq__total">
-            Total price: <span class="freq__total-price" data-freq-total>{{ product.price | money }}</span>
+            Total price: <span class="freq__total-price" data-freq-total>{{ current_variant.price | money }}</span>
             <span data-freq-total-compare style="text-decoration: line-through">
-                {% if product.compare_at_price > product.price %}
-                    {{ product.compare_at_price | money }}
+                {% if current_variant.compare_at_price > current_variant.price %}
+                    {{ current_variant.compare_at_price | money }}
                 {% endif %}
             </span>
         </div>
