@@ -46,7 +46,7 @@
     {%- endif -%}
     {%- if related_collection.products_count > 0 -%}
       <div class="product-recommendations">
-        <div class="product-single__related grid grid--uniform" data-aos="overflow__animation" {% if type == 'block' %}data-slideshow data-controls="{{ block.settings.control_type }}" data-per-slide="{{ block.settings.per_slide }}" data-count="{{ number_of_products}}"{% endif %}>
+        <div class="product-single__related grid grid--uniform" data-aos="overflow__animation" {% if type == 'block' %}data-slideshow data-controls="{{ block.settings.control_type }}" data-per-slide="{{ block.settings.per_slide }}" data-count="{{ related_collection.products_count | at_most: number_of_products }}"{% endif %}>
           {% assign currentStep = 1 %}
           {%- for product in related_collection.products limit: number_of_products -%}
             {% if currentStep == 1 %}
