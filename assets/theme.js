@@ -8172,15 +8172,39 @@ document.addEventListener('DOMContentLoaded', function() {
       $(this).attr('src', $(this).attr('data-src'))
     }
   })
-  // Delegated, so buttons added after page load (e.g. the Complementary
-  // products block, filled in by product-recommendations) also add to cart
+  // Quick add (e.g. the Complementary products block): add to cart without
+  // leaving the page, update the cart count and confirm on the button.
+  // Delegated, so buttons added after page load also work.
   $(document).on('click', '[data-quick-add]', function(e) {
     e.preventDefault();
-    let id = +$(this).attr('data-quick-add');
-    ajaxAddToCart({
-      id,
-      quantity: 1
-    })
+    e.stopPropagation();
+    const $btn = $(this);
+    if ($btn.hasClass('is-adding')) return;
+    const label = $btn.data('label') || $btn.text().trim();
+    $btn.data('label', label).addClass('is-adding').attr('aria-busy', 'true');
+
+    const reset = (delay) => setTimeout(() => {
+      $btn.text(label).removeClass('is-adding is-added').removeAttr('aria-busy');
+    }, delay);
+
+    $.ajax({
+      type: 'post',
+      url: '/cart/add.js',
+      dataType: 'json',
+      data: { id: +$btn.attr('data-quick-add'), quantity: 1 },
+      success: function() {
+        $btn.addClass('is-added').text('Added \u2713');
+        fetch('/cart.js').then(r => r.json()).then(cart => {
+          document.querySelectorAll('.cart-link__bubble-num').forEach(el => el.innerText = cart.item_count);
+          document.querySelectorAll('.cart-link__bubble').forEach(b => b.classList.toggle('cart-link__bubble--visible', cart.item_count > 0));
+        });
+        reset(2500);
+      },
+      error: function(xhr) {
+        $btn.text((xhr.responseJSON && xhr.responseJSON.description) || 'Could not add');
+        reset(3500);
+      }
+    });
   })
   let freqItems = {items:[]};
   $('.freq__check:checked').each(function() {
