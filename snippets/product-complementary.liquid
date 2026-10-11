@@ -22,6 +22,7 @@
   {% endcomment %}
   <style>
     product-recommendations.jalg-addon[data-intent=complementary] {
+      container-type: inline-size;
       padding: 18px 20px;
       background: rgba(61, 86, 64, .05);
       border-left: 2px solid #3d5640;
@@ -43,14 +44,22 @@
     }
     product-recommendations.jalg-addon[data-intent=complementary] .grid__item:last-child { margin-bottom: 0; }
     product-recommendations.jalg-addon[data-intent=complementary] .grid-product__content { margin: 0; }
-    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link { gap: 16px; }
+    /* !important on the layout: section Custom CSS (e.g. on the search page,
+       where the Quick Add window opens) stacks product cards into a column */
+    product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center;
+      gap: 16px;
+      height: auto !important;
+    }
     product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__image-mask,
     product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .image-wrap {
       flex: 0 0 72px;
       width: 72px;
     }
     product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__meta {
-      display: grid;
+      display: grid !important;
       flex: 1 1 auto;
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
@@ -72,7 +81,7 @@
     product-recommendations.jalg-addon[data-intent=complementary] .grid-product__price {
       grid-column: 1;
       grid-row: 2;
-      margin: 2px 0 0;
+      margin: 2px 0 0 !important;
       color: #444;
       font-size: 15px;
     }
@@ -97,7 +106,18 @@
       background-color: #3d5640 !important;
       color: #fff !important;
     }
-    @media only screen and (max-width: 589px) {
+    /* Tighter in the Quick Add window */
+    .modal--quick-shop product-recommendations.jalg-addon[data-intent=complementary] { padding: 14px 16px; }
+    .modal--quick-shop product-recommendations.jalg-addon[data-intent=complementary] .product-recommendations__title { margin-bottom: 10px; }
+    .modal--quick-shop product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link { gap: 14px; }
+    .modal--quick-shop product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__image-mask,
+    .modal--quick-shop product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .image-wrap {
+      flex-basis: 60px;
+      width: 60px;
+    }
+    /* Narrow block (phones, the Quick Add window): button under the price.
+       Based on the block's own width, so it also works in narrow columns. */
+    @container (max-width: 340px) {
       product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__meta {
         grid-template-columns: minmax(0, 1fr);
       }
