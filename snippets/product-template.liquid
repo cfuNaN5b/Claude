@@ -140,7 +140,21 @@
               {%- for block in blocks -%}
                 {%- case block.type -%}
                   {%- when '@app' -%}
-                    {% render block %}
+                    {%- comment -%}
+                      GSC Product Labels & Badges (blinks) block: only on products
+                      tagged "show-badge". Other app blocks always show.
+                    {%- endcomment -%}
+                    {%- liquid
+                      assign show_app_block = true
+                      if block.id contains 'gsc_product_labels_badges_blinks'
+                        unless product.tags contains 'show-badge'
+                          assign show_app_block = false
+                        endunless
+                      endif
+                    -%}
+                    {%- if show_app_block -%}
+                      {% render block %}
+                    {%- endif -%}
                   {%- when 'separator' -%}
                     <div class="product-block" {{ block.shopify_attributes }}><hr></div>
                   {%- when 'text' -%}
