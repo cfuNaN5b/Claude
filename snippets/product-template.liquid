@@ -345,7 +345,11 @@
 
                   <div class="ultimate-badges"></div>
 
-                    {% render 'frequently-buy', product: product %}
+                    {%- comment -%}
+                      Frequently bought together moved out of the Buy buttons block:
+                      add it where you want it with a Custom Liquid block containing
+                      {% render 'frequently-buy', product: product %}
+                    {%- endcomment -%}
 
                   {%- when 'sales_point' -%}
                     {%- unless block.settings.text == blank -%}
