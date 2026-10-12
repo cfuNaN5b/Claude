@@ -118,6 +118,16 @@
     /* Narrow block (phones, the Quick Add window): button under the price.
        Based on the block's own width, so it also works in narrow columns. */
     @container (max-width: 340px) {
+      /* bigger image, as tall as the name, price and button next to it */
+      product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link {
+        align-items: flex-start;
+        gap: 14px;
+      }
+      product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__image-mask,
+      product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .image-wrap {
+        flex: 0 0 106px;
+        width: 106px;
+      }
       product-recommendations.jalg-addon[data-intent=complementary] .grid-product__link .grid-product__meta {
         grid-template-columns: minmax(0, 1fr);
       }
