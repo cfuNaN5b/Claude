@@ -8254,6 +8254,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!variant.available || wasDisabled) $main.prop('checked', variant.available);
     $main.closest('.freq__item').find('.freq__item-price')
       .html(theme.Currency.formatMoney(variant.price, theme.settings.moneyFormat));
+    // hover preview shows the selected variant's image
+    if (variant.featured_image && variant.featured_image.src) {
+      const src = variant.featured_image.src;
+      $main.closest('.freq__item').find('[data-freq-preview]')
+        .attr('src', src + (src.indexOf('?') > -1 ? '&' : '?') + 'width=320');
+    }
     updateFreqTotal();
   }
 
