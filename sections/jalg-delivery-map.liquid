@@ -94,7 +94,7 @@
                 assign current_attr = ' aria-current="true"'
               endif
               assign safe_name = country.name | escape
-              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '><button type="button" class="jd-country" aria-haspopup="dialog" aria-expanded="false">' | append: safe_name | append: '</button></li>'
+              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '>' | append: safe_name | append: '</li>'
             endif
           endfor
         endcapture
@@ -127,7 +127,7 @@
                 assign current_attr = ' aria-current="true"'
               endif
               assign safe_name = country.name | escape
-              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '><button type="button" class="jd-country" aria-haspopup="dialog" aria-expanded="false">' | append: safe_name | append: '</button></li>'
+              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '>' | append: safe_name | append: '</li>'
             endunless
           endif
         endfor
@@ -213,11 +213,9 @@ jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom
 jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
 jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
-jalg-delivery .jd-region li { margin:0; padding:0; break-inside:avoid; }
-jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:#444; font-size:14px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
-jalg-delivery .jd-region li:is(.is-hl,.is-open) .jd-country, jalg-delivery .jd-country:focus-visible { color:var(--green); }
-jalg-delivery .jd-region li[aria-current] .jd-country { color:var(--accent); font-weight:600; }
-jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
+jalg-delivery .jd-region li { margin:0; padding:3px 0; color:#444; font-size:14px; line-height:1.5; break-inside:avoid; cursor:default; transition:color .2s ease; }
+jalg-delivery .jd-region li.is-hl { color:var(--green); }
+jalg-delivery .jd-region li[aria-current] { color:var(--accent); font-weight:600; }
 
 /* Country card */
 jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
@@ -355,7 +353,6 @@ if (!customElements.get('jalg-delivery')) {
         popCode = null;
         highlight(null);
         opener?.setAttribute('aria-expanded', 'false');
-        opener?.closest('li')?.classList.remove('is-open');
         if (restore) (opener || view).focus();
         opener = null;
       };
@@ -366,7 +363,6 @@ if (!customElements.get('jalg-delivery')) {
         popCode = code;
         opener = from;
         opener?.setAttribute('aria-expanded', 'true');
-        opener?.closest('li')?.classList.add('is-open');
         highlight(code);
         const isCurrent = code === this.dataset.current;
         pop.querySelector('strong').textContent = name(code);
@@ -408,16 +404,10 @@ if (!customElements.get('jalg-delivery')) {
       on(view, 'scroll', () => { hideTip(); closePop(); });
       on(window, 'scroll', () => { hideTip(); closePop(); });
 
-      // List: hovering lights the country up on the map, clicking opens its card.
+      // List: hovering a country lights it up on the map.
       this.querySelectorAll('.jd-region li').forEach(li => {
-        const button = li.querySelector('.jd-country');
         on(li, 'pointerenter', () => { highlight(li.dataset.c); li.classList.add('is-hl'); });
         on(li, 'pointerleave', () => { highlight(popCode); li.classList.remove('is-hl'); });
-        on(button, 'click', () => {
-          if (opener === button) return closePop();
-          const r = button.getBoundingClientRect();
-          openPop(li.dataset.c, r.left + Math.min(r.width, 130), r.top, r.bottom, button);
-        });
       });
 
       const pan = (x, y) => {
