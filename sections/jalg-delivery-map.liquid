@@ -118,7 +118,7 @@ jalg-delivery { --green:#3d5640; --green-dark:#2a3c2c; --land:#d6d7d0; --line:#d
 jalg-delivery, jalg-delivery * { box-sizing:border-box; }
 jalg-delivery [hidden] { display:none !important; }
 jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
-jalg-delivery .jd-heading { padding:32px 24px 24px; text-align:center; }
+jalg-delivery .jd-heading { padding:32px 24px 64px; text-align:center; }
 jalg-delivery .jd-heading h2 { margin:0 0 24px; }
 jalg-delivery .jd-heading p { max-width:800px; margin:0 auto; }
 jalg-delivery .jd-controls { display:none; }
@@ -159,6 +159,7 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
   jalg-delivery .jd-region.is-wide ul { columns:3; }
 }
 @media(max-width:799px) {
+  jalg-delivery .jd-heading { padding-bottom:24px; }
   jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
   jalg-delivery .jd-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
   jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
