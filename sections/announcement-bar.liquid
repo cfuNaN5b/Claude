@@ -1,0 +1,153 @@
+{% comment %} Visible immediately, alternating messages with adjustable timing. – Adjusted 22-09-2026 by Smartsy {% endcomment %}
+{% comment %} Session dismissal: sync with every second hero change, otherwise use block timing. {% endcomment %}
+<script>
+try {
+  if (sessionStorage.getItem('jalg-announcement-closed') && !window.Shopify?.designMode)
+    document.documentElement.dataset.announcementClosed = '';
+} catch {}
+
+if (!customElements.get('jalg-announcements')) {
+  customElements.define('jalg-announcements', class extends HTMLElement {
+    connectedCallback() {
+      this.timer = setTimeout(() => this.init());
+    }
+    init() {
+      const slides = [...this.children];
+      if (!slides.length) return;
+      let index = slides.findIndex(slide => !slide.hidden);
+      let editing = false, synced = false, changes = 0;
+      this.events = new AbortController();
+
+      const closed = () =>
+        document.documentElement.hasAttribute('data-announcement-closed');
+      const on = (element, event, handler) =>
+        element.addEventListener(event, handler, {
+          signal: this.events.signal, capture: true
+        });
+      const show = next => {
+        slides[index].hidden = true;
+        index = next;
+        slides[index].hidden = false;
+      };
+      const advance = () => {
+        if (!editing && !closed() && !this.matches(':focus-within'))
+          show((index + 1) % slides.length);
+      };
+      const schedule = () => {
+        clearTimeout(this.timer);
+        if (synced || editing || closed() || slides.length < 2) return;
+        this.timer = setTimeout(() => {
+          if (!document.hidden && !this.matches(':hover')) advance();
+          schedule();
+        }, (Number(slides[index].dataset.seconds) || 7) * 1000);
+      };
+      const connect = () => {
+        if (closed() || slides.length < 2) return;
+        const hero = document.querySelector('[id^="Slideshow-"].hero');
+        if (!hero) return;
+        let previous = null;
+        const track = () => {
+          const selected = hero.querySelector('.flickity-slider > .is-selected');
+          if (!selected || selected === previous) return;
+          if (!synced) {
+            synced = true;
+            clearTimeout(this.timer);
+          } else if (++changes % 2 === 0) advance();
+          previous = selected;
+        };
+        this.observer = new MutationObserver(track);
+        this.observer.observe(hero, {
+          subtree: true, childList: true,
+          attributes: true, attributeFilter: ['class']
+        });
+        track();
+      };
+
+      on(this.parentElement, 'click', event => {
+        if (!event.target.closest('.announcement__close')) return;
+        event.stopImmediatePropagation();
+        document.documentElement.dataset.announcementClosed = '';
+        clearTimeout(this.timer);
+        this.observer?.disconnect();
+        try { sessionStorage.setItem('jalg-announcement-closed', '1'); } catch {}
+      });
+      on(this, 'shopify:block:select', event => {
+        const next = slides.findIndex(slide => slide.contains(event.target));
+        if (next < 0) return;
+        editing = true;
+        clearTimeout(this.timer);
+        show(next);
+      });
+      on(this, 'shopify:block:deselect', () => {
+        editing = false;
+        changes = 0;
+        schedule();
+      });
+
+      schedule();
+      if (document.readyState === 'loading')
+        on(document, 'DOMContentLoaded', connect);
+      else connect();
+    }
+    disconnectedCallback() {
+      clearTimeout(this.timer);
+      this.observer?.disconnect();
+      this.events?.abort();
+    }
+  });
+}
+</script>
+
+<style>
+jalg-announcements{display:block}
+jalg-announcements>[hidden],
+html[data-announcement-closed] .announcement{display:none!important}
+</style>
+
+{% assign shown = false %}
+<div class="announcement{% if section.settings.announcement_closable %} announcement--closeable{% endif %}">
+  <jalg-announcements>
+    {% for block in section.blocks %}
+      {% assign message = block.settings %}
+      {% if message.announcement_text == blank %}{% continue %}{% endif %}
+      <div data-seconds="{{ message.seconds }}" {% if shown %}hidden{% endif %} {{ block.shopify_attributes }}>
+        {% if message.announcement_link != blank %}
+          <a href="{{ message.announcement_link | escape }}" class="announcement__link">
+        {% endif %}
+        <span class="announcement__text{% unless section.settings.announcement_closable %} announcement__text--open{% endunless %}" data-text="{{ message.announcement_text | strip_html | handle }}">
+          {{ message.announcement_text | strip_html | escape }}
+        </span>
+        {% if message.announcement_link != blank %}</a>{% endif %}
+      </div>
+      {% assign shown = true %}
+    {% endfor %}
+  </jalg-announcements>
+
+  {% if shown and section.settings.announcement_closable %}
+    <button type="button" class="text-link announcement__close">
+      <svg aria-hidden="true" focusable="false" class="icon icon-close" viewBox="0 0 64 64"><path d="m19 17.61 27.12 27.13m0-27.12L19 44.74"/></svg>
+      <span class="icon__fallback-text">{{ 'general.accessibility.close' | t }}</span>
+    </button>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "max_blocks": 5,
+  "settings": [
+    {"type":"checkbox","id":"announcement_closable","label":"Allow closing","default":false}
+  ],
+  "blocks": [
+    {
+      "type":"announcement",
+      "name":"Announcement",
+      "settings":[
+        {"type":"text","id":"announcement_text","label":"Text"},
+        {"type":"url","id":"announcement_link","label":"Link"},
+        {"type":"range","id":"seconds","label":"Display time","min":3,"max":15,"step":1,"unit":"s","default":7,"info":"Used on pages without a hero slideshow."}
+      ]
+    }
+  ]
+}
+{% endschema %}
