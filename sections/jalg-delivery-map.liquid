@@ -35,7 +35,7 @@
   assign region_codes = region_data | split: '|'
 -%}
 
-<jalg-delivery data-shop-url="{{ section.settings.shop_url | default: '/collections/all' | escape }}" data-current="{{ localization.country.iso_code }}" data-switch="{{ section.settings.switch_label | escape }}" data-prices="{{ section.settings.currency_label | escape }}" data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
+<jalg-delivery style="--accent:{{ section.settings.current_color | default: '#ff4f33' }}" data-shop-url="{{ section.settings.shop_url | default: '/collections/all' | escape }}" data-current="{{ localization.country.iso_code }}" data-switch="{{ section.settings.switch_label | escape }}" data-prices="{{ section.settings.currency_label | escape }}" data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
   {% if section.settings.show_heading %}
     <header class="jd-heading">
       {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
@@ -57,8 +57,22 @@
       aria-label="World map showing the {{ active.size }} countries JALG delivers to. The full list is below."></div>
   </div>
 
-  {% if section.settings.legend != blank %}
-    <p class="jd-legend"><span aria-hidden="true"></span>{{ section.settings.legend | escape }}</p>
+  {%- liquid
+    assign current_label = section.settings.current_label | default: "You're shopping here"
+    assign show_current = false
+    if active contains localization.country.iso_code and section.settings.legend_current
+      assign show_current = true
+    endif
+  -%}
+  {% if section.settings.legend != blank or show_current %}
+    <div class="jd-legend">
+      {% if section.settings.legend != blank %}
+        <p><span aria-hidden="true"></span>{{ section.settings.legend | escape }}</p>
+      {% endif %}
+      {% if show_current %}
+        <p class="is-current"><span aria-hidden="true"></span>{{ current_label | escape }} ({{ localization.country.name | escape }})</p>
+      {% endif %}
+    </div>
   {% endif %}
 
   {% if section.settings.show_list %}
@@ -151,7 +165,7 @@
     <strong></strong>
     <p class="jd-currency"></p>
     <button type="button" class="jd-switch"></button>
-    <p class="jd-here">{{ section.settings.current_label | default: "You're shopping here" | escape }}</p>
+    <p class="jd-here">{{ current_label | escape }}</p>
   </div>
 
   {%- comment -%} Same form the country selector uses. Shopify switches the market and returns to this page (on the market's own URL if it has one). {%- endcomment -%}
@@ -161,7 +175,7 @@
 </jalg-delivery>
 
 {% stylesheet %}
-jalg-delivery { --green:#3d5640; --green-dark:#2a3c2c; --land:#d6d7d0; --line:#d6d6d1; --paper:#f6f5f3; display:block; padding-bottom:40px; background:var(--paper); color:#222; }
+jalg-delivery { --green:#3d5640; --green-dark:#2a3c2c; --accent:#ff4f33; --land:#d6d7d0; --line:#d6d6d1; --paper:#f6f5f3; display:block; padding-bottom:40px; background:var(--paper); color:#222; }
 jalg-delivery, jalg-delivery * { box-sizing:border-box; }
 jalg-delivery [hidden] { display:none !important; }
 jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
@@ -179,10 +193,14 @@ jalg-delivery .jd-dots circle { display:none; fill:var(--green); stroke:var(--pa
 jalg-delivery .jd-dots .is-on { display:block; }
 jalg-delivery .jd-map .is-on { cursor:pointer; }
 jalg-delivery .jd-map .is-hl { fill:var(--green-dark); }
+jalg-delivery .jd-map .is-current { fill:var(--accent); }
+jalg-delivery .jd-map .is-current.is-hl { fill:color-mix(in srgb, var(--accent) 80%, #000); }
 jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend) { display:none !important; }
 
-jalg-delivery .jd-legend { display:flex; align-items:center; justify-content:center; gap:10px; margin:16px 24px 0; color:#444; font-size:14px; }
-jalg-delivery .jd-legend span { width:14px; height:14px; border-radius:50%; background:var(--green); }
+jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:#444; font-size:14px; }
+jalg-delivery .jd-legend p { display:flex; align-items:center; gap:10px; margin:0; }
+jalg-delivery .jd-legend span { flex:none; width:14px; height:14px; border-radius:50%; background:var(--green); }
+jalg-delivery .jd-legend .is-current span { background:var(--accent); }
 
 /* Country list */
 jalg-delivery .jd-regions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 28px; align-items:start; max-width:1440px; margin:0 auto; padding:32px 40px 0; }
@@ -200,7 +218,7 @@ jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0
 jalg-delivery .jd-region li.is-hl .jd-country, jalg-delivery .jd-country:focus-visible { color:var(--green); }
 jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
 jalg-delivery li[aria-current] .jd-country { color:var(--green); font-weight:600; }
-jalg-delivery li[aria-current] .jd-country::after { content:" ✓"; }
+jalg-delivery li[aria-current] .jd-country::after { content:" ✓"; color:var(--accent); }
 
 /* Country card */
 jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
@@ -281,8 +299,10 @@ if (!customElements.get('jalg-delivery')) {
       const active = new Set(this.dataset.codes.split(' ').filter(Boolean));
       const shapes = code => this.querySelectorAll(`[data-c="${code}"]`);
 
-      map.querySelectorAll('[data-c]').forEach(shape =>
-        shape.classList.toggle('is-on', active.has(shape.dataset.c)));
+      map.querySelectorAll('[data-c]').forEach(shape => {
+        shape.classList.toggle('is-on', active.has(shape.dataset.c));
+        shape.classList.toggle('is-current', shape.dataset.c === this.dataset.current);
+      });
 
       let lit = null;
       const highlight = code => {
@@ -414,6 +434,8 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "text", "id": "heading", "label": "Heading", "default": "Where We Deliver"},
     {"type": "text", "id": "subtitle", "label": "Introduction", "default": "Tracked delivery to [count] countries worldwide", "info": "[count] is replaced with the number of countries."},
     {"type": "text", "id": "legend", "label": "Map key text", "default": "We deliver here", "info": "Leave blank to hide the key."},
+    {"type": "color", "id": "current_color", "label": "Colour of the shopper's current country", "default": "#FF4F33"},
+    {"type": "checkbox", "id": "legend_current", "label": "Show the current country in the map key", "default": true, "info": "Uses the \"Text for the current country\" setting below, followed by the country name."},
     {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
     {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},
     {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"},
