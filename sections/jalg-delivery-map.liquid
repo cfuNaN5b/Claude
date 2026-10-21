@@ -211,6 +211,11 @@ jalg-delivery .jd-points.no-heading { margin-top:48px; }
 jalg-delivery .jd-points li { display:flex; align-items:center; gap:10px; margin:0; padding:0; font-size:15px; line-height:1.4; }
 jalg-delivery .jd-points svg { flex:none; width:22px; height:22px; fill:none; stroke:var(--green); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; }
 jalg-delivery .jd-points svg * { vector-effect:non-scaling-stroke; }
+/* Desktop: the same visible gap (about 40px) between title, intro, ticks and map. */
+@media(min-width:800px) {
+  jalg-delivery .jd-heading h2 { margin-bottom:31px; }
+  jalg-delivery .jd-points { margin-bottom:37px; }
+}
 jalg-delivery .jd-controls { display:none; }
 
 /* Map */
