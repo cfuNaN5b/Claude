@@ -77,7 +77,9 @@
       {% if count > 0 %}
         {%- capture block -%}
           <section class="jd-region">
-            <h3>{{ name }} <span>{{ count }}</span></h3>
+            {%- assign last_word = name | split: ' ' | last -%}
+            {%- comment -%} Keep the count with the last word so it never wraps onto a line alone. {%- endcomment -%}
+            <h3>{{ name | remove_last: last_word }}<span class="jd-keep">{{ last_word }}&nbsp;<span class="jd-count">{{ count }}</span></span></h3>
             <ul>{{ items }}</ul>
           </section>
         {%- endcapture -%}
@@ -145,7 +147,8 @@ jalg-delivery .no-wide .jd-rest { columns:4 200px; }
 jalg-delivery .jd-region { margin:0 0 28px; break-inside:avoid; }
 jalg-delivery .jd-region.is-wide ul { columns:2; column-gap:28px; }
 jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:500; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
-jalg-delivery .jd-region h3 span { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:8px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
+jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
+jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
 jalg-delivery .jd-region li { margin:0; padding:3px 0; color:#444; font-size:14px; line-height:1.5; break-inside:avoid; cursor:default; transition:color .2s ease; }
 jalg-delivery .jd-region li.is-hl { color:var(--green); }
@@ -169,7 +172,7 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
 }
 @media(max-width:589px) {
   jalg-delivery { padding-bottom:25px; }
-  jalg-delivery .jd-heading p { max-width:85%; text-wrap:balance; }
+  jalg-delivery .jd-heading p { text-wrap:pretty; }
   jalg-delivery .jd-regions { padding:24px 20px 0; }
   jalg-delivery :is(.jd-rest,.jd-region.is-wide ul) { column-gap:20px; }
 }
