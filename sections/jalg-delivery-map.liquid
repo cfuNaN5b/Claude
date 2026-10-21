@@ -1,0 +1,276 @@
+{% comment %}
+  JALG delivery map. Countries come from the store's country selector
+  (Settings → Markets), so the map updates when markets change.
+  Needs assets/jalg-delivery-map.svg.
+{% endcomment %}
+
+{%- liquid
+  assign skip = section.settings.exclude | upcase | remove: ' ' | split: ','
+  assign countries = localization.available_countries | sort: 'name'
+
+  capture codes
+    for country in countries
+      unless skip contains country.iso_code
+        echo country.iso_code | append: ' '
+      endunless
+    endfor
+  endcapture
+  assign active = codes | strip | split: ' '
+
+  assign region_names = 'Europe|Asia & Middle East|Americas|Oceania|Africa' | split: '|'
+  capture region_data
+    echo 'AD AL AM AT AX AZ BA BE BG BY CH CY CZ DE DK EE ES FI FO FR GB GE GG GI GR HR HU IE IM IS IT JE LI LT LU LV MC MD ME MK MT NL NO PL PT RO RS RU SE SI SJ SK SM TR UA VA XK|'
+    echo 'AE AF BD BH BN BT CN HK ID IL IN IQ IR JO JP KG KH KP KR KW KZ LA LB LK MM MN MO MV MY NP OM PH PK PS QA SA SG SY TH TJ TL TM TW UZ VN YE|'
+    echo 'AG AI AR AW BB BL BM BO BQ BR BS BZ CA CL CO CR CU CW DM DO EC FK GD GF GL GP GS GT GY HN HT JM KN KY LC MF MQ MS MX NI PA PE PM PR PY SR SV SX TC TT US UY VC VE VG VI|'
+    echo 'AS AU CK FJ FM GU KI MH MP NC NF NR NU NZ PF PG PN PW SB TK TO TV VU WF WS|'
+    echo 'AO BF BI BJ BW CD CF CG CI CM CV DJ DZ EG EH ER ET GA GH GM GN GQ GW KE KM LR LS LY MA MG ML MR MU MW MZ NA NE NG RE RW SC SD SH SL SN SO SS ST SZ TD TG TN TZ UG YT ZA ZM ZW'
+  endcapture
+  assign region_codes = region_data | split: '|'
+-%}
+
+<jalg-delivery data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
+  {% if section.settings.show_heading %}
+    <header class="jd-heading">
+      {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
+      {% if section.settings.subtitle != blank %}
+        <p>{{ section.settings.subtitle | escape | replace: '[count]', active.size }}</p>
+      {% endif %}
+    </header>
+  {% endif %}
+
+  <div class="jd-controls" role="group" aria-label="Map regions">
+    <button type="button" data-region=".533,.21">Europe</button>
+    <button type="button" data-region=".802,.369">Asia</button>
+    <button type="button" data-region=".262,.354">Americas</button>
+    <span>{{ section.settings.map_hint | escape }}</span>
+  </div>
+
+  <div class="jd-view" tabindex="0" role="region" aria-label="Delivery map. Scroll to explore.">
+    <div class="jd-map" role="img"
+      aria-label="World map showing the {{ active.size }} countries JALG delivers to. The full list is below."></div>
+  </div>
+
+  {% if section.settings.legend != blank %}
+    <p class="jd-legend"><span aria-hidden="true"></span>{{ section.settings.legend | escape }}</p>
+  {% endif %}
+
+  {% if section.settings.show_list %}
+    <div class="jd-regions">
+      {% for name in region_names %}
+        {%- liquid
+          assign i = forloop.index0
+          capture items
+            for country in countries
+              if active contains country.iso_code and region_codes[i] contains country.iso_code
+                echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+              endif
+            endfor
+          endcapture
+        -%}
+        {% if items != blank %}
+          {% assign count = items | split: '<li ' | size | minus: 1 %}
+          <section class="jd-region">
+            <h3>{{ name }} <span>{{ count }}</span></h3>
+            <ul>{{ items }}</ul>
+          </section>
+        {% endif %}
+      {% endfor %}
+
+      {%- liquid
+        capture items
+          for country in countries
+            if active contains country.iso_code
+              unless region_data contains country.iso_code
+                echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+              endunless
+            endif
+          endfor
+        endcapture
+      -%}
+      {% if items != blank %}
+        <section class="jd-region">
+          <h3>Other destinations</h3>
+          <ul>{{ items }}</ul>
+        </section>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="jd-tip" aria-hidden="true" hidden></div>
+</jalg-delivery>
+
+{% stylesheet %}
+jalg-delivery { --green:#3d5640; --green-dark:#2a3c2c; --land:#d6d7d0; --line:#d6d6d1; --paper:#f6f5f3; display:block; padding-bottom:40px; background:var(--paper); color:#222; }
+jalg-delivery, jalg-delivery * { box-sizing:border-box; }
+jalg-delivery [hidden] { display:none !important; }
+jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
+jalg-delivery .jd-heading { padding:32px 24px 24px; text-align:center; }
+jalg-delivery .jd-heading h2 { margin:0 0 24px; }
+jalg-delivery .jd-heading p { max-width:800px; margin:0 auto; }
+jalg-delivery .jd-controls { display:none; }
+
+/* Map */
+jalg-delivery .jd-map { position:relative; width:100%; aspect-ratio:1000/436; }
+jalg-delivery .jd-svg { display:block; width:100%; height:100%; overflow:visible; }
+jalg-delivery .jd-land path { fill:var(--land); stroke:var(--paper); stroke-width:.4; stroke-linejoin:round; transition:fill .2s ease; }
+jalg-delivery .jd-land .is-on { fill:var(--green); }
+jalg-delivery .jd-dots circle { display:none; fill:var(--green); stroke:var(--paper); stroke-width:.6; transition:fill .2s ease; }
+jalg-delivery .jd-dots .is-on { display:block; }
+jalg-delivery .jd-map .is-on { cursor:pointer; }
+jalg-delivery .jd-map .is-hl { fill:var(--green-dark); }
+jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend) { display:none !important; }
+
+jalg-delivery .jd-legend { display:flex; align-items:center; justify-content:center; gap:10px; margin:16px 24px 0; color:#444; font-size:14px; }
+jalg-delivery .jd-legend span { width:14px; height:14px; border-radius:50%; background:var(--green); }
+
+/* Country list */
+jalg-delivery .jd-regions { columns:4 200px; column-gap:28px; max-width:1440px; margin:0 auto; padding:32px 40px 0; }
+jalg-delivery .jd-region { margin:0 0 28px; }
+jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:500; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
+jalg-delivery .jd-region h3 span { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:8px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
+jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
+jalg-delivery .jd-region li { margin:0; padding:3px 0; color:#444; font-size:14px; line-height:1.5; break-inside:avoid; cursor:default; transition:color .2s ease; }
+jalg-delivery .jd-region li.is-hl { color:var(--green); }
+
+/* Country name label */
+jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; font-size:14px; line-height:1.4; white-space:nowrap; pointer-events:none; transform:translate(-50%,calc(-100% - 12px)); }
+
+@media(max-width:1099px) {
+  jalg-delivery .jd-regions { padding-inline:24px; }
+}
+@media(max-width:799px) {
+  jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
+  jalg-delivery .jd-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
+  jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
+  jalg-delivery .jd-view { height:350px; overflow:auto; overscroll-behavior-x:contain; }
+  jalg-delivery .jd-map { width:1600px; max-width:none; }
+  jalg-delivery .jd-regions { columns:2; column-gap:24px; }
+}
+@media(max-width:589px) {
+  jalg-delivery { padding-bottom:25px; }
+  jalg-delivery .jd-heading p { max-width:85%; text-wrap:balance; }
+  jalg-delivery .jd-regions { padding:24px 20px 0; column-gap:20px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  jalg-delivery * { transition:none !important; }
+}
+{% endstylesheet %}
+
+{% javascript %}
+if (!customElements.get('jalg-delivery')) {
+  customElements.define('jalg-delivery', class extends HTMLElement {
+    connectedCallback() {
+      this.events?.abort();
+      this.events = new AbortController();
+      this.init(this.events.signal);
+    }
+
+    disconnectedCallback() {
+      this.events?.abort();
+    }
+
+    async init(signal) {
+      const map = this.querySelector('.jd-map');
+      const view = this.querySelector('.jd-view');
+      const tip = this.querySelector('.jd-tip');
+      const on = (el, type, fn) => el.addEventListener(type, fn, { signal });
+
+      if (!map.firstElementChild) {
+        try {
+          const response = await fetch(this.dataset.src, { signal });
+          if (!response.ok) throw new Error(response.status);
+          map.innerHTML = await response.text();
+        } catch (error) {
+          if (!signal.aborted) this.classList.add('is-failed');
+          return;
+        }
+      }
+      if (signal.aborted) return;
+
+      // Country names as the store shows them, keyed by ISO code.
+      const names = {};
+      this.querySelectorAll('.jd-region li').forEach(li => names[li.dataset.c] = li.textContent);
+      const active = new Set(this.dataset.codes.split(' ').filter(Boolean));
+      const shapes = code => this.querySelectorAll(`[data-c="${code}"]`);
+
+      map.querySelectorAll('[data-c]').forEach(shape => {
+        const code = shape.dataset.c;
+        shape.classList.toggle('is-on', active.has(code));
+        if (active.has(code) && !names[code]) names[code] = code;
+      });
+
+      let current = null;
+      const highlight = code => {
+        if (code === current) return;
+        if (current) shapes(current).forEach(el => el.classList.remove('is-hl'));
+        current = code;
+        if (code) shapes(code).forEach(el => el.classList.add('is-hl'));
+      };
+      const showTip = (code, x, y) => {
+        highlight(code);
+        tip.textContent = names[code];
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+        tip.hidden = false;
+      };
+      const hideTip = () => {
+        highlight(null);
+        tip.hidden = true;
+      };
+      const codeAt = target => target.closest?.('.jd-map .is-on')?.dataset.c;
+
+      on(map, 'pointermove', e => {
+        if (e.pointerType !== 'mouse') return;
+        const code = codeAt(e.target);
+        code ? showTip(code, e.clientX, e.clientY) : hideTip();
+      });
+      on(map, 'pointerleave', e => e.pointerType === 'mouse' && hideTip());
+      on(map, 'click', e => {
+        const code = codeAt(e.target);
+        code ? showTip(code, e.clientX, e.clientY) : hideTip();
+      });
+      on(document, 'pointerdown', e => !map.contains(e.target) && hideTip());
+      on(view, 'scroll', hideTip);
+      on(window, 'scroll', hideTip);
+
+      // Hovering a country in the list lights it up on the map.
+      this.querySelectorAll('.jd-region li').forEach(li => {
+        on(li, 'pointerenter', () => { highlight(li.dataset.c); li.classList.add('is-hl'); });
+        on(li, 'pointerleave', () => { highlight(null); li.classList.remove('is-hl'); });
+      });
+
+      const pan = (x, y) => {
+        view.scrollLeft = map.clientWidth * x - view.clientWidth / 2;
+        view.scrollTop = map.clientHeight * y - view.clientHeight / 2;
+      };
+      on(this, 'click', e => {
+        const region = e.target.closest('[data-region]');
+        if (region) { hideTip(); pan(...region.dataset.region.split(',').map(Number)); }
+      });
+
+      const mobile = matchMedia('(max-width:799px)');
+      on(mobile, 'change', () => mobile.matches ? pan(.533, .21) : pan(0, 0));
+      this.classList.add('is-ready');
+      if (mobile.matches) requestAnimationFrame(() => pan(.533, .21));
+    }
+  });
+}
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "JALG delivery map",
+  "tag": "section",
+  "settings": [
+    {"type": "paragraph", "content": "Countries are taken from the store's country selector (Settings → Markets). Needs the jalg-delivery-map.svg file in the theme's Assets folder."},
+    {"type": "checkbox", "id": "show_heading", "label": "Show heading and introduction", "default": true},
+    {"type": "text", "id": "heading", "label": "Heading", "default": "Where We Deliver"},
+    {"type": "text", "id": "subtitle", "label": "Introduction", "default": "JALG delivers to [count] countries worldwide", "info": "[count] is replaced with the number of countries."},
+    {"type": "text", "id": "legend", "label": "Map key text", "default": "We deliver here", "info": "Leave blank to hide the key."},
+    {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
+    {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},
+    {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"}
+  ],
+  "presets": [{ "name": "JALG Delivery Map" }]
+}
+{% endschema %}
