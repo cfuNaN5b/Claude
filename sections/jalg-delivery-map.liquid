@@ -45,6 +45,28 @@
     </header>
   {% endif %}
 
+  {%- liquid
+    assign points = ''
+    for n in (1..3)
+      assign key = 'point_' | append: n
+      assign text = section.settings[key]
+      if text != blank
+        assign points = points | append: text | append: '|||'
+      endif
+    endfor
+    assign points = points | split: '|||'
+  -%}
+  {% if points.size > 0 %}
+    <ul class="jd-points{% unless section.settings.show_heading %} no-heading{% endunless %}">
+      {% for point in points %}
+        <li>
+          <svg viewBox="2 2 20 20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.6"/></svg>
+          {{ point | escape }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <div class="jd-controls" role="group" aria-label="Map regions">
     <button type="button" data-region=".533,.21">{{ section.settings.button_europe | default: 'Europe' | escape }}</button>
     <button type="button" data-region=".802,.369">{{ section.settings.button_asia | default: 'Asia' | escape }}</button>
@@ -182,6 +204,13 @@ jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
 jalg-delivery .jd-heading { padding:80px 24px 64px; text-align:center; }
 jalg-delivery .jd-heading h2 { margin:0 0 24px; }
 jalg-delivery .jd-heading p { max-width:800px; margin:0 auto; }
+
+/* Delivery points (ticks) */
+jalg-delivery .jd-points { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 40px; margin:-24px auto 56px; padding:0 24px; list-style:none; }
+jalg-delivery .jd-points.no-heading { margin-top:48px; }
+jalg-delivery .jd-points li { display:flex; align-items:center; gap:10px; margin:0; padding:0; font-size:15px; line-height:1.4; }
+jalg-delivery .jd-points svg { flex:none; width:22px; height:22px; fill:none; stroke:var(--green); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; }
+jalg-delivery .jd-points svg * { vector-effect:non-scaling-stroke; }
 jalg-delivery .jd-controls { display:none; }
 
 /* Map */
@@ -242,6 +271,8 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
 }
 @media(max-width:799px) {
   jalg-delivery .jd-heading { padding-top:48px; padding-bottom:24px; }
+  jalg-delivery .jd-points { flex-direction:column; align-items:flex-start; width:fit-content; gap:10px; margin:0 auto 8px; }
+  jalg-delivery .jd-points.no-heading { margin-top:32px; }
   jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
   jalg-delivery .jd-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
   jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
@@ -437,6 +468,9 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "checkbox", "id": "show_heading", "label": "Show heading and introduction", "default": true},
     {"type": "text", "id": "heading", "label": "Heading", "default": "Where We Deliver"},
     {"type": "text", "id": "subtitle", "label": "Introduction", "default": "Tracked delivery to [count] countries worldwide", "info": "[count] is replaced with the number of countries."},
+    {"type": "text", "id": "point_1", "label": "Delivery point 1", "default": "Order processed in 1–3 days", "info": "Shown with a tick above the map. Leave blank to hide."},
+    {"type": "text", "id": "point_2", "label": "Delivery point 2", "default": "Order delivered in 4–7 days"},
+    {"type": "text", "id": "point_3", "label": "Delivery point 3", "default": "Delivery by FedEx or DPD"},
     {"type": "text", "id": "legend", "label": "Map key text", "default": "We deliver here", "info": "Leave blank to hide the key."},
     {"type": "color", "id": "current_color", "label": "Colour of the shopper's current country", "default": "#FF4F33"},
     {"type": "checkbox", "id": "legend_current", "label": "Show the current country in the map key", "default": true, "info": "Uses the \"Text for the current country\" setting below, followed by the country name."},
