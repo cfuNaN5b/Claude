@@ -45,10 +45,6 @@
     </header>
   {% endif %}
 
-  {% if section.settings.map_cta != blank %}
-    <p class="jd-cta">{{ section.settings.map_cta | escape }}</p>
-  {% endif %}
-
   <div class="jd-controls" role="group" aria-label="Map regions">
     <button type="button" data-region=".533,.21">{{ section.settings.button_europe | default: 'Europe' | escape }}</button>
     <button type="button" data-region=".802,.369">{{ section.settings.button_asia | default: 'Asia' | escape }}</button>
@@ -199,9 +195,8 @@ jalg-delivery .jd-map .is-on { cursor:pointer; }
 jalg-delivery .jd-map .is-hl { fill:var(--green-dark); }
 jalg-delivery .jd-map .is-current { fill:var(--accent); }
 jalg-delivery .jd-map .is-current.is-hl { fill:color-mix(in srgb, var(--accent) 80%, #000); }
-jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend,.jd-cta) { display:none !important; }
+jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend) { display:none !important; }
 
-jalg-delivery .jd-cta { margin:-24px 24px 32px; color:#444; font-size:14px; text-align:center; }
 jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:#444; font-size:14px; }
 jalg-delivery .jd-legend p { display:flex; align-items:center; gap:10px; margin:0; }
 jalg-delivery .jd-legend span { flex:none; width:14px; height:14px; border-radius:50%; background:var(--green); }
@@ -248,7 +243,6 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
 }
 @media(max-width:799px) {
   jalg-delivery .jd-heading { padding-top:48px; padding-bottom:24px; }
-  jalg-delivery .jd-cta { display:none; }
   jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
   jalg-delivery .jd-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
   jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
@@ -444,7 +438,6 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "checkbox", "id": "legend_current", "label": "Show the current country in the map key", "default": true, "info": "Uses the \"Text for the current country\" setting below, followed by the country name."},
     {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
     {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},
-    {"type": "text", "id": "map_cta", "label": "Text above the map (desktop)", "default": "Click your country on the map to start shopping", "info": "Leave blank to hide. Phones show the mobile map hint instead."},
     {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"},
     {"type": "header", "content": "Region names"},
     {"type": "text", "id": "region_europe", "label": "Europe", "default": "Europe"},
