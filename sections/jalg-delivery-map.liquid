@@ -28,7 +28,7 @@
   assign region_codes = region_data | split: '|'
 -%}
 
-<jalg-delivery data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
+<jalg-delivery data-current="{{ localization.country.iso_code }}" data-switch="{{ section.settings.switch_label | escape }}" data-prices="{{ section.settings.currency_label | escape }}" data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
   {% if section.settings.show_heading %}
     <header class="jd-heading">
       {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
@@ -68,7 +68,12 @@
         capture items
           for country in countries
             if active contains country.iso_code and region_codes[i] contains country.iso_code
-              echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+              assign current_attr = ''
+              if country.iso_code == localization.country.iso_code
+                assign current_attr = ' aria-current="true"'
+              endif
+              assign safe_name = country.name | escape
+              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '><button type="button" class="jd-country">' | append: safe_name | append: '</button></li>'
             endif
           endfor
         endcapture
@@ -96,7 +101,12 @@
         for country in countries
           if active contains country.iso_code
             unless region_data contains country.iso_code
-              echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+              assign current_attr = ''
+              if country.iso_code == localization.country.iso_code
+                assign current_attr = ' aria-current="true"'
+              endif
+              assign safe_name = country.name | escape
+              echo '<li data-c="' | append: country.iso_code | append: '"' | append: current_attr | append: '><button type="button" class="jd-country">' | append: safe_name | append: '</button></li>'
             endunless
           endif
         endfor
@@ -113,6 +123,34 @@
   {% endif %}
 
   <div class="jd-tip" aria-hidden="true" hidden></div>
+
+  {%- comment -%} Country names and currencies for the map card. {%- endcomment -%}
+  <script type="application/json" class="jd-data">
+    {
+      {%- for country in countries -%}
+        {%- liquid
+          assign currency = country.currency.iso_code
+          unless country.currency.symbol == currency
+            assign currency = currency | append: ' ' | append: country.currency.symbol
+          endunless
+        -%}
+        {{ country.iso_code | json }}: { "name": {{ country.name | json }}, "currency": {{ currency | json }} }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    }
+  </script>
+
+  <div class="jd-pop" role="dialog" aria-label="Country details" hidden>
+    <button type="button" class="jd-close" aria-label="Close">×</button>
+    <strong></strong>
+    <p class="jd-currency"></p>
+    <button type="button" class="jd-switch"></button>
+    <p class="jd-here">{{ section.settings.current_label | default: "You're shopping here" | escape }}</p>
+  </div>
+
+  {%- comment -%} Same form the country selector uses. Shopify switches the market and returns to this page (on the market's own URL if it has one). {%- endcomment -%}
+  {%- form 'localization', class: 'jd-form' -%}
+    <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
+  {%- endform -%}
 </jalg-delivery>
 
 {% stylesheet %}
@@ -150,8 +188,25 @@ jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom
 jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
 jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
-jalg-delivery .jd-region li { margin:0; padding:3px 0; color:#444; font-size:14px; line-height:1.5; break-inside:avoid; cursor:default; transition:color .2s ease; }
-jalg-delivery .jd-region li.is-hl { color:var(--green); }
+jalg-delivery .jd-region li { margin:0; padding:0; break-inside:avoid; }
+jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:#444; font-size:14px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
+jalg-delivery .jd-region li.is-hl .jd-country, jalg-delivery .jd-country:focus-visible { color:var(--green); }
+jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
+jalg-delivery li[aria-current] .jd-country { color:var(--green); font-weight:600; }
+jalg-delivery li[aria-current] .jd-country::after { content:" ✓"; }
+
+/* Country card */
+jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
+jalg-delivery .jd-pop strong { display:block; padding-right:18px; font-size:16px; font-weight:500; }
+jalg-delivery .jd-pop p { margin:4px 0 0; color:#444; font-size:14px; }
+jalg-delivery .jd-pop .jd-here { margin-top:14px; color:var(--green); }
+jalg-delivery .jd-switch { position:relative; display:inline-block; width:auto; min-width:0; min-height:0; margin:14px 0 0; padding:0 0 2px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:none; box-shadow:none; color:var(--green); font-size:15px; letter-spacing:0; text-transform:none; }
+jalg-delivery .jd-switch::after { content:""; position:absolute; inset:auto 0 -1px; height:1px; background:var(--green); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
+jalg-delivery .jd-switch:is(:hover,:focus-visible)::after { transform:scaleX(1); }
+jalg-delivery .jd-close { position:absolute; top:4px; right:4px; width:32px; height:32px; min-width:0; min-height:0; padding:0; border:0; background:none; font-size:24px; line-height:1; }
+jalg-delivery .jd-form { display:none; }
+jalg-delivery.is-switching { cursor:progress; }
+jalg-delivery.is-switching .jd-pop, jalg-delivery.is-switching .jd-regions { opacity:.6; pointer-events:none; }
 
 /* Country name label */
 jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; font-size:14px; line-height:1.4; white-space:nowrap; pointer-events:none; transform:translate(-50%,calc(-100% - 12px)); }
@@ -212,56 +267,106 @@ if (!customElements.get('jalg-delivery')) {
       }
       if (signal.aborted) return;
 
-      // Country names as the store shows them, keyed by ISO code.
-      const names = {};
-      this.querySelectorAll('.jd-region li').forEach(li => names[li.dataset.c] = li.textContent);
+      // Country names and currencies as the store shows them, keyed by ISO code.
+      let data = {};
+      try { data = JSON.parse(this.querySelector('.jd-data').textContent); } catch (error) {}
+      const name = code => data[code]?.name || code;
       const active = new Set(this.dataset.codes.split(' ').filter(Boolean));
       const shapes = code => this.querySelectorAll(`[data-c="${code}"]`);
 
-      map.querySelectorAll('[data-c]').forEach(shape => {
-        const code = shape.dataset.c;
-        shape.classList.toggle('is-on', active.has(code));
-        if (active.has(code) && !names[code]) names[code] = code;
-      });
+      map.querySelectorAll('[data-c]').forEach(shape =>
+        shape.classList.toggle('is-on', active.has(shape.dataset.c)));
 
-      let current = null;
+      let lit = null;
       const highlight = code => {
-        if (code === current) return;
-        if (current) shapes(current).forEach(el => el.classList.remove('is-hl'));
-        current = code;
+        if (code === lit) return;
+        if (lit) shapes(lit).forEach(el => el.classList.remove('is-hl'));
+        lit = code;
         if (code) shapes(code).forEach(el => el.classList.add('is-hl'));
       };
+
+      // Hover label (mouse only)
       const showTip = (code, x, y) => {
         highlight(code);
-        tip.textContent = names[code];
+        tip.textContent = name(code);
         tip.style.left = x + 'px';
         tip.style.top = y + 'px';
         tip.hidden = false;
       };
       const hideTip = () => {
-        highlight(null);
+        if (pop.hidden) highlight(null);
         tip.hidden = true;
       };
+
+      // Switching country uses the store's own localization form.
+      const form = this.querySelector('.jd-form');
+      const switchTo = code => {
+        if (!form || code === this.dataset.current) return;
+        form.elements.country_code.value = code;
+        this.classList.add('is-switching');
+        form.submit();
+      };
+
+      // Country card (click or tap on the map)
+      const pop = this.querySelector('.jd-pop');
+      const switchButton = pop.querySelector('.jd-switch');
+      const here = pop.querySelector('.jd-here');
+      let popCode = null;
+
+      const closePop = (restore = false) => {
+        if (pop.hidden) return;
+        pop.hidden = true;
+        popCode = null;
+        highlight(null);
+        if (restore) map.closest('.jd-view').focus();
+      };
+      const openPop = (code, x, y) => {
+        hideTip();
+        popCode = code;
+        highlight(code);
+        const isCurrent = code === this.dataset.current;
+        pop.querySelector('strong').textContent = name(code);
+        pop.querySelector('.jd-currency').textContent = data[code]
+          ? (this.dataset.prices || 'Prices in [currency]').replace('[currency]', data[code].currency) : '';
+        switchButton.textContent = (this.dataset.switch || 'Shop in [country]').replace('[country]', name(code)) + ' →';
+        switchButton.hidden = isCurrent;
+        here.hidden = !isCurrent;
+        pop.hidden = false;
+
+        const w = pop.offsetWidth, h = pop.offsetHeight;
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+        const top = y + 16 + h <= innerHeight - 12 ? y + 16 : y - h - 16;
+        pop.style.left = clamp(x - w / 2, 12, innerWidth - w - 12) + 'px';
+        pop.style.top = clamp(top, 12, innerHeight - h - 12) + 'px';
+        (isCurrent ? pop.querySelector('.jd-close') : switchButton).focus({ preventScroll: true });
+      };
+
       const codeAt = target => target.closest?.('.jd-map .is-on')?.dataset.c;
 
       on(map, 'pointermove', e => {
-        if (e.pointerType !== 'mouse') return;
+        if (e.pointerType !== 'mouse' || !pop.hidden) return;
         const code = codeAt(e.target);
         code ? showTip(code, e.clientX, e.clientY) : hideTip();
       });
       on(map, 'pointerleave', e => e.pointerType === 'mouse' && hideTip());
       on(map, 'click', e => {
         const code = codeAt(e.target);
-        code ? showTip(code, e.clientX, e.clientY) : hideTip();
+        code ? openPop(code, e.clientX, e.clientY) : closePop();
       });
-      on(document, 'pointerdown', e => !map.contains(e.target) && hideTip());
-      on(view, 'scroll', hideTip);
-      on(window, 'scroll', hideTip);
+      on(switchButton, 'click', () => popCode && switchTo(popCode));
+      on(pop.querySelector('.jd-close'), 'click', () => closePop(true));
+      on(document, 'pointerdown', e => {
+        if (!map.contains(e.target) && !pop.contains(e.target)) { hideTip(); closePop(); }
+      });
+      on(document, 'keydown', e => e.key === 'Escape' && closePop(true));
+      on(view, 'scroll', () => { hideTip(); closePop(); });
+      on(window, 'scroll', () => { hideTip(); closePop(); });
 
-      // Hovering a country in the list lights it up on the map.
+      // List: hovering lights the country up on the map, clicking switches to it.
       this.querySelectorAll('.jd-region li').forEach(li => {
         on(li, 'pointerenter', () => { highlight(li.dataset.c); li.classList.add('is-hl'); });
         on(li, 'pointerleave', () => { highlight(null); li.classList.remove('is-hl'); });
+        on(li.querySelector('.jd-country'), 'click', () => switchTo(li.dataset.c));
       });
 
       const pan = (x, y) => {
@@ -270,7 +375,7 @@ if (!customElements.get('jalg-delivery')) {
       };
       on(this, 'click', e => {
         const region = e.target.closest('[data-region]');
-        if (region) { hideTip(); pan(...region.dataset.region.split(',').map(Number)); }
+        if (region) { hideTip(); closePop(); pan(...region.dataset.region.split(',').map(Number)); }
       });
 
       const mobile = matchMedia('(max-width:799px)');
@@ -294,7 +399,11 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "text", "id": "legend", "label": "Map key text", "default": "We deliver here", "info": "Leave blank to hide the key."},
     {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
     {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},
-    {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"}
+    {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"},
+    {"type": "header", "content": "Country card"},
+    {"type": "text", "id": "switch_label", "label": "Switch button", "default": "Shop in [country]", "info": "[country] is replaced with the country name. Clicking it changes the store's country, like the country selector."},
+    {"type": "text", "id": "currency_label", "label": "Currency line", "default": "Prices in [currency]"},
+    {"type": "text", "id": "current_label", "label": "Text for the current country", "default": "You're shopping here"}
   ],
   "presets": [{ "name": "JALG Delivery Map" }]
 }
