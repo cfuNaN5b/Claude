@@ -17,7 +17,14 @@
   endcapture
   assign active = codes | strip | split: ' '
 
-  assign region_names = 'Europe|Asia & Middle East|Americas|Oceania|Africa' | split: '|'
+  capture region_list
+    echo section.settings.region_europe | default: 'Europe' | append: '|'
+    echo section.settings.region_asia | default: 'Asia & Middle East' | append: '|'
+    echo section.settings.region_americas | default: 'Americas' | append: '|'
+    echo section.settings.region_oceania | default: 'Oceania' | append: '|'
+    echo section.settings.region_africa | default: 'Africa'
+  endcapture
+  assign region_names = region_list | split: '|'
   capture region_data
     echo 'AD AL AM AT AX AZ BA BE BG BY CH CY CZ DE DK EE ES FI FO FR GB GE GG GI GR HR HU IE IM IS IT JE LI LT LU LV MC MD ME MK MT NL NO PL PT RO RS RU SE SI SJ SK SM TR UA VA XK|'
     echo 'AE AF BD BH BN BT CN HK ID IL IN IQ IR JO JP KG KH KP KR KW KZ LA LB LK MM MN MO MV MY NP OM PH PK PS QA SA SG SY TH TJ TL TM TW UZ VN YE|'
@@ -39,9 +46,9 @@
   {% endif %}
 
   <div class="jd-controls" role="group" aria-label="Map regions">
-    <button type="button" data-region=".533,.21">Europe</button>
-    <button type="button" data-region=".802,.369">Asia</button>
-    <button type="button" data-region=".262,.354">Americas</button>
+    <button type="button" data-region=".533,.21">{{ section.settings.button_europe | default: 'Europe' | escape }}</button>
+    <button type="button" data-region=".802,.369">{{ section.settings.button_asia | default: 'Asia' | escape }}</button>
+    <button type="button" data-region=".262,.354">{{ section.settings.button_americas | default: 'Americas' | escape }}</button>
     <span>{{ section.settings.map_hint | escape }}</span>
   </div>
 
@@ -84,7 +91,7 @@
           <section class="jd-region">
             {%- assign last_word = name | split: ' ' | last -%}
             {%- comment -%} Keep the count with the last word so it never wraps onto a line alone. {%- endcomment -%}
-            <h3>{{ name | remove_last: last_word }}<span class="jd-keep">{{ last_word }}&nbsp;<span class="jd-count">{{ count }}</span></span></h3>
+            <h3>{{ name | remove_last: last_word | escape }}<span class="jd-keep">{{ last_word | escape }}&nbsp;<span class="jd-count">{{ count }}</span></span></h3>
             <ul>{{ items }}</ul>
           </section>
         {%- endcapture -%}
@@ -113,7 +120,7 @@
       endcapture
     -%}
     {% if items != blank %}
-      {%- capture rest -%}{{ rest }}<section class="jd-region"><h3>Other destinations</h3><ul>{{ items }}</ul></section>{%- endcapture -%}
+      {%- capture rest -%}{{ rest }}<section class="jd-region"><h3>{{ section.settings.region_other | default: 'Other destinations' | escape }}</h3><ul>{{ items }}</ul></section>{%- endcapture -%}
     {% endif %}
 
     <div class="jd-regions{% if wide == blank %} no-wide{% endif %}">
@@ -400,6 +407,17 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
     {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},
     {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a country"},
+    {"type": "header", "content": "Region names"},
+    {"type": "text", "id": "region_europe", "label": "Europe", "default": "Europe"},
+    {"type": "text", "id": "region_asia", "label": "Asia & Middle East", "default": "Asia & Middle East"},
+    {"type": "text", "id": "region_americas", "label": "Americas", "default": "Americas"},
+    {"type": "text", "id": "region_oceania", "label": "Oceania", "default": "Oceania"},
+    {"type": "text", "id": "region_africa", "label": "Africa", "default": "Africa"},
+    {"type": "text", "id": "region_other", "label": "Other countries", "default": "Other destinations"},
+    {"type": "header", "content": "Mobile map buttons"},
+    {"type": "text", "id": "button_europe", "label": "Europe button", "default": "Europe"},
+    {"type": "text", "id": "button_asia", "label": "Asia button", "default": "Asia"},
+    {"type": "text", "id": "button_americas", "label": "Americas button", "default": "Americas"},
     {"type": "header", "content": "Country card"},
     {"type": "text", "id": "switch_label", "label": "Switch button", "default": "Shop in [country]", "info": "[country] is replaced with the country name. Clicking it changes the store's country, like the country selector."},
     {"type": "text", "id": "currency_label", "label": "Currency line", "default": "Prices in [currency]"},

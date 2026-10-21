@@ -8,8 +8,8 @@
   {% endif %}
   {% if section.settings.map != blank %}
     <div class="jr-controls" role="group" aria-label="Map regions">
-      <button type="button" data-region=".51,.20">Europe</button>
-      <button type="button" data-region=".81,.29">East Asia</button>
+      <button type="button" data-region=".51,.20">{{ section.settings.button_europe | default: 'Europe' | escape }}</button>
+      <button type="button" data-region=".81,.29">{{ section.settings.button_asia | default: 'East Asia' | escape }}</button>
       <span>{{ section.settings.map_hint | escape }}</span>
     </div>
     <div class="jr-view" tabindex="0" role="region" aria-label="Retailer map. Scroll to explore.">
@@ -326,6 +326,8 @@ if (!customElements.get('jalg-retailers')) {
     {"type": "text", "id": "heading", "label": "Heading", "default": "JALG Retailers Worldwide"},
     {"type": "text", "id": "subtitle", "label": "Introduction", "default": "Selected design destinations across Europe and East Asia"},
     {"type": "text", "id": "map_hint", "label": "Mobile map hint", "default": "Swipe the map · Tap a number"},
+    {"type": "text", "id": "button_europe", "label": "Europe button (mobile)", "default": "Europe"},
+    {"type": "text", "id": "button_asia", "label": "East Asia button (mobile)", "default": "East Asia"},
     {"type": "text", "id": "visit_label", "label": "Website link text", "default": "Visit website"}
   ],
   "blocks": [{
