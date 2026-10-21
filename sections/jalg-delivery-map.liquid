@@ -55,44 +55,58 @@
   {% endif %}
 
   {% if section.settings.show_list %}
-    <div class="jd-regions">
-      {% for name in region_names %}
-        {%- liquid
-          assign i = forloop.index0
-          capture items
-            for country in countries
-              if active contains country.iso_code and region_codes[i] contains country.iso_code
-                echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
-              endif
-            endfor
-          endcapture
-        -%}
-        {% if items != blank %}
-          {% assign count = items | split: '<li ' | size | minus: 1 %}
+    {%- comment -%}
+      Big regions (like Europe) get their own block with two columns under
+      the heading. The smaller regions share the rest of the space and are
+      never split across columns.
+    {%- endcomment -%}
+    {%- capture wide -%}{%- endcapture -%}
+    {%- capture rest -%}{%- endcapture -%}
+    {% for name in region_names %}
+      {%- liquid
+        assign i = forloop.index0
+        capture items
+          for country in countries
+            if active contains country.iso_code and region_codes[i] contains country.iso_code
+              echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+            endif
+          endfor
+        endcapture
+        assign count = items | split: '<li ' | size | minus: 1
+      -%}
+      {% if count > 0 %}
+        {%- capture block -%}
           <section class="jd-region">
             <h3>{{ name }} <span>{{ count }}</span></h3>
             <ul>{{ items }}</ul>
           </section>
+        {%- endcapture -%}
+        {% if count > 15 %}
+          {%- capture wide -%}{{ wide }}{{ block | replace: 'class="jd-region"', 'class="jd-region is-wide"' }}{%- endcapture -%}
+        {% else %}
+          {%- capture rest -%}{{ rest }}{{ block }}{%- endcapture -%}
         {% endif %}
-      {% endfor %}
-
-      {%- liquid
-        capture items
-          for country in countries
-            if active contains country.iso_code
-              unless region_data contains country.iso_code
-                echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
-              endunless
-            endif
-          endfor
-        endcapture
-      -%}
-      {% if items != blank %}
-        <section class="jd-region">
-          <h3>Other destinations</h3>
-          <ul>{{ items }}</ul>
-        </section>
       {% endif %}
+    {% endfor %}
+
+    {%- liquid
+      capture items
+        for country in countries
+          if active contains country.iso_code
+            unless region_data contains country.iso_code
+              echo '<li data-c="' | append: country.iso_code | append: '">' | append: country.name | append: '</li>'
+            endunless
+          endif
+        endfor
+      endcapture
+    -%}
+    {% if items != blank %}
+      {%- capture rest -%}{{ rest }}<section class="jd-region"><h3>Other destinations</h3><ul>{{ items }}</ul></section>{%- endcapture -%}
+    {% endif %}
+
+    <div class="jd-regions{% if wide == blank %} no-wide{% endif %}">
+      {{ wide }}
+      {% if rest != blank %}<div class="jd-rest">{{ rest }}</div>{% endif %}
     </div>
   {% endif %}
 
@@ -124,8 +138,12 @@ jalg-delivery .jd-legend { display:flex; align-items:center; justify-content:cen
 jalg-delivery .jd-legend span { width:14px; height:14px; border-radius:50%; background:var(--green); }
 
 /* Country list */
-jalg-delivery .jd-regions { columns:4 200px; column-gap:28px; max-width:1440px; margin:0 auto; padding:32px 40px 0; }
-jalg-delivery .jd-region { margin:0 0 28px; }
+jalg-delivery .jd-regions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 28px; align-items:start; max-width:1440px; margin:0 auto; padding:32px 40px 0; }
+jalg-delivery .jd-regions.no-wide { grid-template-columns:1fr; }
+jalg-delivery .jd-rest { columns:2; column-gap:28px; }
+jalg-delivery .no-wide .jd-rest { columns:4 200px; }
+jalg-delivery .jd-region { margin:0 0 28px; break-inside:avoid; }
+jalg-delivery .jd-region.is-wide ul { columns:2; column-gap:28px; }
 jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:500; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
 jalg-delivery .jd-region h3 span { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:8px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
@@ -136,7 +154,9 @@ jalg-delivery .jd-region li.is-hl { color:var(--green); }
 jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; font-size:14px; line-height:1.4; white-space:nowrap; pointer-events:none; transform:translate(-50%,calc(-100% - 12px)); }
 
 @media(max-width:1099px) {
-  jalg-delivery .jd-regions { padding-inline:24px; }
+  jalg-delivery .jd-regions { grid-template-columns:1fr; padding-inline:24px; }
+  jalg-delivery .jd-rest { columns:3; }
+  jalg-delivery .jd-region.is-wide ul { columns:3; }
 }
 @media(max-width:799px) {
   jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
@@ -144,12 +164,13 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
   jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
   jalg-delivery .jd-view { height:350px; overflow:auto; overscroll-behavior-x:contain; }
   jalg-delivery .jd-map { width:1600px; max-width:none; }
-  jalg-delivery .jd-regions { columns:2; column-gap:24px; }
+  jalg-delivery :is(.jd-rest,.no-wide .jd-rest,.jd-region.is-wide ul) { columns:2; column-gap:24px; }
 }
 @media(max-width:589px) {
   jalg-delivery { padding-bottom:25px; }
   jalg-delivery .jd-heading p { max-width:85%; text-wrap:balance; }
-  jalg-delivery .jd-regions { padding:24px 20px 0; column-gap:20px; }
+  jalg-delivery .jd-regions { padding:24px 20px 0; }
+  jalg-delivery :is(.jd-rest,.jd-region.is-wide ul) { column-gap:20px; }
 }
 @media(prefers-reduced-motion:reduce) {
   jalg-delivery * { transition:none !important; }
