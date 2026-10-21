@@ -57,7 +57,7 @@ jalg-retailers [hidden] { display:none !important; }
 jalg-retailers button { font:inherit; color:inherit; cursor:pointer; }
 /* The map image has ~32px of empty space at the top, so this gives the same
    gap above the land as the delivery map. */
-jalg-retailers .jr-heading { padding:32px 24px; text-align:center; }
+jalg-retailers .jr-heading { padding:80px 24px 32px; text-align:center; }
 jalg-retailers .jr-heading h1 { margin:0 0 24px; }
 jalg-retailers .jr-heading p { max-width:800px; margin:0 auto; }
 jalg-retailers .jr-controls { display:none; }
@@ -94,7 +94,7 @@ jalg-retailers .jr-error { display:block; color:#a12b22; }
   jalg-retailers .jr-list { grid-template-columns:repeat(3,minmax(0,1fr)); padding-inline:24px; }
 }
 @media(max-width:799px) {
-  jalg-retailers .jr-heading { padding-bottom:24px; }
+  jalg-retailers .jr-heading { padding-top:48px; padding-bottom:24px; }
   jalg-retailers.is-ready .jr-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
   jalg-retailers .jr-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
   jalg-retailers .jr-controls span { flex-basis:100%; text-align:center; font-size:13px; }
