@@ -146,6 +146,8 @@
     --green: var(--colorBtnPrimary, #3d5640);
     --line: var(--colorBorder, #e8e8e1);
     --paper: var(--colorBody, #f6f5f3);
+    /* Theme text colour softened towards the background, for locations, notes and footnotes */
+    --muted: color-mix(in srgb, var(--colorTextBody, #000) 73%, var(--paper));
     display: block;
     padding-bottom: 40px;
     background: var(--paper);
@@ -171,6 +173,7 @@
     position: relative;
     margin: 12px 0 0;
     padding-left: 46px;
+    color: var(--muted);
     font-size: 12px;
     line-height: 1.9;
     letter-spacing: .12em;
@@ -217,6 +220,7 @@
   #JalgClientDirectory-{{ section.id }} .jd-group-note {
     max-width: 320px;
     margin: 0;
+    color: var(--muted);
     font-size: 15px;
     line-height: 1.5;
     text-align: right;
@@ -252,6 +256,7 @@
   #JalgClientDirectory-{{ section.id }} .jd-location {
     display: block;
     margin-top: 4px;
+    color: var(--muted);
     font-size: 15px;
     line-height: 1.5;
   }
@@ -287,6 +292,7 @@
 
   #JalgClientDirectory-{{ section.id }} .jd-caption {
     margin: 20px 0 0;
+    color: var(--muted);
     font-size: 15px;
     line-height: 1.5;
   }

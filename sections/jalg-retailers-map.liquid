@@ -51,8 +51,9 @@
 </jalg-retailers>
 
 {% stylesheet %}
-/* Colours come from Theme settings → Colors: Text, Background, Buttons (green), Lines and borders. */
-jalg-retailers { --green:var(--colorBtnPrimary,#3d5640); --line:var(--colorBorder,#e8e8e1); --paper:var(--colorBody,#f6f5f3); display:block; padding-bottom:40px; background:var(--paper); color:var(--colorTextBody,#000); }
+/* Colours come from Theme settings → Colors: Text, Background, Buttons (green), Lines and borders.
+   --muted is the theme text colour softened towards the background, for cities and other details. */
+jalg-retailers { --muted:color-mix(in srgb, var(--colorTextBody,#000) 73%, var(--colorBody,#f6f5f3)); --green:var(--colorBtnPrimary,#3d5640); --line:var(--colorBorder,#e8e8e1); --paper:var(--colorBody,#f6f5f3); display:block; padding-bottom:40px; background:var(--paper); color:var(--colorTextBody,#000); }
 jalg-retailers, jalg-retailers * { box-sizing:border-box; }
 jalg-retailers [hidden] { display:none !important; }
 jalg-retailers button { font:inherit; color:inherit; cursor:pointer; }
@@ -82,10 +83,10 @@ jalg-retailers .jr-link:is(:hover,:focus-visible) .jr-name { color:var(--green);
 jalg-retailers .jr-link:focus-visible { outline:1px solid var(--green); outline-offset:5px; }
 jalg-retailers .jr-number { display:inline-flex; flex:0 0 28px; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--green); color:#fff; font-size:13px; font-weight:600; line-height:1; }
 jalg-retailers .jr-name { display:block; font-size:16px; font-weight:500; line-height:1.5; }
-jalg-retailers .jr-location { display:block; margin-top:4px; font-size:15px; line-height:1.5; }
+jalg-retailers .jr-location { display:block; margin-top:4px; color:var(--muted); font-size:15px; line-height:1.5; }
 jalg-retailers .jr-pop { position:fixed; z-index:10000; width:280px; padding:24px; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
 jalg-retailers .jr-pop strong { display:block; padding-right:18px; font-size:16px; }
-jalg-retailers .jr-pop p { margin:8px 0 16px; font-size:15px; }
+jalg-retailers .jr-pop p { margin:8px 0 16px; color:var(--muted); font-size:15px; }
 jalg-retailers .jr-pop a { display:inline-block; color:var(--green); }
 jalg-retailers .jr-pop svg { display:inline-block; vertical-align:middle; margin-left:3px; }
 jalg-retailers .jr-close { position:absolute; top:4px; right:4px; width:32px; height:32px; padding:0; border:0; background:none; font-size:24px; }

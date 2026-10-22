@@ -199,7 +199,7 @@
 {% stylesheet %}
 /* Colours come from Theme settings → Colors: Text, Background, Buttons (green),
    Lines and borders, Sale price (current country). The grey land is the map's own. */
-jalg-delivery { --green:var(--colorBtnPrimary,#3d5640); --green-dark:color-mix(in srgb, var(--green) 70%, #000); --accent:var(--colorSalePrice,#ff4f33); --land:#d6d7d0; --line:var(--colorBorder,#e8e8e1); --paper:var(--colorBody,#f6f5f3); --text:var(--colorTextBody,#000); display:block; padding-bottom:40px; background:var(--paper); color:var(--text); }
+jalg-delivery { --green:var(--colorBtnPrimary,#3d5640); --green-dark:color-mix(in srgb, var(--green) 70%, #000); --accent:var(--colorSalePrice,#ff4f33); --land:#d6d7d0; --line:var(--colorBorder,#e8e8e1); --paper:var(--colorBody,#f6f5f3); --text:var(--colorTextBody,#000); --muted:color-mix(in srgb, var(--text) 73%, var(--paper)); display:block; padding-bottom:40px; background:var(--paper); color:var(--text); }
 jalg-delivery, jalg-delivery * { box-sizing:border-box; }
 jalg-delivery [hidden] { display:none !important; }
 jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
@@ -258,7 +258,7 @@ jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outlin
 /* Country card */
 jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
 jalg-delivery .jd-pop strong { display:block; padding-right:18px; font-size:16px; font-weight:500; }
-jalg-delivery .jd-pop p { margin:4px 0 0; color:var(--text); font-size:15px; }
+jalg-delivery .jd-pop p { margin:4px 0 0; color:var(--muted); font-size:15px; }
 jalg-delivery .jd-pop .jd-here { margin-top:14px; color:var(--green); }
 jalg-delivery .jd-switch { position:relative; display:inline-block; width:auto; min-width:0; min-height:0; margin:14px 0 0; padding:0 0 2px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:none; box-shadow:none; color:var(--green); font-size:15px; letter-spacing:0; text-transform:none; }
 jalg-delivery .jd-switch::after { content:""; position:absolute; inset:auto 0 -1px; height:1px; background:var(--green); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
