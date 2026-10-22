@@ -210,13 +210,13 @@ jalg-delivery .jd-heading p { max-width:800px; margin:0 auto; }
 /* Delivery points (ticks) */
 jalg-delivery .jd-points { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 40px; margin:-24px auto 56px; padding:0 24px; list-style:none; }
 jalg-delivery .jd-points.no-heading { margin-top:48px; }
-jalg-delivery .jd-points li { display:flex; align-items:center; gap:10px; margin:0; padding:0; font-size:15px; line-height:1.4; }
+jalg-delivery .jd-points li { display:flex; align-items:center; gap:10px; margin:0; padding:0; font-size:16px; font-weight:400; line-height:1.4; }
 jalg-delivery .jd-points svg { flex:none; width:22px; height:22px; fill:none; stroke:var(--green); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; }
 jalg-delivery .jd-points svg * { vector-effect:non-scaling-stroke; }
 /* Desktop: the same visible gap (about 40px) between title, intro, ticks and map. */
 @media(min-width:800px) {
-  jalg-delivery .jd-heading h2 { margin-bottom:31px; }
-  jalg-delivery .jd-points { margin-bottom:37px; }
+  jalg-delivery .jd-heading h2 { margin-bottom:27px; }
+  jalg-delivery .jd-points { margin-top:-27px; margin-bottom:36px; }
 }
 jalg-delivery .jd-controls { display:none; }
 
@@ -245,7 +245,7 @@ jalg-delivery .jd-rest { columns:2; column-gap:28px; }
 jalg-delivery .no-wide .jd-rest { columns:4 200px; }
 jalg-delivery .jd-region { margin:0 0 28px; break-inside:avoid; }
 jalg-delivery .jd-region.is-wide ul { columns:2; column-gap:28px; }
-jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:500; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
+jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:400; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
 jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
 jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:13px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
@@ -282,7 +282,7 @@ jalg-delivery .jd-tip { position:fixed; z-index:10000; padding:6px 12px; backgro
   jalg-delivery .jd-points.no-heading { margin-top:32px; }
   jalg-delivery.is-ready .jd-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:16px 20px; }
   jalg-delivery .jd-controls button { padding:10px 16px; border:1px solid var(--green); border-radius:0; background:none; color:var(--green); }
-  jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:13px; }
+  jalg-delivery .jd-controls span { flex-basis:100%; text-align:center; font-size:16px; }
   jalg-delivery .jd-view { height:350px; overflow:auto; overscroll-behavior-x:contain; }
   jalg-delivery .jd-map { width:1600px; max-width:none; }
   jalg-delivery :is(.jd-rest,.no-wide .jd-rest,.jd-region.is-wide ul) { columns:2; column-gap:24px; }
