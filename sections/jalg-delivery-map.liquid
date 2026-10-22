@@ -231,8 +231,8 @@ jalg-delivery .jd-map .is-current { fill:var(--accent); }
 jalg-delivery .jd-map .is-current.is-hl { fill:color-mix(in srgb, var(--accent) 80%, #000); }
 jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend) { display:none !important; }
 
-jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:#444; font-size:14px; }
-jalg-delivery .jd-legend p { display:flex; align-items:center; gap:10px; margin:0; font-size:14px; }
+jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:#222; font-size:16px; }
+jalg-delivery .jd-legend p { display:flex; align-items:center; gap:10px; margin:0; font-size:16px; }
 jalg-delivery .jd-legend span { flex:none; width:14px; height:14px; border-radius:50%; background:var(--green); }
 jalg-delivery .jd-legend .is-current span { background:var(--accent); }
 
@@ -248,7 +248,7 @@ jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
 jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
 jalg-delivery .jd-region li { margin:0; padding:0; break-inside:avoid; }
-jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:#444; font-size:14px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
+jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:#222; font-size:15px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
 jalg-delivery .jd-country:hover, jalg-delivery .jd-country:focus-visible { color:var(--green); }
 jalg-delivery .jd-region li[aria-current] .jd-country { color:var(--accent); font-weight:600; }
 jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
@@ -256,7 +256,7 @@ jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outlin
 /* Country card */
 jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
 jalg-delivery .jd-pop strong { display:block; padding-right:18px; font-size:16px; font-weight:500; }
-jalg-delivery .jd-pop p { margin:4px 0 0; color:#444; font-size:14px; }
+jalg-delivery .jd-pop p { margin:4px 0 0; color:#222; font-size:14px; }
 jalg-delivery .jd-pop .jd-here { margin-top:14px; color:var(--green); }
 jalg-delivery .jd-switch { position:relative; display:inline-block; width:auto; min-width:0; min-height:0; margin:14px 0 0; padding:0 0 2px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:none; box-shadow:none; color:var(--green); font-size:15px; letter-spacing:0; text-transform:none; }
 jalg-delivery .jd-switch::after { content:""; position:absolute; inset:auto 0 -1px; height:1px; background:var(--green); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
