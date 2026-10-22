@@ -35,7 +35,7 @@
   assign region_codes = region_data | split: '|'
 -%}
 
-<jalg-delivery style="--accent:{{ section.settings.current_color | default: '#ff4f33' }}" data-shop-url="{{ section.settings.shop_url | default: '/collections/all' | escape }}" data-current="{{ localization.country.iso_code }}" data-switch="{{ section.settings.switch_label | escape }}" data-prices="{{ section.settings.currency_label | escape }}" data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
+<jalg-delivery{% if section.settings.current_color != blank %} style="--accent:{{ section.settings.current_color }}"{% endif %} data-shop-url="{{ section.settings.shop_url | default: '/collections/all' | escape }}" data-current="{{ localization.country.iso_code }}" data-switch="{{ section.settings.switch_label | escape }}" data-prices="{{ section.settings.currency_label | escape }}" data-src="{{ 'jalg-delivery-map.svg' | asset_url }}" data-codes="{{ active | join: ' ' }}">
   {% if section.settings.show_heading %}
     <header class="jd-heading">
       {% if section.settings.heading != blank %}<h2>{{ section.settings.heading | escape }}</h2>{% endif %}
@@ -197,7 +197,9 @@
 </jalg-delivery>
 
 {% stylesheet %}
-jalg-delivery { --green:#3d5640; --green-dark:#2a3c2c; --accent:#ff4f33; --land:#d6d7d0; --line:#d6d6d1; --paper:#f6f5f3; display:block; padding-bottom:40px; background:var(--paper); color:#222; }
+/* Colours come from Theme settings → Colors: Text, Background, Buttons (green),
+   Lines and borders, Sale price (current country). The grey land is the map's own. */
+jalg-delivery { --green:var(--colorBtnPrimary,#3d5640); --green-dark:color-mix(in srgb, var(--green) 70%, #000); --accent:var(--colorSalePrice,#ff4f33); --land:#d6d7d0; --line:var(--colorBorder,#e8e8e1); --paper:var(--colorBody,#f6f5f3); --text:var(--colorTextBody,#000); display:block; padding-bottom:40px; background:var(--paper); color:var(--text); }
 jalg-delivery, jalg-delivery * { box-sizing:border-box; }
 jalg-delivery [hidden] { display:none !important; }
 jalg-delivery button { font:inherit; color:inherit; cursor:pointer; }
@@ -231,7 +233,7 @@ jalg-delivery .jd-map .is-current { fill:var(--accent); }
 jalg-delivery .jd-map .is-current.is-hl { fill:color-mix(in srgb, var(--accent) 80%, #000); }
 jalg-delivery.is-failed :is(.jd-controls,.jd-view,.jd-legend) { display:none !important; }
 
-jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:#222; font-size:16px; }
+jalg-delivery .jd-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 32px; margin:16px 24px 0; color:var(--text); font-size:16px; }
 jalg-delivery .jd-legend p { display:flex; align-items:center; gap:10px; margin:0; font-size:16px; }
 jalg-delivery .jd-legend span { flex:none; width:14px; height:14px; border-radius:50%; background:var(--green); }
 jalg-delivery .jd-legend .is-current span { background:var(--accent); }
@@ -245,10 +247,10 @@ jalg-delivery .jd-region { margin:0 0 28px; break-inside:avoid; }
 jalg-delivery .jd-region.is-wide ul { columns:2; column-gap:28px; }
 jalg-delivery .jd-region h3 { margin:0 0 10px; padding:5px 0 12px; border-bottom:1px solid var(--line); font-size:16px; font-weight:500; line-height:1.5; letter-spacing:0; text-transform:none; break-after:avoid; }
 jalg-delivery .jd-region .jd-keep { white-space:nowrap; }
-jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:12px; font-weight:600; vertical-align:1px; }
+jalg-delivery .jd-region .jd-count { display:inline-grid; place-items:center; min-width:24px; height:24px; margin-left:4px; padding:0 6px; border-radius:12px; background:var(--green); color:#fff; font-size:13px; font-weight:600; vertical-align:1px; }
 jalg-delivery .jd-region ul { margin:0; padding:0; list-style:none; }
 jalg-delivery .jd-region li { margin:0; padding:0; break-inside:avoid; }
-jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:#222; font-size:15px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
+jalg-delivery .jd-country { display:block; width:auto; min-width:0; min-height:0; margin:0; padding:3px 0; border:0; border-radius:0; background:none; box-shadow:none; color:var(--text); font-size:15px; font-weight:400; line-height:1.5; letter-spacing:0; text-align:left; text-transform:none; transition:color .2s ease; }
 jalg-delivery .jd-country:hover, jalg-delivery .jd-country:focus-visible { color:var(--green); }
 jalg-delivery .jd-region li[aria-current] .jd-country { color:var(--accent); font-weight:600; }
 jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
@@ -256,7 +258,7 @@ jalg-delivery .jd-country:focus-visible { outline:1px solid var(--green); outlin
 /* Country card */
 jalg-delivery .jd-pop { position:fixed; z-index:10000; width:260px; padding:22px 24px; background:var(--paper); border:1px solid var(--line); border-radius:4px; box-shadow:0 8px 28px #00000029; text-align:left; font-size:15px; line-height:1.5; }
 jalg-delivery .jd-pop strong { display:block; padding-right:18px; font-size:16px; font-weight:500; }
-jalg-delivery .jd-pop p { margin:4px 0 0; color:#222; font-size:14px; }
+jalg-delivery .jd-pop p { margin:4px 0 0; color:var(--text); font-size:15px; }
 jalg-delivery .jd-pop .jd-here { margin-top:14px; color:var(--green); }
 jalg-delivery .jd-switch { position:relative; display:inline-block; width:auto; min-width:0; min-height:0; margin:14px 0 0; padding:0 0 2px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:none; box-shadow:none; color:var(--green); font-size:15px; letter-spacing:0; text-transform:none; }
 jalg-delivery .jd-switch::after { content:""; position:absolute; inset:auto 0 -1px; height:1px; background:var(--green); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
@@ -477,7 +479,7 @@ if (!customElements.get('jalg-delivery')) {
     {"type": "text", "id": "point_2", "label": "Delivery point 2", "default": "Order delivered in 4–7 days"},
     {"type": "text", "id": "point_3", "label": "Delivery point 3", "default": "Delivery by FedEx or DPD"},
     {"type": "text", "id": "legend", "label": "Map key text", "default": "We deliver here", "info": "Leave blank to hide the key."},
-    {"type": "color", "id": "current_color", "label": "Colour of the shopper's current country", "default": "#FF4F33"},
+    {"type": "color", "id": "current_color", "label": "Colour of the shopper's current country", "info": "Leave empty to use the theme's Sale price colour."},
     {"type": "checkbox", "id": "legend_current", "label": "Show the current country in the map key", "default": true, "info": "Uses the \"Text for the current country\" setting below, followed by the country name."},
     {"type": "checkbox", "id": "show_list", "label": "Show country list", "default": true},
     {"type": "text", "id": "exclude", "label": "Hide these countries", "info": "Two-letter country codes, separated by commas (example: HK, TW). Use this for countries in the selector that you don't deliver to."},

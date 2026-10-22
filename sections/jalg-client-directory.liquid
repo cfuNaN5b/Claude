@@ -2,7 +2,7 @@
   JALG — Good places. Good company.
   sections/jalg-client-directory.liquid
   Lists styled to match the Dealers page (pages/dealers): the same grid,
-  entry style, colours and hover underline.
+  entry style and hover underline. Colours come from Theme settings → Colors.
   Review names, URLs, and classifications before publishing.
 {% endcomment %}
 
@@ -13,7 +13,7 @@
     {% endif %}
     <div class="jd-intro-grid">
       <div>
-        <h1 class="h1 jd-title">{{ section.settings.title | escape | newline_to_br }}</h1>
+        <h1 class="h2 jd-title">{{ section.settings.title | escape | newline_to_br }}</h1>
         {% if section.settings.intro != blank %}
           <p class="jd-intro-copy">{{ section.settings.intro | escape | newline_to_br }}</p>
         {% endif %}
@@ -142,13 +142,14 @@
 
 <style>
   #JalgClientDirectory-{{ section.id }} {
-    --green: {{ section.settings.accent_color }};
-    --line: {{ section.settings.rule_color }};
-    --paper: {{ section.settings.background }};
+    /* Theme settings → Colors: Buttons (green), Lines and borders, Background, Text */
+    --green: var(--colorBtnPrimary, #3d5640);
+    --line: var(--colorBorder, #e8e8e1);
+    --paper: var(--colorBody, #f6f5f3);
     display: block;
     padding-bottom: 40px;
     background: var(--paper);
-    color: {{ section.settings.text_color }};
+    color: var(--colorTextBody, #000);
   }
   #JalgClientDirectory-{{ section.id }}, #JalgClientDirectory-{{ section.id }} * { box-sizing: border-box; }
 
@@ -170,7 +171,6 @@
     position: relative;
     margin: 12px 0 0;
     padding-left: 46px;
-    color: #444;
     font-size: 12px;
     line-height: 1.9;
     letter-spacing: .12em;
@@ -202,7 +202,9 @@
     margin: 0 auto;
     padding: clamp(48px, 6vw, 80px) 40px;
   }
+  {%- if section.settings.trade_background != blank -%}
   #JalgClientDirectory-{{ section.id }} .jd-group--trade { background: {{ section.settings.trade_background }}; }
+  {%- endif %}
   #JalgClientDirectory-{{ section.id }} .jd-group-heading {
     display: flex;
     justify-content: space-between;
@@ -215,8 +217,7 @@
   #JalgClientDirectory-{{ section.id }} .jd-group-note {
     max-width: 320px;
     margin: 0;
-    color: #444;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.5;
     text-align: right;
   }
@@ -251,8 +252,7 @@
   #JalgClientDirectory-{{ section.id }} .jd-location {
     display: block;
     margin-top: 4px;
-    color: #444;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.5;
   }
   #JalgClientDirectory-{{ section.id }} .jd-icon { flex: 0 0 auto; margin-top: 5px; color: var(--green); }
@@ -287,8 +287,7 @@
 
   #JalgClientDirectory-{{ section.id }} .jd-caption {
     margin: 20px 0 0;
-    color: #444;
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.5;
   }
 
@@ -378,11 +377,8 @@
     { "type": "text", "id": "cta2_label", "label": "Second link label (optional)", "default": "Trade enquiries" },
     { "type": "url", "id": "cta2_url", "label": "Second link URL", "info": "For example your Trade page. The link only shows when a URL is set." },
     { "type": "text", "id": "visit_label", "label": "Accessible external-link label", "default": "Visit website" },
-    { "type": "color", "id": "background", "label": "Main background", "default": "#F6F5F3" },
-    { "type": "color", "id": "trade_background", "label": "Trade section background", "default": "#F6F5F3" },
-    { "type": "color", "id": "text_color", "label": "Text colour", "default": "#222222" },
-    { "type": "color", "id": "accent_color", "label": "Accent colour", "default": "#3D5640" },
-    { "type": "color", "id": "rule_color", "label": "Divider colour", "default": "#D6D6D1" }
+    { "type": "paragraph", "content": "Text, background, accent and line colours come from Theme settings → Colors." },
+    { "type": "color", "id": "trade_background", "label": "Trade section background (optional)", "info": "Leave empty to use the theme background." }
   ],
   "blocks": [
     {
