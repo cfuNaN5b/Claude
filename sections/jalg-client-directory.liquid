@@ -9,7 +9,7 @@
 <section id="JalgClientDirectory-{{ section.id }}" class="jalg-directory">
   <header class="jd-intro">
     {% if section.settings.eyebrow != blank %}
-      <p class="jd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <p class="subheading jd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
     {% endif %}
     <div class="jd-intro-grid">
       <div>
@@ -19,7 +19,7 @@
         {% endif %}
       </div>
       {% if section.settings.side_note != blank %}
-        <p class="jd-side-note">{{ section.settings.side_note | escape | newline_to_br }}</p>
+        <p class="subheading jd-side-note">{{ section.settings.side_note | escape | newline_to_br }}</p>
       {% endif %}
     </div>
   </header>
@@ -61,7 +61,7 @@
     <div class="jd-group jd-group--{{ category }}">
       <div class="jd-group-heading">
         <div>
-          {% if kicker != blank %}<p class="jd-eyebrow">{{ kicker | escape }}</p>{% endif %}
+          {% if kicker != blank %}<p class="subheading jd-eyebrow">{{ kicker | escape }}</p>{% endif %}
           <h2 class="h2 jd-group-title">{{ heading | escape }}</h2>
         </div>
         {% if note != blank %}<p class="jd-group-note">{{ note | escape }}</p>{% endif %}
@@ -169,20 +169,21 @@
   }
   #JalgClientDirectory-{{ section.id }} .jd-title { max-width: 760px; margin: 0 0 20px; }
   #JalgClientDirectory-{{ section.id }} .jd-intro-copy { max-width: 680px; margin: 0; }
+  /* Eyebrow and side note take their letter spacing and capitals from the theme's label style
+     (.subheading, which follows Theme settings → Typography); size, weight and colour are set here. */
+  #JalgClientDirectory-{{ section.id }} :is(.jd-eyebrow, .jd-side-note) { font-size: 12px; }
   #JalgClientDirectory-{{ section.id }} .jd-side-note {
     position: relative;
     margin: 12px 0 0;
     padding-left: 46px;
     color: var(--muted);
-    font-size: 12px;
     line-height: 1.9;
-    letter-spacing: .1em;
-    text-transform: uppercase;
   }
   #JalgClientDirectory-{{ section.id }} .jd-side-note::before {
     content: "";
     position: absolute;
-    top: 11px;
+    top: 13px;
+    top: calc(.5lh - .5px);
     left: 0;
     width: 30px;
     height: 1px;
@@ -191,11 +192,8 @@
   #JalgClientDirectory-{{ section.id }} .jd-eyebrow {
     margin: 0 0 10px;
     color: var(--green);
-    font-size: 12px;
     font-weight: 600;
-    letter-spacing: .1em;
     line-height: 1.4;
-    text-transform: uppercase;
   }
 
   /* Groups: Hospitality / Design & Trade */
