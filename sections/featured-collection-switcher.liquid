@@ -16,8 +16,8 @@
     carousel strip is shifted right by half of the empty space.
     Desktop shows per_row products, phones always 2.
   endcomment
-  assign count1 = collection1.products_count | at_most: product_limit
-  assign count2 = collection2.products_count | at_most: product_limit
+  assign count1 = collection1.products.size | at_most: product_limit
+  assign count2 = collection2.products.size | at_most: product_limit
   assign offset1 = 0
   assign offset2 = 0
   if count1 < per_row
