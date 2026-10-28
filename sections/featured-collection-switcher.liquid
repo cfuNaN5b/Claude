@@ -11,30 +11,6 @@
   assign collection1_title = section.settings.collection1_title | default: collection1.title
   assign collection2_title = section.settings.collection2_title | default: collection2.title
 
-  comment
-    Centre incomplete rows: with fewer products than fit in a row, the
-    carousel strip is shifted right by half of the empty space.
-    Desktop shows per_row products, phones always 2.
-  endcomment
-  assign count1 = collection1.products.size | at_most: product_limit
-  assign count2 = collection2.products.size | at_most: product_limit
-  assign offset1 = 0
-  assign offset2 = 0
-  if count1 < per_row
-    assign offset1 = per_row | minus: count1 | times: 50.0 | divided_by: per_row
-  endif
-  if count2 < per_row
-    assign offset2 = per_row | minus: count2 | times: 50.0 | divided_by: per_row
-  endif
-  assign offset1_small = 0
-  assign offset2_small = 0
-  if count1 == 1
-    assign offset1_small = 25
-  endif
-  if count2 == 1
-    assign offset2_small = 25
-  endif
-
   assign emptyState = false
   if collection1.empty? and collection2.empty?
     assign emptyState = true
@@ -52,12 +28,6 @@
   .collection-switcher__description p:last-child { margin-bottom: 0; }
   @media only screen and (max-width: 589px) {
     .collection-switcher__description { margin-bottom: 20px; }
-  }
-  /* centre incomplete rows (the carousel positions products itself, so the
-     whole strip is shifted; the offsets are worked out in Liquid above) */
-  .collection-switcher__collection-grid .flickity-slider { margin-left: var(--switcher-offset-small, 0%); }
-  @media only screen and (min-width: 590px) {
-    .collection-switcher__collection-grid .flickity-slider { margin-left: var(--switcher-offset, 0%); }
   }
 </style>
 
@@ -121,7 +91,6 @@
         <div
           id="CollectionSwitcher1-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
-          style="--switcher-offset: {{ offset1 }}%; --switcher-offset-small: {{ offset1_small }}%;"
           data-per-row="{{ per_row }}">
           {%- for product in collection1.products limit: product_limit -%}
             {%- render 'product-grid-item',
@@ -149,7 +118,6 @@
         <div
           id="CollectionSwitcher2-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
-          style="--switcher-offset: {{ offset2 }}%; --switcher-offset-small: {{ offset2_small }}%;"
           data-per-row="{{ per_row }}">
           {%- for product in collection2.products limit: product_limit -%}
             {%- render 'product-grid-item',
