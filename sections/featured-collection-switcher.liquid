@@ -4,6 +4,13 @@
   assign collection1 = collections[section.settings.collection1]
   assign collection2 = collections[section.settings.collection2]
 
+  comment
+    Tab titles and descriptions are set in the section; a blank title falls
+    back to the collection's own title.
+  endcomment
+  assign collection1_title = section.settings.collection1_title | default: collection1.title
+  assign collection2_title = section.settings.collection2_title | default: collection2.title
+
   assign emptyState = false
   if collection1.empty? and collection2.empty?
     assign emptyState = true
@@ -11,6 +18,18 @@
 -%}
 
 {%- if section.settings.divider -%}<div class="section--divider">{%- endif -%}
+
+<style>
+  .collection-switcher__description {
+    max-width: 640px;
+    margin: 0 auto 30px;
+    text-align: center;
+  }
+  .collection-switcher__description p:last-child { margin-bottom: 0; }
+  @media only screen and (max-width: 589px) {
+    .collection-switcher__description { margin-bottom: 20px; }
+  }
+</style>
 
 <div
   id="CollectionSection-{{ section.id }}"
@@ -28,7 +47,7 @@
             <a href="{{ collection1.url }}"
               class="collection-switcher__trigger is-active js-no-transition"
               aria-controls="collection1-{{ section.id }}">
-              {{ collection1.title }}
+              {{ collection1_title }}
             </a>
           </h3>
         {%- endunless -%}
@@ -37,7 +56,7 @@
             <a href="{{ collection2.url }}"
               class="collection-switcher__trigger js-no-transition"
               aria-controls="collection2-{{ section.id }}">
-              {{ collection2.title }}
+              {{ collection2_title }}
             </a>
           </h3>
         {%- endunless -%}
@@ -66,6 +85,9 @@
   <div class="page-width">
     {%- unless collection1.empty? -%}
       <div id="collection1-{{ section.id }}" class="collection-switcher__collection" data-index="0">
+        {%- if section.settings.collection1_description != blank -%}
+          <div class="collection-switcher__description rte">{{ section.settings.collection1_description }}</div>
+        {%- endif -%}
         <div
           id="CollectionSwitcher1-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
@@ -90,6 +112,9 @@
 
     {%- unless collection2.empty? -%}
       <div id="collection2-{{ section.id }}" class="collection-switcher__collection hide" data-index="1">
+        {%- if section.settings.collection2_description != blank -%}
+          <div class="collection-switcher__description rte">{{ section.settings.collection2_description }}</div>
+        {%- endif -%}
         <div
           id="CollectionSwitcher2-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
@@ -187,9 +212,33 @@
       "label": "t:sections.featured-collection-switcher.settings.collection1.label"
     },
     {
+      "type": "text",
+      "id": "collection1_title",
+      "label": "Collection 1 tab title",
+      "info": "Leave empty to use the collection's own title"
+    },
+    {
+      "type": "richtext",
+      "id": "collection1_description",
+      "label": "Collection 1 description",
+      "info": "Short text shown above the products while this tab is selected"
+    },
+    {
       "id": "collection2",
       "type": "collection",
       "label": "t:sections.featured-collection-switcher.settings.collection2.label"
+    },
+    {
+      "type": "text",
+      "id": "collection2_title",
+      "label": "Collection 2 tab title",
+      "info": "Leave empty to use the collection's own title"
+    },
+    {
+      "type": "richtext",
+      "id": "collection2_description",
+      "label": "Collection 2 description",
+      "info": "Short text shown above the products while this tab is selected"
     },
     {
       "type": "range",
