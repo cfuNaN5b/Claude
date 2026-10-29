@@ -124,6 +124,20 @@
             padding-top: 70px;
           }
         }
+        /* Bottom-aligned text: 60px under the text leaves room for the dots
+           (theme/custom.css default); arrows sit half below the slide and
+           "minimal" has no navigation, so 40px is enough for those. */
+        @media only screen and (min-width: 590px) {
+          #Slideshow-{{ section.id }}:not([data-dots=true]) .hero__text-content.vertical-bottom {
+            padding-bottom: 40px;
+          }
+        }
+        @media only screen and (max-width: 589px) {
+          #Slideshow-{{ section.id }}:not([data-dots=true]) .hero__text-content.vertical-bottom:not(.mobile-vertical-top):not(.mobile-vertical-center),
+          #Slideshow-{{ section.id }}:not([data-dots=true]) .hero__text-content.mobile-vertical-bottom {
+            padding-bottom: 40px;
+          }
+        }
         @media only screen and (max-width: 589px) {
           /* top-aligned text on phones: 40px from the top edge (theme default 20px) */
           #Slideshow-{{ section.id }} .hero__text-content.vertical-top:not(.mobile-vertical-center):not(.mobile-vertical-bottom),
