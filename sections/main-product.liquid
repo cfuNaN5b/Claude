@@ -407,60 +407,6 @@
   ]
 },
 {
-  "type": "trust_line",
-  "name": "Trust line",
-  "limit": 1,
-  "settings": [
-    {"type": "paragraph", "content": "Up to 3 short points, best placed directly under Buy buttons. Points with empty text are hidden."},
-    {"type": "color", "id": "accent", "label": "Icon colour", "default": "#3d5640"},
-    {"type": "range", "id": "stroke", "label": "Icon line weight (×10)", "min": 10, "max": 30, "step": 1, "default": 18, "info": "18 = 1.8"},
-    {"type": "header", "content": "Point 1"},
-    {"type": "select", "id": "icon_1", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "warranty"},
-    {"type": "text", "id": "text_1", "label": "Text", "default": "Lifetime warranty"},
-    {"type": "header", "content": "Point 2"},
-    {"type": "select", "id": "icon_2", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "delivery"},
-    {"type": "text", "id": "text_2", "label": "Text", "default": "Ready to ship"},
-    {"type": "header", "content": "Point 3"},
-    {"type": "select", "id": "icon_3", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "assembly"},
-    {"type": "text", "id": "text_3", "label": "Text", "default": "Easy to assemble"}
-  ]
-},
-{
-  "type": "feature_list",
-  "name": "Feature list",
-  "limit": 1,
-  "settings": [
-    {"type": "paragraph", "content": "Up to 6 features. Features with an empty title are hidden. Texts can be translated in Translate & Adapt, or connected to product metafields for product-specific figures."},
-    {"type": "text", "id": "label", "label": "Label above list", "default": "Why you'll love it"},
-    {"type": "color", "id": "accent", "label": "Icon and label colour", "default": "#3d5640"},
-    {"type": "range", "id": "stroke", "label": "Icon line weight (×10)", "min": 10, "max": 30, "step": 1, "default": 15, "info": "15 = 1.5"},
-    {"type": "header", "content": "Feature 1"},
-    {"type": "select", "id": "icon_1", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "delivery"},
-    {"type": "text", "id": "title_1", "label": "Title", "default": "Ready to ship"},
-    {"type": "text", "id": "line_1", "label": "Line below", "default": "Fast worldwide delivery"},
-    {"type": "header", "content": "Feature 2"},
-    {"type": "select", "id": "icon_2", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "warranty"},
-    {"type": "text", "id": "title_2", "label": "Title", "default": "Lifetime warranty"},
-    {"type": "text", "id": "line_2", "label": "Line below", "default": "On the structure"},
-    {"type": "header", "content": "Feature 3"},
-    {"type": "select", "id": "icon_3", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "assembly"},
-    {"type": "text", "id": "title_3", "label": "Title", "default": "Easy to assemble"},
-    {"type": "text", "id": "line_3", "label": "Line below", "default": "Video + PDF guide"},
-    {"type": "header", "content": "Feature 4"},
-    {"type": "select", "id": "icon_4", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "tv_size"},
-    {"type": "text", "id": "title_4", "label": "Title", "default": "Fits 55″–77″ TVs"},
-    {"type": "text", "id": "line_4", "label": "Line below", "default": "Up to 45 kg"},
-    {"type": "header", "content": "Feature 5"},
-    {"type": "select", "id": "icon_5", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "vesa"},
-    {"type": "text", "id": "title_5", "label": "Title", "default": "VESA 200–600 mm"},
-    {"type": "text", "id": "line_5", "label": "Line below", "default": "M6 / M8 holes"},
-    {"type": "header", "content": "Feature 6"},
-    {"type": "select", "id": "icon_6", "label": "Icon", "options": [{"value": "delivery", "label": "Delivery"}, {"value": "warranty", "label": "Warranty"}, {"value": "assembly", "label": "Assembly"}, {"value": "tv_size", "label": "TV size"}, {"value": "vesa", "label": "VESA"}, {"value": "scandinavian", "label": "Scandinavian design"}], "default": "scandinavian"},
-    {"type": "text", "id": "title_6", "label": "Title", "default": "Scandinavian design"},
-    {"type": "text", "id": "line_6", "label": "Line below", "default": "Solid oak, oil wax"}
-  ]
-},
-{
   "type": "trust_badge",
   "name": "t:product_block.trust_badge.name",
   "settings": [

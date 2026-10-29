@@ -1,0 +1,149 @@
+{% comment %}
+  JALG Feature list – compact list of product features with line icons.
+  Add to a product template (Customize → Product → Add section → "JALG feature list").
+  Icons are the uploaded theme assets jalg-icon-*.svg, or any image picked per feature.
+  Titles and lines are per template (connect them to product metafields for
+  product-specific figures) and can be translated in Translate & Adapt.
+{% endcomment %}
+
+{%- if section.blocks.size > 0 -%}
+<div id="JalgFeatureList-{{ section.id }}" class="jalg-features">
+  <div class="jf-inner">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="subheading jf-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+
+    <ul class="jf-list" role="list">
+      {%- for block in section.blocks -%}
+        <li class="jf-item" {{ block.shopify_attributes }}>
+          <span class="jf-icon" aria-hidden="true">
+            {%- if block.settings.custom_icon != blank -%}
+              {{ block.settings.custom_icon | image_url: width: 96 | image_tag: alt: '', loading: 'lazy' }}
+            {%- else -%}
+              <img src="{{ 'jalg-icon-' | append: block.settings.icon | append: '.svg' | asset_url }}" alt="" width="48" height="48" loading="lazy">
+            {%- endif -%}
+          </span>
+          <span class="jf-text">
+            <span class="jf-title">{{ block.settings.title | escape }}</span>
+            {%- if block.settings.text != blank -%}
+              <span class="jf-sub">{{ block.settings.text | escape }}</span>
+            {%- endif -%}
+          </span>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+{%- endif -%}
+
+<style>
+  #JalgFeatureList-{{ section.id }} {
+    --jf-accent: {{ section.settings.accent | default: '#3d5640' }};
+    --jf-muted: color-mix(in srgb, var(--colorTextBody, #000) 73%, var(--colorBody, #f6f5f3));
+    container-type: inline-size;
+  }
+  #JalgFeatureList-{{ section.id }} .jf-inner {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 {% if section.settings.align == 'center' %}auto{% else %}auto 0 0{% endif %};
+    padding: {{ section.settings.padding_top }}px 40px {{ section.settings.padding_bottom }}px;
+  }
+  #JalgFeatureList-{{ section.id }} .jf-eyebrow {
+    margin: 0 0 4px;
+    color: var(--jf-accent);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  #JalgFeatureList-{{ section.id }} .jf-list {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns }}, minmax(0, 1fr));
+    gap: 0 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #JalgFeatureList-{{ section.id }} .jf-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--colorBorder, #e8e8e1);
+  }
+  #JalgFeatureList-{{ section.id }} .jf-icon {
+    flex: 0 0 {{ section.settings.icon_size }}px;
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+  }
+  #JalgFeatureList-{{ section.id }} .jf-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  #JalgFeatureList-{{ section.id }} .jf-text { min-width: 0; }
+  #JalgFeatureList-{{ section.id }} .jf-title { display: block; font-size: 15px; font-weight: 500; line-height: 1.45; }
+  #JalgFeatureList-{{ section.id }} .jf-sub { display: block; color: var(--jf-muted); font-size: 13px; line-height: 1.45; }
+
+  @media only screen and (max-width: 1099px) {
+    #JalgFeatureList-{{ section.id }} .jf-inner { padding-inline: 24px; }
+  }
+  @media only screen and (max-width: 589px) {
+    #JalgFeatureList-{{ section.id }} .jf-inner { padding-inline: 20px; }
+    #JalgFeatureList-{{ section.id }} .jf-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+  }
+  @container (max-width: 339px) {
+    #JalgFeatureList-{{ section.id }} .jf-list { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "JALG feature list",
+  "class": "section-jalg-feature-list",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label above list", "default": "Why you'll love it" },
+    { "type": "color", "id": "accent", "label": "Label colour", "default": "#3d5640" },
+    { "type": "range", "id": "columns", "label": "Columns (desktop)", "min": 1, "max": 3, "step": 1, "default": 2 },
+    { "type": "range", "id": "max_width", "label": "Maximum width", "min": 360, "max": 1440, "step": 20, "unit": "px", "default": 560 },
+    { "type": "select", "id": "align", "label": "Alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" }
+    ], "default": "center" },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 20, "max": 48, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "paragraph", "content": "Icons are the uploaded theme files jalg-icon-*.svg. Text and line colours come from Theme settings → Colors." }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "delivery", "label": "Delivery" },
+          { "value": "warranty", "label": "Warranty" },
+          { "value": "assembly", "label": "Assembly" },
+          { "value": "tv-size", "label": "TV size" },
+          { "value": "vesa", "label": "VESA" },
+          { "value": "scandinavian", "label": "Scandinavian design" }
+        ], "default": "delivery" },
+        { "type": "image_picker", "id": "custom_icon", "label": "Custom icon", "info": "Optional, replaces the icon above" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Feature" },
+        { "type": "text", "id": "text", "label": "Line below" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "enabled_on": { "templates": ["product"] },
+  "presets": [
+    {
+      "name": "JALG feature list",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "delivery", "title": "Ready to ship", "text": "Fast worldwide delivery" } },
+        { "type": "feature", "settings": { "icon": "warranty", "title": "Lifetime warranty", "text": "On the structure" } },
+        { "type": "feature", "settings": { "icon": "assembly", "title": "Easy to assemble", "text": "Video + PDF guide" } },
+        { "type": "feature", "settings": { "icon": "tv-size", "title": "Fits 55″–77″ TVs", "text": "Up to 45 kg" } },
+        { "type": "feature", "settings": { "icon": "vesa", "title": "VESA 200–600 mm", "text": "M6 / M8 holes" } },
+        { "type": "feature", "settings": { "icon": "scandinavian", "title": "Scandinavian design", "text": "Solid oak, oil wax" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

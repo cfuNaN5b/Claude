@@ -1,0 +1,25 @@
+{%- comment -%}
+  JALG trust line: paste into a Custom Liquid block directly under Buy buttons.
+  Icons are the uploaded theme files jalg-icon-*.svg. Change the texts below.
+{%- endcomment -%}
+{%- liquid
+  # Texts. For a translated store, wrap them in a check on the language, e.g.
+  # if request.locale.iso_code == 'de' ... else ... endif
+  assign t1 = 'Lifetime warranty'
+  assign t2 = 'Ready to ship'
+  assign t3 = 'Easy to assemble'
+-%}
+<ul class="jalg-trust" role="list">
+  <li><img src="{{ 'jalg-icon-warranty.svg' | asset_url }}" alt="" width="22" height="22">{{ t1 }}</li>
+  <li><img src="{{ 'jalg-icon-delivery.svg' | asset_url }}" alt="" width="22" height="22">{{ t2 }}</li>
+  <li><img src="{{ 'jalg-icon-assembly.svg' | asset_url }}" alt="" width="22" height="22">{{ t3 }}</li>
+</ul>
+<style>
+  .jalg-trust { display: flex; justify-content: center; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+  .jalg-trust li { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; line-height: 1.3; }
+  .jalg-trust img { flex: none; width: 22px; height: 22px; }
+  @media only screen and (max-width: 589px) {
+    .jalg-trust { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 8px; }
+    .jalg-trust li { flex-direction: column; gap: 4px; font-size: 12px; text-align: center; }
+  }
+</style>
