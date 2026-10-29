@@ -347,12 +347,12 @@
                   <div class="ultimate-badges"></div>
 
                     {%- comment -%}
-                      Frequently bought together: if an app block (the Secure checkout
-                      payment icons) comes right after Buy buttons, show it after that
-                      block instead, so the icons sit directly under the buttons.
+                      Frequently bought together: if a Trust line or an app block (the
+                      Secure checkout payment icons) comes right after Buy buttons, show
+                      it after those blocks instead, so they sit directly under the buttons.
                     {%- endcomment -%}
                     {%- assign next_block = blocks[forloop.index] -%}
-                    {%- if next_block.type == '@app' -%}
+                    {%- if next_block.type == '@app' or next_block.type == 'trust_line' -%}
                       {%- capture freq_html -%}{% render 'frequently-buy', product: product %}{%- endcapture -%}
                     {%- else -%}
                       {% render 'frequently-buy', product: product %}
@@ -406,16 +406,21 @@
                         </div>
                       </div>
                     </div>
-                  {%- when 'usp_icons' -%}
+                  {%- when 'feature_list' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
-                      {%- render 'usp-icons', block: block -%}
+                      {%- render 'jalg-feature-list', block: block -%}
+                    </div>
+                  {%- when 'trust_line' -%}
+                    <div class="product-block product-block--trust-line" {{ block.shopify_attributes }}>
+                      {%- render 'jalg-trust-line', block: block -%}
                     </div>
                   {%- when 'custom' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
                       {{ block.settings.code }}
                     </div>
                 {%- endcase -%}
-                {%- if freq_html != blank and block.type != 'buy_buttons' -%}
+                {%- assign next_block = blocks[forloop.index] -%}
+                {%- if freq_html != blank and block.type != 'buy_buttons' and next_block.type != '@app' and next_block.type != 'trust_line' -%}
                   {{ freq_html }}
                   {%- assign freq_html = '' -%}
                 {%- endif -%}
