@@ -8172,6 +8172,8 @@ document.addEventListener('DOMContentLoaded', function() {
       $(this).attr('src', $(this).attr('data-src'))
     }
   })
+
+  
   // Quick add (e.g. the Complementary products block): add to cart without
   // leaving the page, update the cart count and confirm on the button.
   // Delegated, so buttons added after page load also work.
@@ -8206,6 +8208,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   })
+
+
   // Frequently bought together
   let freqItems = {items:[]};
 
@@ -8269,6 +8273,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   $(document).on('change', '.freq__check', updateFreqTotal);
+
   $('.freq__add').click(function() {
     ajaxAddToCart(freqItems);
   })

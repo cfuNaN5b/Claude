@@ -1,0 +1,27 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign days_price_valid_until = 10 | times: 86400
+  assign gtin_option = 'gtin'
+  assign is_barcode_available = false
+  if current_variant.barcode != blank
+    assign is_barcode_available = true
+    assign gtin_string_length = current_variant.barcode | size
+    if gtin_string_length == 8 or gtin_string_length == 12 or gtin_string_length == 13 or gtin_string_length == 14
+      assign is_valid_gtin_length = true
+      assign gtin_option = gtin_option | append: gtin_string_length
+    endif
+  endif
+-%}
+
+{%- comment -%}
+  Product JSON-LD DISABLED 2026-08-18 (tracker task 7).
+
+  This page previously emitted TWO competing Product blocks: this one and the
+  TinyIMG SEO app's product-json-ld-embed. The app's block is strictly better —
+  it has @id, a proper Brand object, aggregateRating, the correct
+  https://schema.org availability scheme, and carries sku + gtin13 on the Offer.
+  This block had brand as a bare string and the WRONG http://schema.org scheme.
+
+  TinyIMG now owns Product schema. Do not re-enable without first disabling the
+  app embed, or the duplicate returns.
+{%- endcomment -%}

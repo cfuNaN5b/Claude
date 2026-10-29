@@ -1,0 +1,88 @@
+# we use Shopify as our ecommerce platform
+{%- comment -%}
+  Caution! Read https://help.shopify.com/en/manual/promoting-marketing/seo/editing-robots-txt
+  before you change this file.
+
+  Three customizations live here. Read the notes before you edit.
+
+  1. LINE BREAKS (tracker task 39). Every directive is built by hand from
+     `.directive` and `.value`, and each {% raw %}{% %}{% endraw %} tag sits flush against its
+     neighbour so the literal newlines survive. Do NOT print a drop directly
+     ({% raw %}{{ rule }}{% endraw %}, {% raw %}{{ group.user_agent }}{% endraw %}) and do NOT add {% raw %}{{- ... -}}{% endraw %}
+     whitespace markers. The previous version did both and rendered
+     "User-agent: *Disallow: /a/downloads/-/*" on the live site.
+     robots.txt cannot be previewed on an unpublished theme, so always check
+     https://jalg.me/robots.txt right after you publish.
+
+  2. POLICIES. The `unless` drops Shopify's default `Disallow: /policies/`
+     so policy pages stay crawlable. PRE-EXISTING - do not remove.
+
+  3. AI CRAWLERS (tracker task 8, GEO audit section 3). Approved 2026-07-06:
+     both tiers allowed - the citation tier that earns AI citations, and the
+     training tier that feeds long-term model knowledge. To opt out of
+     training later, change that group's `Allow: /` to `Disallow: /`.
+
+     A named bot obeys ONLY its own group, never `User-agent: *`. So each AI
+     group replays the `*` rules from `ai_disallows` below. That is built from
+     Shopify's own `*` group, so when Shopify adds a path, the AI groups get
+     it too. Nothing to maintain by hand.
+{%- endcomment -%}
+
+{%- for group in robots.default_groups -%}
+{%- if group.user_agent.value == '*' -%}
+{%- capture ai_disallows -%}
+{% for rule in group.rules %}{% unless rule.directive == 'Disallow' and rule.value == '/policies/' %}{{ rule.directive }}: {{ rule.value }}
+{% endunless %}{% endfor %}
+{%- endcapture -%}
+{%- endif -%}
+{%- endfor %}
+
+{% for group in robots.default_groups %}{{ group.user_agent.directive }}: {{ group.user_agent.value }}
+{% for rule in group.rules %}{% unless rule.directive == 'Disallow' and rule.value == '/policies/' %}{{ rule.directive }}: {{ rule.value }}
+{% endunless %}{% endfor %}{% if group.sitemap != blank %}{{ group.sitemap.directive }}: {{ group.sitemap.value }}
+{% endif %}
+{% endfor -%}
+# --- AI answer-engine / citation crawlers -------------------------------
+# These read pages to answer a live question and can cite jalg.me.
+# Allowed: this is how the store earns AI citations.
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Claude-Web
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: Google-CloudVertexBot
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: DuckAssistBot
+User-agent: MistralAI-User
+User-agent: Meta-ExternalFetcher
+User-agent: YouBot
+User-agent: PetalBot
+User-agent: cohere-ai
+{{ ai_disallows }}Allow: /
+
+# --- AI training crawlers -----------------------------------------------
+# These feed long-term model knowledge. Allowed on purpose (2026-07-06).
+# To opt out later, change the `Allow: /` on the last line to `Disallow: /`.
+User-agent: GPTBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Meta-ExternalAgent
+User-agent: FacebookBot
+User-agent: Bytespider
+User-agent: Diffbot
+User-agent: omgili
+User-agent: omgilibot
+User-agent: ImagesiftBot
+User-agent: AI2Bot
+User-agent: Ai2Bot-Dolma
+User-agent: Webzio-Extended
+User-agent: cohere-training-data-crawler
+User-agent: PanguBot
+User-agent: Timpibot
+{{ ai_disallows }}Allow: /

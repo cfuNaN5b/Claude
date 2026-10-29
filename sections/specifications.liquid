@@ -1,0 +1,48 @@
+{% assign table = pages[section.settings.page].content %}
+
+
+<div class="specs">
+    {% if section.settings.title != blank %}
+        <div class="specs__title">
+            {{ section.settings.title }}
+        </div>
+    {% endif %}
+
+    {{ table }}
+
+
+    {% if section.settings.footer_text != blank %}
+        <div class="specs__footer">
+            {{ section.settings.footer_text }}
+        </div>
+    {% endif %}
+</div>
+
+
+{% schema %}
+{
+"name": "Specifications",
+"settings": [
+{
+"type": "text",
+"id": "title",
+"label": "Title"
+},
+{
+"type": "page",
+"id": "page",
+"label": "Page"
+},
+{
+"type": "richtext",
+"id": "footer_text",
+"label": "Footer Text"
+}
+],
+"presets": [
+{
+"name": "Specifications"
+}
+]
+}
+{% endschema %}

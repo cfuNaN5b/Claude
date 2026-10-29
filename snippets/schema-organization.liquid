@@ -1,0 +1,82 @@
+{%- comment -%}
+  Organization JSON-LD — tracker task 2 / GEO audit §4.1 (the biggest entity lever).
+  Render ONCE in layout/theme.liquid inside <head>:  {% render 'schema-organization' %}
+
+  Replaces the TinySEO "Store JSON-LD" app embed, which declared this store a
+  `WholesaleStore` — wrong entity type for a D2C brand and the single worst
+  entity signal on the site. That embed must stay OFF or the two will compete.
+
+  Verified against this theme 2026-08-18:
+  - `settings.logo` does NOT exist here (Motion). The visible brand logo is a
+    header SECTION setting, unreachable from the layout, so we resolve
+    shop.brand.logo (Settings → Brand) and fall back to the Files copy.
+  - sameAs is built from the theme's own social settings rather than hardcoded.
+    The client has Facebook, Pinterest and Instagram only — there is no LinkedIn
+    profile, so none is claimed. Asserting a profile that does not exist would
+    actively harm entity resolution.
+  - legalName "Esthete OÜ" CONFIRMED by Veiko 2026-08-20 (email thread) as the
+    exact Estonian registry form. Do not "translate" it to Ltd — Google checks
+    this against official records.
+  - FOLLOW-UP: once a Wikidata entity for JALG / Esthete Ltd exists, add its URL
+    to sameAs — strongest possible knowledge-graph signal.
+{%- endcomment -%}
+{%- liquid
+  assign org_logo = ''
+  if shop.brand.logo
+    assign org_logo = shop.brand.logo | image_url: width: 500
+  else
+    assign org_logo = 'JALG-TV-Stands_logo-1.png' | file_url
+  endif
+
+  capture social_raw
+    if settings.social_facebook_link != blank
+      echo settings.social_facebook_link | append: '|'
+    endif
+    if settings.social_instagram_link != blank
+      echo settings.social_instagram_link | append: '|'
+    endif
+    if settings.social_pinterest_link != blank
+      echo settings.social_pinterest_link | append: '|'
+    endif
+    if settings.social_linkedin_link != blank
+      echo settings.social_linkedin_link | append: '|'
+    endif
+    if settings.social_youtube_link != blank
+      echo settings.social_youtube_link | append: '|'
+    endif
+  endcapture
+  assign social_links = social_raw | split: '|'
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": {{ shop.url | append: '#organization' | json }},
+    "name": {{ shop.name | json }},
+    "legalName": "Esthete OÜ",
+    "url": {{ shop.url | json }},
+    {%- if org_logo != blank %}
+    "logo": {{ org_logo | prepend: 'https:' | replace: 'https:https:', 'https:' | json }},
+    {%- endif %}
+    "description": {{ shop.description | default: page_description | json }},
+    "foundingDate": "2016",
+    "award": "Red Dot Design Award 2024",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tallinn",
+      "addressCountry": "EE"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "hello@jalg.me"
+    }
+    {%- if social_links.size > 0 %},
+    "sameAs": [
+      {%- for link in social_links -%}
+        {{ link | strip | json }}{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+    {%- endif %}
+  }
+</script>

@@ -1,0 +1,273 @@
+{% doc %}
+  @prompt
+    Generate a table where I can add content for 50 rows. I would need to insert table data into one field. I will insert link to 3rd collumn that needs to open in a new tab, make the table center, add some example data in table, row background color should be #FFFFFF, page background color should be FFFFFF, make row color #E8E8E1, I want to be able to change top and bottom padding
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-table-container-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    background-color: {{ block.settings.page_background_color }};
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: block;
+  }
+
+  .ai-table-wrapper-{{ ai_gen_id }} {
+    overflow-x: auto;
+    background-color: {{ block.settings.page_background_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: {{ block.settings.row_background_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} th,
+  .ai-table-{{ ai_gen_id }} td {
+    padding: {{ block.settings.cell_padding }}px;
+    text-align: left;
+    border: 1px solid {{ block.settings.row_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} th {
+    background-color: {{ block.settings.header_background_color }};
+    color: {{ block.settings.header_text_color }};
+    font-weight: 600;
+    font-size: {{ block.settings.header_font_size }}px;
+  }
+
+  .ai-table-{{ ai_gen_id }} td {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_font_size }}px;
+  }
+
+  .ai-table-{{ ai_gen_id }} tbody tr {
+    background-color: {{ block.settings.row_background_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} tbody tr:nth-child(even) {
+    background-color: {{ block.settings.row_color }};
+  }
+
+  .ai-table-{{ ai_gen_id }} a {
+    color: {{ block.settings.link_color }};
+    text-decoration: underline;
+  }
+
+  .ai-table-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.link_hover_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-table-container-{{ ai_gen_id }} {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .ai-table-{{ ai_gen_id }} th,
+    .ai-table-{{ ai_gen_id }} td {
+      padding: {{ block.settings.cell_padding | divided_by: 2 }}px;
+      font-size: {{ block.settings.text_font_size | times: 0.9 }}px;
+    }
+
+    .ai-table-{{ ai_gen_id }} th {
+      font-size: {{ block.settings.header_font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<data-table-{{ ai_gen_id }} class="ai-table-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-table-wrapper-{{ ai_gen_id }}">
+    {{ block.settings.table_content }}
+  </div>
+</data-table-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class DataTable{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.processLinks();
+      }
+
+      processLinks() {
+        const wrapper = this.querySelector('.ai-table-wrapper-{{ ai_gen_id }}');
+        if (!wrapper) return;
+
+        const table = wrapper.querySelector('table');
+        if (!table) return;
+
+        table.classList.add('ai-table-{{ ai_gen_id }}');
+
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 3) {
+            const thirdCell = cells[2];
+            const links = thirdCell.querySelectorAll('a');
+            links.forEach((link) => {
+              link.setAttribute('target', '_blank');
+              link.setAttribute('rel', 'noopener noreferrer');
+            });
+          }
+        });
+      }
+    }
+
+    customElements.define('data-table-{{ ai_gen_id }}', DataTable{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Data table",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Table content"
+    },
+    {
+      "type": "html",
+      "id": "table_content",
+      "label": "Table HTML",
+      "default": "<table><thead><tr><th>Product Name</th><th>Price</th><th>Link</th></tr></thead><tbody><tr><td>Oak TV Stand</td><td>€299</td><td><a href=\"https://example.com/product1\">View Product</a></td></tr><tr><td>Walnut TV Stand</td><td>€349</td><td><a href=\"https://example.com/product2\">View Product</a></td></tr><tr><td>Pine TV Stand</td><td>€249</td><td><a href=\"https://example.com/product3\">View Product</a></td></tr><tr><td>Mahogany TV Stand</td><td>€399</td><td><a href=\"https://example.com/product4\">View Product</a></td></tr><tr><td>Birch TV Stand</td><td>€279</td><td><a href=\"https://example.com/product5\">View Product</a></td></tr></tbody></table>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "cell_padding",
+      "label": "Cell padding",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "page_background_color",
+      "label": "Page background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "row_background_color",
+      "label": "Row background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "row_color",
+      "label": "Alternate row background",
+      "default": "#E8E8E1"
+    },
+    {
+      "type": "color",
+      "id": "header_background_color",
+      "label": "Header background",
+      "default": "#3d5640"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link",
+      "default": "#3d5640"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "label": "Header font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Text font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    }
+  ],
+  "presets": [
+    {
+      "name": "Data table"
+    }
+  ]
+}
+{% endschema %}

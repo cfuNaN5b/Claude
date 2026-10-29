@@ -1,0 +1,48 @@
+<div class="address-section" style="background-color:var(--colorFooter);">
+  <div class="page-width">
+    <div class="address-content">
+      <div class="address-grid">
+        {% for block in section.blocks %}
+          <div class="address-grid-item">
+            <div class="add-details">
+              {% if block.settings.title != blank %}<h3>{{ block.settings.title }}</h3>{% endif %}
+              {% if block.settings.textarea != blank %}<div class="text-area">{{ block.settings.textarea }}</div>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Address Section",
+    "settings": [
+
+    ],
+    "blocks" : [
+      {
+        "type" : "address",
+        "name" : "Address",
+        "settings" : [
+          {
+            "type" : "text",
+            "id" : "title",
+            "label" : "Title"
+          },
+          {
+            "type" : "richtext",
+            "id" : "textarea",
+            "label" : "Textarea"
+          }
+        ]
+      }
+    ],
+    "presets": [
+    {
+    "name": "Address Section"
+    }
+    ]
+  }
+{% endschema %}

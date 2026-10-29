@@ -7,10 +7,10 @@
 {%- assign main_image = current_variant.featured_image | default: product.featured_image -%}
 {% if product.metafields.custom.extra_products != blank and current_variant.available %}
     {%- comment -%}
-      Hovering an item shows its image in a small popup to the left of the list
-      (only on devices with a mouse; phones and tablets have no hover).
+      Hovering an item shows its image in a small popup (only on devices with a
+      mouse; phones and tablets have no hover).
     {%- endcomment -%}
-    <style>
+        <style>
       .freq__item { position: relative; }
       .freq__preview { display: none; }
       @media (hover: hover) and (pointer: fine) {

@@ -1,0 +1,884 @@
+{%- comment -%}
+  A framed band of retailer logos (optional links), with an award and the live review score below.
+  The review score is read from Judge.me's shop metafields, with typed-in fallback values.
+{%- endcomment -%}
+
+{%- liquid
+  assign rating = blank
+  assign review_count = blank
+
+  assign rating_path = section.settings.rating_metafield | split: '.'
+  if rating_path.size == 2
+    assign mf_ns = rating_path.first
+    assign mf_key = rating_path.last
+    assign rating_mf = shop.metafields[mf_ns][mf_key]
+    assign rating = rating_mf.value | default: rating_mf
+  endif
+
+  assign count_path = section.settings.count_metafield | split: '.'
+  if count_path.size == 2
+    assign mf_ns = count_path.first
+    assign mf_key = count_path.last
+    assign count_mf = shop.metafields[mf_ns][mf_key]
+    assign review_count = count_mf.value | default: count_mf
+  endif
+
+  if rating.rating != blank
+    assign rating = rating.rating
+  endif
+
+  if rating == blank
+    assign rating = section.settings.rating_fallback
+  endif
+  if review_count == blank
+    assign review_count = section.settings.count_fallback
+  endif
+
+  assign show_reviews = false
+  if section.settings.show_reviews and rating != blank
+    assign show_reviews = true
+    assign rating_num = rating | times: 1.0 | round: 1
+    assign star_fill = rating_num | divided_by: 5.0 | times: 100 | at_most: 100
+    assign review_count_num = review_count | times: 1 | round
+    assign reviews_text = section.settings.reviews_text | replace: '{rating}', rating_num | replace: '{count}', review_count_num
+  endif
+
+  assign show_award = false
+  if section.settings.award_image != blank or section.settings.award_text != blank
+    assign show_award = true
+  endif
+
+  assign show_band = true
+  assign show_proof = true
+  if section.settings.layout == 'logos'
+    assign show_proof = false
+  elsif section.settings.layout == 'proof'
+    assign show_band = false
+  endif
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .stocked {
+    --line: {{ section.settings.line_color }};
+    --marquee-gap: 56px;
+    --divider-height: 28px;
+    --edge: 40px;
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    padding: {{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__band {
+    display: flex;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__label {
+    flex: 0 0 auto;
+    margin: 0;
+    position: relative;
+    padding-right: var(--edge);
+    max-width: 240px;
+    line-height: 1.4;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+  }
+
+  /* Divider and spacing around the link */
+  #shopify-section-{{ section.id }} .stocked__more {
+    flex: 0 0 auto;
+    position: relative;
+    padding-left: var(--edge);
+  }
+
+  /* All vertical dividers share one height: label, link and the award row */
+  #shopify-section-{{ section.id }} .stocked__label::after,
+  #shopify-section-{{ section.id }} .stocked__more::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 1px;
+    height: var(--divider-height);
+    margin-top: calc(var(--divider-height) / -2);
+    background: var(--line);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__label::after {
+    right: 0;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__more::before {
+    left: 0;
+  }
+
+  /* Link styled like "Trade enquiries" on the clients page */
+  #shopify-section-{{ section.id }} .stocked__more-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    color: #3D5640;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__more-link::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 1px;
+    background: #3D5640;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s ease;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__more-link:is(:hover, :focus-visible)::after {
+    transform: scaleX(1);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__more-link svg {
+    flex: 0 0 auto;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__more-link:focus-visible {
+    outline: 1px solid #3D5640;
+    outline-offset: 5px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .stocked__more-link::after {
+      transition: none;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .stocked__viewport {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 var(--edge);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__list {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 20px var(--marquee-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__item img {
+    display: block;
+    width: auto;
+    height: calc({{ section.settings.logo_height }}px * var(--scale, 1));
+    max-width: calc(180px * var(--scale, 1));
+    object-fit: contain;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__logo-link {
+    display: flex;
+    align-items: center;
+    transition: opacity .2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__logo-link:hover {
+    opacity: 0.65;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__logo-link:focus-visible {
+    outline: 1px solid #3D5640;
+    outline-offset: 5px;
+  }
+
+  /* Award and review score below the band */
+  #shopify-section-{{ section.id }} .stocked__proof {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px 28px;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 20px auto 0;
+    font-size: 15px;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__award,
+  #shopify-section-{{ section.id }} .stocked__reviews {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} a.stocked__award:hover span:last-child,
+  #shopify-section-{{ section.id }} a.stocked__reviews:hover span:last-child {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__award img {
+    display: block;
+    width: auto;
+    height: {{ section.settings.award_height }}px;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__sep {
+    width: 1px;
+    height: var(--divider-height);
+    background: var(--line);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__stars {
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--line);
+  }
+
+  #shopify-section-{{ section.id }} .stocked__stars span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: {{ section.settings.star_color }};
+  }
+
+  #shopify-section-{{ section.id }} .stocked > .stocked__proof:first-child {
+    margin-top: 0 !important;
+  }
+
+  #shopify-section-{{ section.id }} .stocked__empty {
+    padding: 12px 16px;
+    border: 1px dashed #c5c4bf;
+    color: #5e6a62;
+    font-size: 14px;
+  }
+
+  /* Auto-scroll, switched on by the script below only when the logos don't fit */
+  /* Measured with the same spacing as the scrolling row, so scrolling starts before logos get crowded */
+  #shopify-section-{{ section.id }} .stocked.is-measuring .stocked__list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: var(--marquee-gap);
+    width: max-content;
+  }
+
+  #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent var(--edge), #000 calc(var(--edge) + 40px), #000 calc(100% - var(--edge) - 40px), transparent calc(100% - var(--edge)));
+    mask-image: linear-gradient(to right, transparent var(--edge), #000 calc(var(--edge) + 40px), #000 calc(100% - var(--edge) - 40px), transparent calc(100% - var(--edge)));
+  }
+
+  #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__track {
+    display: flex;
+    width: max-content;
+    animation: stocked-scroll-{{ section.id }} var(--duration, 40s) linear infinite;
+  }
+
+  #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: var(--marquee-gap);
+    padding-right: var(--marquee-gap);
+  }
+
+  #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__viewport:hover .stocked__track,
+  #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__viewport:focus-within .stocked__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes stocked-scroll-{{ section.id }} {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  #shopify-section-{{ section.id }} a.stocked__award:focus-visible,
+  #shopify-section-{{ section.id }} a.stocked__reviews:focus-visible {
+    outline: 2px solid #3D5640;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .stocked {
+      --marquee-gap: 32px;
+      padding-top: calc({{ section.settings.padding_top }}px * 0.7);
+      padding-bottom: calc({{ section.settings.padding_bottom }}px * 0.7);
+    }
+
+    #shopify-section-{{ section.id }} .stocked__band {
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px 0;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__label {
+      padding-right: 0;
+      max-width: none;
+      text-align: center;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__more {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__label::after,
+    #shopify-section-{{ section.id }} .stocked__more::before {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__viewport {
+      width: 100%;
+      padding: 0;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__item img {
+      height: calc({{ section.settings.logo_height_mobile }}px * var(--scale, 1));
+      max-width: calc(120px * var(--scale, 1));
+    }
+
+    {%- if section.settings.mobile_layout == 'scroll' -%}
+      #shopify-section-{{ section.id }} .stocked:not(.is-scrolling) .stocked__list {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 28px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      #shopify-section-{{ section.id }} .stocked:not(.is-scrolling) .stocked__list::-webkit-scrollbar {
+        display: none;
+      }
+    {%- else -%}
+      #shopify-section-{{ section.id }} .stocked:not(.is-scrolling) .stocked__list {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px 24px;
+      }
+    {%- endif -%}
+
+    #shopify-section-{{ section.id }} .stocked.is-scrolling .stocked__viewport {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+    }
+
+    #shopify-section-{{ section.id }} .stocked__proof {
+      margin-top: 16px;
+      gap: 10px 20px;
+      font-size: 13px;
+    }
+
+    #shopify-section-{{ section.id }} .stocked__award img {
+      height: calc({{ section.settings.award_height }}px * 0.8);
+    }
+
+    #shopify-section-{{ section.id }} .stocked {
+      --divider-height: 22px;
+    }
+  }
+</style>
+
+<div
+  class="stocked"
+  data-scroll-desktop="{{ section.settings.scroll_desktop }}"
+  data-scroll-mobile="{{ section.settings.scroll_mobile }}"
+  data-speed="{{ section.settings.scroll_speed }}"
+>
+  {%- if show_band and section.blocks.size > 0 -%}
+    <div class="stocked__band">
+      {%- if section.settings.label != blank -%}
+        <p class="stocked__label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+
+      <div class="stocked__viewport">
+        <div class="stocked__track">
+          <ul class="stocked__list" role="list">
+            {%- for block in section.blocks -%}
+              {%- assign image = block.settings.image -%}
+              {%- if image != blank -%}
+                {%- liquid
+                  assign scale = block.settings.scale | default: 100 | divided_by: 100.0
+                  assign alt = block.settings.name | default: image.alt
+                -%}
+                <li class="stocked__item" style="--scale:{{ scale }}" {{ block.shopify_attributes }}>
+                  {%- if section.settings.link_logos and block.settings.url != blank -%}
+                    <a class="stocked__logo-link" href="{{ block.settings.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ alt | escape }} (opens in a new tab)">
+                      {{ image | image_url: width: 400 | image_tag: alt: alt, widths: '180, 360', sizes: '180px', loading: 'eager' }}
+                    </a>
+                  {%- else -%}
+                    {{ image | image_url: width: 400 | image_tag: alt: alt, widths: '180, 360', sizes: '180px', loading: 'eager' }}
+                  {%- endif -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+      </div>
+
+      {%- if section.settings.show_link and section.settings.link_text != blank and section.settings.link_url != blank -%}
+        <div class="stocked__more"><a class="stocked__more-link" href="{{ section.settings.link_url }}">{{ section.settings.link_text | escape }}<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false"><path d="M3 13 13 3M3 3h10v10"/></svg></a></div>
+      {%- endif -%}
+    </div>
+  {%- elsif show_band and request.design_mode -%}
+    <p class="stocked__empty">Add logo blocks to show the stores that stock JALG.</p>
+  {%- endif -%}
+
+  {%- if show_proof and show_award or show_proof and show_reviews -%}
+    <div class="stocked__proof">
+      {%- if show_award -%}
+        {%- liquid
+          assign award_url = section.settings.award_url
+          assign award_external = false
+          if award_url contains '://'
+            assign award_external = true
+            if award_url contains request.host or award_url contains shop.domain
+              assign award_external = false
+            endif
+          endif
+        -%}
+        {%- if award_url != blank -%}
+          {%- if award_external -%}
+            <a class="stocked__award" href="{{ award_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ section.settings.award_text | default: 'Award' | escape }} (opens in a new tab)">
+          {%- else -%}
+            <a class="stocked__award" href="{{ award_url }}">
+          {%- endif -%}
+        {%- else -%}
+          <div class="stocked__award">
+        {%- endif -%}
+          {%- if section.settings.award_image != blank -%}
+            {%- assign award_alt = section.settings.award_image.alt | default: section.settings.award_text -%}
+            {{ section.settings.award_image | image_url: width: 200 | image_tag: alt: award_alt, widths: '100, 200', sizes: '100px', loading: 'eager' }}
+          {%- endif -%}
+          {%- if section.settings.award_text != blank -%}
+            <span>{{ section.settings.award_text | escape }}</span>
+          {%- endif -%}
+        {%- if award_url != blank -%}
+          </a>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if show_award and show_reviews -%}
+        <span class="stocked__sep" aria-hidden="true"></span>
+      {%- endif -%}
+
+      {%- if show_reviews -%}
+        {%- if section.settings.reviews_url != blank -%}
+          {%- liquid
+            assign reviews_external = false
+            if section.settings.reviews_url contains '://'
+              assign reviews_external = true
+              if section.settings.reviews_url contains request.host or section.settings.reviews_url contains shop.domain
+                assign reviews_external = false
+              endif
+            endif
+          -%}
+          {%- if reviews_external -%}
+            <a class="stocked__reviews" href="{{ section.settings.reviews_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ reviews_text | escape }} (opens in a new tab)">
+          {%- else -%}
+            <a class="stocked__reviews" href="{{ section.settings.reviews_url }}">
+          {%- endif -%}
+        {%- else -%}
+          <div class="stocked__reviews">
+        {%- endif -%}
+            <span class="stocked__stars" aria-hidden="true">★★★★★<span style="width:{{ star_fill }}%">★★★★★</span></span>
+            <span>{{ reviews_text | escape }}</span>
+        {%- if section.settings.reviews_url != blank -%}
+          </a>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    if (!window.JalgStockedStrip) {
+      window.JalgStockedStrip = function (sectionEl) {
+        var root = sectionEl && sectionEl.querySelector('.stocked');
+        if (!root || root.dataset.ready) return;
+        root.dataset.ready = 'true';
+
+        var viewport = root.querySelector('.stocked__viewport');
+        var track = root.querySelector('.stocked__track');
+        var list = root.querySelector('.stocked__list');
+        if (!viewport || !track || !list) return;
+
+        var mobile = window.matchMedia('(max-width: 749px)');
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        var speed = parseFloat(root.dataset.speed) || 25;
+        var lastWidth = 0;
+
+        function stop() {
+          root.classList.remove('is-scrolling');
+          var clone = track.querySelector('[data-clone]');
+          if (clone) clone.remove();
+        }
+
+        function update() {
+          stop();
+          var enabled = mobile.matches ? root.dataset.scrollMobile === 'true' : root.dataset.scrollDesktop === 'true';
+          if (!enabled || reduced.matches) return;
+
+          root.classList.add('is-measuring');
+          var vs = getComputedStyle(viewport);
+          var available = viewport.clientWidth - parseFloat(vs.paddingLeft || 0) - parseFloat(vs.paddingRight || 0);
+          var fits = list.scrollWidth <= available;
+          root.classList.remove('is-measuring');
+          if (fits) return;
+
+          var clone = list.cloneNode(true);
+          clone.setAttribute('data-clone', '');
+          clone.setAttribute('aria-hidden', 'true');
+          clone.querySelectorAll('img').forEach(function (img) { img.alt = ''; });
+          clone.querySelectorAll('a').forEach(function (link) { link.tabIndex = -1; });
+          track.appendChild(clone);
+          root.classList.add('is-scrolling');
+          root.style.setProperty('--duration', Math.max(list.offsetWidth / speed, 10) + 's');
+        }
+
+
+        if ('ResizeObserver' in window) {
+          new ResizeObserver(function () {
+            if (viewport.clientWidth !== lastWidth) {
+              lastWidth = viewport.clientWidth;
+              update();
+            }
+          }).observe(viewport);
+        }
+        window.addEventListener('load', update);
+        if (reduced.addEventListener) reduced.addEventListener('change', update);
+        update();
+      };
+
+      document.addEventListener('shopify:section:load', function (event) {
+        window.JalgStockedStrip(event.target);
+      });
+    }
+
+    window.JalgStockedStrip(document.getElementById('shopify-section-{{ section.id }}'));
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Stocked by strip",
+  "tag": "section",
+  "class": "stocked-by-strip",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Show",
+      "options": [
+        { "value": "both", "label": "Logos, award and reviews" },
+        { "value": "logos", "label": "Logos only" },
+        { "value": "proof", "label": "Award and reviews only" }
+      ],
+      "default": "both"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Selected by 15 design stores in 9 countries"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_link",
+      "label": "Show link to retailers page",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link text",
+      "default": "See all retailers"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link",
+      "info": "Choose your Retailers page. The link stays on your site."
+    },
+    {
+      "type": "header",
+      "content": "Logos"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_logos",
+      "label": "Link logos to store websites",
+      "info": "Logos with a website set open it in a new tab. Untick to show all logos without links.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Logo height on desktop",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "logo_height_mobile",
+      "label": "Logo height on mobile",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "wrap", "label": "Wrap onto several rows" },
+        { "value": "scroll", "label": "One row, swipe sideways" }
+      ],
+      "default": "wrap",
+      "info": "Used when auto-scroll is off or the logos fit."
+    },
+    {
+      "type": "header",
+      "content": "Auto-scroll"
+    },
+    {
+      "type": "paragraph",
+      "content": "Logos scroll slowly only when they don't fit in one row. Scrolling pauses on hover and stops for visitors who have reduced motion turned on."
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_desktop",
+      "label": "Auto-scroll on desktop when logos don't fit",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_mobile",
+      "label": "Auto-scroll on mobile when logos don't fit",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "info": "Pixels per second.",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Award"
+    },
+    {
+      "type": "image_picker",
+      "id": "award_image",
+      "label": "Award label",
+      "info": "Use the official Red Dot winner label from your winner package."
+    },
+    {
+      "type": "text",
+      "id": "award_text",
+      "label": "Award text",
+      "default": "Red Dot Award winner 2024"
+    },
+    {
+      "type": "url",
+      "id": "award_url",
+      "label": "Award link (optional)",
+      "info": "A page on your site opens in the same tab. An external site (for example the Red Dot winner page) opens in a new tab."
+    },
+    {
+      "type": "range",
+      "id": "award_height",
+      "label": "Award label height",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "header",
+      "content": "Review score"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show review score",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reviews_text",
+      "label": "Text",
+      "info": "{rating} and {count} are filled in automatically.",
+      "default": "{rating}/5 from {count} reviews"
+    },
+    {
+      "type": "url",
+      "id": "reviews_url",
+      "label": "Link to reviews page",
+      "info": "Your own reviews page opens in the same tab. An external review site (for example your Judge.me profile) opens in a new tab."
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star colour",
+      "default": "#111111"
+    },
+    {
+      "type": "text",
+      "id": "rating_metafield",
+      "label": "Rating metafield",
+      "info": "Judge.me's shop rating, as namespace.key. Check in Settings > Custom data > Shop.",
+      "default": "judgeme.all_reviews_rating"
+    },
+    {
+      "type": "text",
+      "id": "count_metafield",
+      "label": "Review count metafield",
+      "default": "judgeme.all_reviews_count"
+    },
+    {
+      "type": "text",
+      "id": "rating_fallback",
+      "label": "Fallback rating",
+      "info": "Used only if the metafield is empty.",
+      "default": "4.6"
+    },
+    {
+      "type": "text",
+      "id": "count_fallback",
+      "label": "Fallback review count",
+      "default": "713"
+    },
+    {
+      "type": "header",
+      "content": "Colours and spacing"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#F6F5F3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line colour",
+      "default": "#C5C4BF"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Store name",
+          "info": "Read out by screen readers. Leave empty to use the image's alt text."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Store website (optional)",
+          "info": "Opens in a new tab when \"Link logos to store websites\" is on."
+        },
+        {
+          "type": "range",
+          "id": "scale",
+          "label": "Size adjustment",
+          "info": "Balance logos that look too big or too small next to the others.",
+          "min": 50,
+          "max": 150,
+          "step": 5,
+          "unit": "%",
+          "default": 100
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stocked by strip",
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    }
+  ]
+}
+{% endschema %}

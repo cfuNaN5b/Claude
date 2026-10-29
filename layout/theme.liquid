@@ -1,0 +1,296 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}" dir="{{ settings.text_direction }}">
+<head>
+
+  {% render 'gcm-integration-script' %}
+
+ <script>
+window.dataLayer = window.dataLayer || [];
+</script>
+
+  <!-- Google Tag Manager -->
+<!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T7JP6B5Q');</script> -->
+<!-- End Google Tag Manager -->
+
+    <!-- Google Tag Manager integration- script from Consentmo GDPR Compliance App -->
+  <script id="gdpr-gtm-blocking-script">
+    let isGTMExecuted = false;
+    function executeGTM() {
+      if(!isGTMExecuted) {
+        // The content of Google Tag Manager script goes here
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T7JP6B5Q');
+        isGTMExecuted = true;
+      }
+    }
+    function checkConsentForGTM(adittionalChecks = 0) {
+      let cpdCookie=(document.cookie.match(/^(?:.*;)?\s*cookieconsent_preferences_disabled(\s*=\s*([^;]+)?)(?:.*)?$/)||[,null])[1];
+      if(cpdCookie != null) {
+        if(parseInt(cpdCookie.indexOf('marketing')) === -1 && parseInt(cpdCookie.indexOf('analytics')) === -1) {
+          executeGTM();
+        }
+      } else {
+        let gdprCache = localStorage.getItem('gdprCache') ? JSON.parse(localStorage.getItem('gdprCache')) : null;
+        let gdprCacheConsentSettings = gdprCache && gdprCache.getCookieConsentSettings ? JSON.parse(gdprCache.getCookieConsentSettings) : null;
+        let gdprCacheCountryDetection = gdprCache && gdprCache.countryDetection ? JSON.parse(gdprCache.countryDetection) : null;
+        let ccsCookie = (document.cookie.match(/^(?:.*;)?\s*cookieconsent_status\s*=\s*([^;]+)(?:.*)?$/)||[,null])[1];
+        if((gdprCacheConsentSettings || (gdprCacheCountryDetection && gdprCacheCountryDetection.disable === '1')) && !ccsCookie) {
+          if((gdprCacheConsentSettings && gdprCacheConsentSettings.status === 'disabled') || gdprCacheCountryDetection.disable === '1'){
+            executeGTM();
+          } else {
+            let initPreferences = parseInt(gdprCacheConsentSettings.checkboxes_behavior);
+            if(initPreferences === 1 || initPreferences === 4) {
+              executeGTM();
+            }
+          }
+        } else {
+          if (adittionalChecks > 0) {
+            setTimeout(function() {
+              checkConsentForGTM(adittionalChecks - 1);
+            }, 1000);
+          } else {
+            executeGTM();
+          }
+        }
+      }
+    }
+
+    checkConsentForGTM(3);
+  </script>
+
+
+<style>#shopify-pc__banner + #shopify-pc__banner { display:none!important;}</style>
+
+<style>
+    #shopify-pc__banner + #shopify-pc__banner { display:none!important;}
+.collection-hero__content:before, .hero__image-wrapper:before, .hero__media:before {
+background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.0) 40%, rgba(0, 0, 0, 0) 100%)!important;
+}
+
+
+h1#reviews-page-title {
+    padding-top: 45px;
+}
+
+.footer__title {
+font-weight: 800;
+}
+
+#dynamic-checkout-cart ul li div, #dynamic-checkout-cart ul li iframe {height: 48px !important;}
+
+  span.money {
+    color: inherit !important;
+  }
+  .product__price span.money{
+    font-size: 32px;
+  }
+
+@media only screen and (min-width: 590px)
+theme.css:2022.rte .enlarge-text p {
+font-size: calc(var(--typeBaseSize)*1); !important
+}
+
+
+</style>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_button }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+  {%- comment -%} legacy Shopify Product Reviews dns-prefetch removed 2026-08-18 (task 35) — app no longer serves this store {%- endcomment -%}
+  <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+  <link rel="dns-prefetch" href="https://maps.googleapis.com">
+  <link rel="dns-prefetch" href="https://maps.gstatic.com">
+
+  <meta name="facebook-domain-verification" content="9qgicqlm0we6j8z9612fxbls7mkrln" />
+  <meta name="google-site-verification" content="5znvSuVIf4mKemBpKndaRA6fH3ZB1NGHPlfeiFjZUbA" />
+
+  {%- if settings.favicon != blank -%}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />
+  {%- endif -%}
+
+  {%- render 'seo-title' -%}
+
+  {%- if page_description -%}
+  <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  {%- render 'social-meta-tags' -%}
+
+  {%- render 'font-face' -%}
+  {{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'custom.css' | asset_url | stylesheet_tag: preload: true }}
+  {%- render 'css-variables' -%}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+
+    window.theme = window.theme || {};
+    theme.routes = {
+      home: "{{ routes.root_url }}",
+      cart: "{{ routes.cart_url | append: '.js' }}",
+      cartPage: "{{ routes.cart_url }}",
+      cartAdd: "{{ routes.cart_add_url | append: '.js' }}",
+      cartChange: "{{ routes.cart_change_url | append: '.js' }}",
+      search: "{{ routes.search_url }}",
+      predictiveSearch: "{{ routes.predictive_search_url }}"
+    };
+    theme.strings = {
+      soldOut: {{ 'products.product.sold_out' | t | json }},
+      unavailable: {{ 'products.product.unavailable' | t | json }},
+      inStockLabel: {{ 'products.product.in_stock_label' | t | json }},
+      oneStockLabel: {{ 'products.product.stock_label.one' | t: count: '[count]' | json }},
+      otherStockLabel: {{ 'products.product.stock_label.other' | t: count: '[count]' | json }},
+      willNotShipUntil: {{ 'products.product.will_not_ship_until' | t: date: '[date]' | json }},
+      willBeInStockAfter: {{ 'products.product.will_be_in_stock_after' | t: date: '[date]' | json }},
+      waitingForStock: {{ 'products.product.waiting_for_stock' | t | json }},
+      cartSavings: {{ 'cart.general.savings_html' | t: savings: '[savings]' | json }},
+      cartEmpty: {{ 'cart.general.empty' | t | json }},
+      cartTermsConfirmation: {{ 'cart.general.terms_confirm' | t | json }},
+      searchCollections: {{ 'general.search.collections' | t | json }},
+      searchPages: {{ 'general.search.pages' | t | json }},
+      searchArticles: {{ 'general.search.articles' | t | json }},
+      maxQuantity: {{ 'cart.general.max_quantity' | t: quantity: '[quantity]', title: '[title]' | json }}
+    };
+    theme.settings = {
+      cartType: {{ settings.cart_type | json }},
+      isCustomerTemplate: {% if request.page_type contains 'customers/' %}true{% else %}false{% endif %},
+      moneyFormat: {{ shop.money_format | json }},
+      predictiveSearch: {{ settings.predictive_search_enabled }},
+      predictiveSearchType: {{ settings.search_type | json }},
+      quickView: {{ settings.quick_shop_enable }},
+      themeName: 'Motion',
+      themeVersion: "10.4.0"
+    };
+  </script>
+
+  {%- if tinyscript -%}{{ content_for_header }}{%- else -%}{% render 'tiny-script-control' %}{%- endif -%}
+
+  <script src="{{ 'vendor-scripts-v14.js' | asset_url | split: '?' | first }}" defer="defer"></script>
+
+  {%- if shop.enabled_currencies.size > 1 -%}
+    <link rel="stylesheet" href="{{ 'country-flags.css' | asset_url | split: '?' | first }}">
+  {%- endif -%}
+
+  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+
+  {%- if request.page_type contains 'customers/' -%}
+    <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+  {%- endif -%}
+
+  {% if request.design_mode %}
+    <script src="https://api.archetypethemes.co/design-mode.js" defer="defer"></script>
+  {% endif %}
+
+{% render "rafp-render" %}
+
+
+{% include 'ufe-offer' %}{% render "rafp-render" %} <!-- roartheme: FontPicker app -->
+{% include "omega_pinterest_multi_pixel" %}
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "i4px4zhup6");
+</script>
+
+  {%- comment -%} Structured data owned by the theme (tracker tasks 2 + 26).
+       Replaces the TinySEO Store JSON-LD and Breadcrumbs JSON-LD app embeds,
+       which must remain DISABLED or duplicate entities return. {%- endcomment -%}
+  {% render 'schema-organization' %}
+  {% render 'schema-breadcrumbs' %}
+
+  {% comment %} App-page redirects added by Smartsy on 16-09-2026 {% endcomment %}
+
+<script>
+(()=>{
+  const p=location.pathname.replace(/\/$/,'');
+  const r={
+    '/a/faq':'/pages/frequently-asked-questions',
+    '/a/review/all':'/pages/reviews'
+  };
+  for(const [from,to] of Object.entries(r))
+    if(p.endsWith(from)){
+      location.replace(p.slice(0,-from.length)+to+location.search+location.hash);
+      break;
+    }
+})();
+</script>
+
+            </head>
+
+<body class="template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}{% if request.path == '/challenge' %} template-challange{% endif %} template--{{ template.suffix }}" data-transitions="{{ settings.animate_page_transitions }}" data-type_header_capitalize="{{ settings.type_header_capitalize }}" data-type_base_accent_transform="{{ settings.type_base_accent_transform }}" data-type_header_accent_transform="{{ settings.type_header_accent_transform }}" data-animate_sections="{{ settings.animate_sections }}" data-animate_underlines="{{ settings.animate_underlines }}" data-animate_buttons="{{ settings.animate_buttons }}" data-animate_images="{{ settings.animate_images }}" data-animate_page_transition_style="{{ settings.animate_page_transition_style }}" data-type_header_text_alignment="{{ settings.type_headers_align_text }}" data-animate_images_style="{{ settings.animate_images_style | default: "zoom-fade" }}">
+
+  {% if settings.animate_page_transitions %}
+    <script type="text/javascript">window.setTimeout(function() { document.body.className += " loaded"; }, 25);</script>
+  {% endif %}
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  <div id="PageContainer" class="page-container">
+    <div class="transition-body">
+
+      {%- sections 'header-group' -%}
+      {%- sections 'popup-group' -%}
+
+      <main class="main-content" id="MainContent">
+        {{ content_for_layout }}
+      </main>
+
+      {%- sections 'footer-group' -%}
+
+
+    </div>
+  </div>
+
+  {%- liquid
+    render 'video-modal'
+    render 'photoswipe-template'
+    render 'tool-tip'
+  -%}
+
+    {%- if request.page_type contains 'customers/' -%}
+    <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+  {%- endif -%}
+       <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+
+  {%- comment -%}
+    REMOVED 2026-08-18 (tracker tasks 7 + 14): 7 hand-written Product JSON-LD
+    blocks that fired on the homepage only.
+
+    They were stale and factually wrong:
+      - priceValidUntil "2021-08-21" — expired five years ago
+      - prices 289/299/319/379/399 while the live product pages say 426.00 EUR
+      - aggregateRating hardcoded, sourced from "Stamped.io Product Reviews Addon"
+    Google was reading a homepage price that contradicted the product page — the
+    exact mistrust signal task 14 set out to remove.
+
+    Accurate per-product schema is emitted on the PDPs by the TinyIMG
+    product-json-ld-embed. The homepage does not need duplicate product markup.
+    Do not restore this block; if homepage product schema is ever wanted, render
+    it from live product objects, never hardcoded values.
+  {%- endcomment -%}
+
+  {% comment %} Image markup used when building product grid item via JS {% endcomment %}
+  <template id="predictiveImageMarkup">
+    <image-element>
+      <img width height src loading="lazy" sizes="(min-width: 769px) 100px, 60px">
+    </image-element>
+  </template>
+{{'tiny-img-link-preloader.js' | asset_url | script_tag }}
+</body>
+</html>

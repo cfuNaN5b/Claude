@@ -879,8 +879,7 @@ body.template-product .page-container {
 /* End: Homepage full-height slideshow and header styling */
 
 
-/* Product page Frequently Bought Together sale price styling:
-   Added by Smartsy on 14-09-2026 */
+/* Product page Frequently Bought Together sale price styling: Added by Smartsy on 14-09-2026 */
 
 .freq__item-price-compare,
   [data-freq-total-compare] {
@@ -896,3 +895,17 @@ body.template-product .page-container {
   white-space: nowrap;
 }
   /* End: Product page Frequently Bought Together sale price styling */
+
+
+  /* Match cart note and buyer consent text sizes: Added by Smartsy on 11-10-2026 */
+.ajaxcart__note,
+#shopify-buyer-consent {
+  font-size: 0.75em !important;
+  opacity: 1 !important;
+  text-align: left !important;
+}
+/* Prevent <small> from shrinking the cart note */
+.ajaxcart__note small {
+  font-size: 1em !important;
+}
+  /* End: Match cart note and buyer consent text sizes */ 

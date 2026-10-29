@@ -1,0 +1,136 @@
+<div class="logo-cols" style="background-color: {{ section.settings.bg_color }}">
+    <div class="logo-cols__list">
+        {% for block in section.blocks %}
+            <style>
+                @media all and (min-width: 1000px) {
+                    .logo-cols__item--{{ block.id }} .logo-cols__imgs {
+                        margin-top: {{ block.settings.desktop_offset }}px;
+                    }
+                }
+            </style>
+            <div class="logo-cols__item logo-cols__item--{{ block.id }}">
+                <div class="logo-cols__title">
+                    {{ block.settings.title }}
+                </div>
+                <div class="logo-cols__imgs">
+                    {% if block.settings.image != blank %}
+                        {% if block.settings.url != blank %}
+                            <a href="{{ block.settings.url }}" target="_blank" class="logo-cols__img">
+                                <img src="{{ block.settings.image | img_url: '400x' }}" alt="">
+                            </a>
+                        {% else %}
+                            <div class="logo-cols__img">
+                                <img src="{{ block.settings.image | img_url: '400x' }}" alt="">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if block.settings.image_2 != blank %}
+                        {% if block.settings.url_2 != blank %}
+                            <a href="{{ block.settings.url_2 }}" target="_blank" class="logo-cols__img">
+                                <img src="{{ block.settings.image_2 | img_url: '400x' }}" alt="">
+                            </a>
+                        {% else %}
+                            <div class="logo-cols__img">
+                                <img src="{{ block.settings.image_2 | img_url: '400x' }}" alt="">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if block.settings.image_3 != blank %}
+                        {% if block.settings.url_3 != blank %}
+                            <a href="{{ block.settings.url_3 }}" target="_blank" class="logo-cols__img">
+                                <img src="{{ block.settings.image_3 | img_url: '400x' }}" alt="">
+                            </a>
+                        {% else %}
+                            <div class="logo-cols__img">
+                                <img src="{{ block.settings.image_3 | img_url: '400x' }}" alt="">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% schema %}
+{
+"name": "Resellers Section",
+"settings": [
+{
+"type": "color",
+"id": "bg_color",
+"label": "Background Color"
+}
+],
+"blocks": [
+{
+"name": "Column",
+"type": "column",
+"settings": [
+{
+"type": "text",
+"id": "title",
+"label": "Title"
+},
+{
+"type": "range",
+"id": "desktop_offset",
+"min": 0,
+"max": 100,
+"step": 5,
+"unit": "px",
+"label": "Desktop Offset",
+"default": 0
+},
+{
+"type": "header",
+"content": "Image 1"
+},
+{
+"type": "image_picker",
+"id": "image",
+"label": "Image"
+},
+{
+"type": "url",
+"id": "url",
+"label": "URL"
+},
+{
+"type": "header",
+"content": "Image 2"
+},
+{
+"type": "image_picker",
+"id": "image_2",
+"label": "Image"
+},
+{
+"type": "url",
+"id": "url_2",
+"label": "URL"
+},
+{
+"type": "header",
+"content": "Image 3"
+},
+{
+"type": "image_picker",
+"id": "image_3",
+"label": "Image"
+},
+{
+"type": "url",
+"id": "url_3",
+"label": "URL"
+}
+]
+}
+],
+"presets": [
+{
+"name": "Resellers Section"
+}
+]
+}
+{% endschema %}

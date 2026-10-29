@@ -1,0 +1,190 @@
+{% comment %} Visible immediately, alternating messages with adjustable timing. – Adjusted 22-09-2026 by Smartsy {% endcomment %}
+{% comment %} Session dismissal: sync with every second hero change, otherwise use block timing. {% endcomment %}
+<script>
+try {
+  if (sessionStorage.getItem('jalg-announcement-closed') && !window.Shopify?.designMode)
+    document.documentElement.dataset.announcementClosed = '';
+} catch {}
+
+if (!customElements.get('jalg-announcements')) {
+  customElements.define('jalg-announcements', class extends HTMLElement {
+    connectedCallback() {
+      this.timer = setTimeout(() => this.init());
+    }
+    init() {
+      const slides = [...this.children];
+      if (!slides.length) return;
+      let index = slides.findIndex(slide => !slide.hidden);
+      let editing = false, synced = false, changes = 0;
+      this.events = new AbortController();
+
+      const closed = () =>
+        document.documentElement.hasAttribute('data-announcement-closed');
+      const on = (element, event, handler) =>
+        element.addEventListener(event, handler, {
+          signal: this.events.signal, capture: true
+        });
+      const show = next => {
+        slides[index].hidden = true;
+        index = next;
+        slides[index].hidden = false;
+      };
+      const advance = () => {
+        if (!editing && !closed() && !this.matches(':focus-within'))
+          show((index + 1) % slides.length);
+      };
+      const schedule = () => {
+        clearTimeout(this.timer);
+        if (synced || editing || closed() || slides.length < 2) return;
+        this.timer = setTimeout(() => {
+          if (!document.hidden && !this.matches(':hover')) advance();
+          schedule();
+        }, (Number(slides[index].dataset.seconds) || 7) * 1000);
+      };
+      const connect = () => {
+        if (closed() || slides.length < 2) return;
+        const hero = document.querySelector('[id^="Slideshow-"].hero');
+        if (!hero) return;
+        let previous = null;
+        const track = () => {
+          const selected = hero.querySelector('.flickity-slider > .is-selected');
+          if (!selected || selected === previous) return;
+          if (!synced) {
+            synced = true;
+            clearTimeout(this.timer);
+          } else if (++changes % 2 === 0) advance();
+          previous = selected;
+        };
+        this.observer = new MutationObserver(track);
+        this.observer.observe(hero, {
+          subtree: true, childList: true,
+          attributes: true, attributeFilter: ['class']
+        });
+        track();
+      };
+
+      on(this.parentElement, 'click', event => {
+        if (!event.target.closest('.announcement__close')) return;
+        event.stopImmediatePropagation();
+        document.documentElement.dataset.announcementClosed = '';
+        clearTimeout(this.timer);
+        this.observer?.disconnect();
+        try { sessionStorage.setItem('jalg-announcement-closed', '1'); } catch {}
+      });
+      on(this, 'shopify:block:select', event => {
+        const next = slides.findIndex(slide => slide.contains(event.target));
+        if (next < 0) return;
+        editing = true;
+        clearTimeout(this.timer);
+        show(next);
+      });
+      on(this, 'shopify:block:deselect', () => {
+        editing = false;
+        changes = 0;
+        schedule();
+      });
+
+      schedule();
+      if (document.readyState === 'loading')
+        on(document, 'DOMContentLoaded', connect);
+      else connect();
+    }
+    disconnectedCallback() {
+      clearTimeout(this.timer);
+      this.observer?.disconnect();
+      this.events?.abort();
+    }
+  });
+}
+</script>
+
+<style>
+jalg-announcements{display:block}
+/* Icon is centred on the capital letters (Raleway caps are 0.71em tall). */
+.announcement__icon{display:inline-block;width:auto;height:1.35em;margin:0 .8em 0 0;vertical-align:-.32em}
+svg.announcement__icon{fill:none;stroke:currentColor;stroke-width:.8;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+svg.announcement__icon *{vector-effect:non-scaling-stroke}
+svg.announcement__icon .bg{fill:var(--colorAnnouncement,#000)}
+jalg-announcements>[hidden],
+html[data-announcement-closed] .announcement{display:none!important}
+</style>
+
+{% assign shown = false %}
+<div class="announcement{% if section.settings.announcement_closable %} announcement--closeable{% endif %}">
+  <jalg-announcements>
+    {% for block in section.blocks %}
+      {% assign message = block.settings %}
+      {% if message.announcement_text == blank %}{% continue %}{% endif %}
+      <div data-seconds="{{ message.seconds }}" {% if shown %}hidden{% endif %} {{ block.shopify_attributes }}>
+        {% if message.announcement_link != blank %}
+          <a href="{{ message.announcement_link | escape }}" class="announcement__link">
+        {% endif %}
+        <span class="announcement__text{% unless section.settings.announcement_closable %} announcement__text--open{% endunless %}" data-text="{{ message.announcement_text | strip_html | handle }}">
+          {%- if message.icon_image != blank -%}
+            {{ message.icon_image | image_url: height: 48 | image_tag: class: 'announcement__icon', alt: '', height: 18, loading: 'eager' }}
+          {%- else -%}
+            {%- comment -%} Line icons in the text colour with a 1px line, like the header icons. {%- endcomment -%}
+            {%- case message.icon -%}
+              {%- when 'globe' -%}
+                <svg class="announcement__icon" viewBox="0.75 0.75 22.5 22.5" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M4.6 7.5h14.8M4.6 16.5h14.8"/></svg>
+              {%- when 'truck' -%}
+                <svg class="announcement__icon" viewBox="1.5 2.7 20 20" aria-hidden="true" focusable="false"><path d="M2.5 6.5h11v10h-11zM13.5 9.5h4l3 3.3v3.7h-7z"/><circle class="bg" cx="6.5" cy="17" r="1.9"/><circle class="bg" cx="17" cy="17" r="1.9"/></svg>
+              {%- when 'plane' -%}
+                <svg class="announcement__icon" viewBox="1.27 1.08 21.65 21.65" aria-hidden="true" focusable="false"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+              {%- when 'gift' -%}
+                <svg class="announcement__icon" viewBox="2.63 3.86 18.75 18.75" aria-hidden="true" focusable="false"><path d="M4.5 9.5h15v10.5h-15zM12 9.5V20M4.5 13.5h15"/><path d="M12 9.5C11 6.3 7.4 5.6 7.4 7.6c0 1.6 2.8 1.9 4.6 1.9zM12 9.5c1-3.2 4.6-3.9 4.6-1.9 0 1.6-2.8 1.9-4.6 1.9z"/></svg>
+              {%- when 'tv' -%}
+                <svg class="announcement__icon" viewBox="0.75 1.25 22.5 22.5" aria-hidden="true" focusable="false"><path d="M3 4.5h18v11H3zM7.5 15.5 6 20.5M16.5 15.5l1.5 5M6.6 18.5h10.8"/></svg>
+              {%- when 'check' -%}
+                <svg class="announcement__icon" viewBox="0.75 0.75 22.5 22.5" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.6"/></svg>
+              {%- when 'returns' -%}
+                <svg class="announcement__icon" viewBox="2 2 20 20" aria-hidden="true" focusable="false"><path d="M4 9h11a5 5 0 0 1 0 10H8M4 9l4-4M4 9l4 4"/></svg>
+            {%- endcase -%}
+          {%- endif -%}
+          {{ message.announcement_text | strip_html | escape }}
+        </span>
+        {% if message.announcement_link != blank %}</a>{% endif %}
+      </div>
+      {% assign shown = true %}
+    {% endfor %}
+  </jalg-announcements>
+
+  {% if shown and section.settings.announcement_closable %}
+    <button type="button" class="text-link announcement__close">
+      <svg aria-hidden="true" focusable="false" class="icon icon-close" viewBox="0 0 64 64"><path d="m19 17.61 27.12 27.13m0-27.12L19 44.74"/></svg>
+      <span class="icon__fallback-text">{{ 'general.accessibility.close' | t }}</span>
+    </button>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "max_blocks": 5,
+  "settings": [
+    {"type":"checkbox","id":"announcement_closable","label":"Allow closing","default":false}
+  ],
+  "blocks": [
+    {
+      "type":"announcement",
+      "name":"Announcement",
+      "settings":[
+        {"type":"text","id":"announcement_text","label":"Text"},
+        {"type":"url","id":"announcement_link","label":"Link"},
+        {"type":"select","id":"icon","label":"Icon","default":"none","options":[
+          {"value":"none","label":"None"},
+          {"value":"truck","label":"Delivery truck"},
+          {"value":"plane","label":"Plane"},
+          {"value":"globe","label":"Globe"},
+          {"value":"gift","label":"Gift"},
+          {"value":"tv","label":"TV stand"},
+          {"value":"check","label":"Check mark"},
+          {"value":"returns","label":"Returns"}
+        ]},
+        {"type":"image_picker","id":"icon_image","label":"Custom icon","info":"Replaces the icon above. Use a light-coloured SVG or PNG so it shows on the dark bar."},
+        {"type":"range","id":"seconds","label":"Display time","min":3,"max":15,"step":1,"unit":"s","default":7,"info":"Used on pages without a hero slideshow."}
+      ]
+    }
+  ]
+}
+{% endschema %}

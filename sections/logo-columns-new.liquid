@@ -1,0 +1,614 @@
+{%- comment -%}
+  Resellers Section New
+  Retailer heading, divider and logos, with settings for which page types it appears on
+  and whether logos link out.
+{%- endcomment -%}
+
+{%- liquid
+  assign show_section = section.settings.show_other
+  case request.page_type
+    when 'index'
+      assign show_section = section.settings.show_home
+    when 'product'
+      assign show_section = section.settings.show_product
+    when 'collection', 'list-collections'
+      assign show_section = section.settings.show_collection
+    when 'page'
+      assign show_section = section.settings.show_page
+    when 'blog', 'article'
+      assign show_section = section.settings.show_blog
+  endcase
+-%}
+
+{%- if show_section -%}
+<style>
+  #shopify-section-{{ section.id }} .dealers {
+    --dealers-line: {{ section.settings.line_color }};
+    background: {{ section.settings.bg_color }};
+    padding: {{ section.settings.heading_spacing }}px 20px {{ section.settings.padding_bottom }}px;
+    color: #000;
+  }
+
+  /* Heading */
+  #shopify-section-{{ section.id }} .dealers__header {
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__eyebrow {
+    margin: 0 0 10px;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+  }
+
+  /* Font family, weight and line height come from the theme's h2 styles */
+  #shopify-section-{{ section.id }} .dealers__heading {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+  }
+
+  /* Divider below the heading: same line as the row dividers in the logo grid */
+  #shopify-section-{{ section.id }} .dealers__divider {
+    display: block;
+    max-width: 1400px;
+    height: 1px;
+    margin: {{ section.settings.heading_spacing }}px auto {{ section.settings.divider_space_below }}px;
+    padding: 0;
+    border: 0;
+    background: var(--dealers-line);
+  }
+
+  /* Divider below the logos, 32px under the last row like the row dividers */
+  #shopify-section-{{ section.id }} .dealers__divider--bottom {
+    margin: 32px auto 0;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__header + .dealers__grid {
+    margin-top: {{ section.settings.heading_spacing }}px;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 64px 24px;
+    max-width: 1400px;
+    margin: auto;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__country {
+    position: relative;
+    grid-column: span var(--span);
+    min-width: 0;
+    text-align: center;
+  }
+
+  /* Vertical dividers between countries only */
+  #shopify-section-{{ section.id }} .dealers__country::before {
+    content: "";
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    width: 1px;
+    background: var(--dealers-line);
+    pointer-events: none;
+  }
+
+  /* Horizontal dividers between rows only */
+  #shopify-section-{{ section.id }} .dealers__country::after {
+    content: "";
+    position: absolute;
+    bottom: -32px;
+    left: -100vw;
+    width: 200vw;
+    height: 1px;
+    background: var(--dealers-line);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__title {
+    margin: 0 0 18px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 16px;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 calc((100% - (var(--span) - 1) * 16px) / var(--span));
+    min-width: 0;
+    height: 64px;
+  }
+
+  #shopify-section-{{ section.id }} .dealers__logo img {
+    display: block;
+    width: var(--logo-width);
+    max-width: 100%;
+    height: auto;
+    max-height: 60px;
+    object-fit: contain;
+  }
+
+  #shopify-section-{{ section.id }} a.dealers__logo:focus-visible {
+    outline: 2px solid #3D5640;
+    outline-offset: -2px;
+  }
+
+  @media (min-width: 1100px) {
+    #shopify-section-{{ section.id }} .dealers__country--divider-desktop::before {
+      display: block;
+    }
+  }
+
+  @media (min-width: 750px) and (max-width: 1099px) {
+    #shopify-section-{{ section.id }} .dealers__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    #shopify-section-{{ section.id }} .dealers__country {
+      grid-column: span var(--tablet-span);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__logo {
+      flex-basis: calc((100% - (var(--tablet-span) - 1) * 16px) / var(--tablet-span));
+    }
+
+    #shopify-section-{{ section.id }} .dealers__country--divider-tablet::before {
+      display: block;
+    }
+  }
+
+  @media (max-width: 749px) {
+    /* Tighter vertical spacing on phones to keep the section short */
+    #shopify-section-{{ section.id }} .dealers {
+      padding-top: calc({{ section.settings.heading_spacing }}px * 0.8);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__heading {
+      font-size: min({{ section.settings.heading_size }}px, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__divider {
+      margin-top: calc({{ section.settings.heading_spacing }}px * 0.8);
+      margin-bottom: calc({{ section.settings.divider_space_below }}px * 0.8);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__divider--bottom {
+      margin: 24px auto 0;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__header + .dealers__grid {
+      margin-top: calc({{ section.settings.heading_spacing }}px * 0.8);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 48px 16px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__country::after {
+      bottom: -24px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__logos {
+      gap: 10px 16px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__country {
+      grid-column: span var(--mobile-span);
+    }
+
+    #shopify-section-{{ section.id }} .dealers__country--divider-mobile::before {
+      display: block;
+      left: -8px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__title {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__logo {
+      flex-basis: calc((100% - (var(--mobile-span) - 1) * 16px) / var(--mobile-span));
+      height: 50px;
+    }
+
+    #shopify-section-{{ section.id }} .dealers__logo img {
+      max-height: 44px;
+    }
+  }
+</style>
+
+<div class="dealers">
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+    <div class="dealers__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="dealers__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="dealers__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.show_divider -%}
+    <hr class="dealers__divider">
+  {%- endif -%}
+
+  <div class="dealers__grid">
+    {% liquid
+      assign desktop_used = 0
+      assign tablet_used = 0
+      assign mobile_used = 0
+    %}
+
+    {% for block in section.blocks %}
+      {% liquid
+        assign count = 0
+
+        for i in (1..8)
+          assign image_key = 'image'
+          if i > 1
+            assign image_key = 'image_' | append: i
+          endif
+          if block.settings[image_key] != blank
+            assign count = count | plus: 1
+          endif
+        endfor
+
+        assign span = 1
+        if count > 6
+          assign span = 4
+        elsif count > 4
+          assign span = 3
+        elsif count > 2
+          assign span = 2
+        endif
+
+        assign tablet_span = span | at_most: 3
+
+        assign mobile_span = 1
+        if count > 2
+          assign mobile_span = 2
+        endif
+      %}
+
+      {% if count > 0 %}
+        {% liquid
+          assign desktop_total = desktop_used | plus: span
+          if desktop_total > 6
+            assign desktop_used = 0
+          endif
+
+          assign tablet_total = tablet_used | plus: tablet_span
+          if tablet_total > 3
+            assign tablet_used = 0
+          endif
+
+          assign mobile_total = mobile_used | plus: mobile_span
+          if mobile_total > 2
+            assign mobile_used = 0
+          endif
+        %}
+
+        <div
+          class="dealers__country{% if desktop_used > 0 %} dealers__country--divider-desktop{% endif %}{% if tablet_used > 0 %} dealers__country--divider-tablet{% endif %}{% if mobile_used > 0 %} dealers__country--divider-mobile{% endif %}"
+          style="--span:{{ span }};--tablet-span:{{ tablet_span }};--mobile-span:{{ mobile_span }}"
+          {{ block.shopify_attributes }}
+        >
+          <h3 class="dealers__title">
+            {{ block.settings.title | escape }}
+          </h3>
+
+          <div class="dealers__logos">
+            {% for i in (1..8) %}
+              {% liquid
+                assign image_key = 'image'
+                assign url_key = 'url'
+
+                if i > 1
+                  assign image_key = 'image_' | append: i
+                  assign url_key = 'url_' | append: i
+                endif
+
+                assign logo = block.settings[image_key]
+                assign link = block.settings[url_key]
+                unless section.settings.link_logos
+                  assign link = blank
+                endunless
+                assign logo_alt = logo.alt | default: block.settings.title
+
+                assign width_key = 'logo_width_' | append: i
+                assign individual_width = block.settings[width_key] | default: 0
+                if individual_width == 0
+                  assign individual_width = block.settings.logo_width | default: 120
+                endif
+              %}
+
+              {% if logo != blank %}
+                {% if link != blank %}
+                  <a
+                    class="dealers__logo"
+                    href="{{ link | escape }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                {% else %}
+                  <div class="dealers__logo">
+                {% endif %}
+
+                  <img
+                    src="{{ logo | image_url: width: 600 }}"
+                    alt="{{ logo_alt | escape }}"
+                    width="{{ logo.width }}"
+                    height="{{ logo.height }}"
+                    style="--logo-width:{{ individual_width }}px"
+                    loading="lazy"
+                  >
+
+                {% if link != blank %}
+                  </a>
+                {% else %}
+                  </div>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        {% liquid
+          assign desktop_used = desktop_used | plus: span
+          assign tablet_used = tablet_used | plus: tablet_span
+          assign mobile_used = mobile_used | plus: mobile_span
+        %}
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {%- if section.settings.show_bottom_divider -%}
+    <hr class="dealers__divider dealers__divider--bottom">
+  {%- endif -%}
+</div>
+
+{%- else -%}
+  {%- if request.design_mode -%}
+    {%- comment -%} Only visible in the theme editor, so the hidden section can still be found and edited. {%- endcomment -%}
+    <div style="max-width:1400px;margin:16px auto;padding:12px 16px;border:1px dashed #c5c4bf;color:#5e6a62;font-size:14px;text-align:center;">
+      Retailers section is hidden on this page type. Change this in the section’s “Show this section on” settings.
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Resellers Section New",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Show this section on"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product",
+      "label": "Product pages",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection",
+      "label": "Collection pages",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_page",
+      "label": "Content pages (About, Retailers, FAQ…)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blog",
+      "label": "Blog and articles",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_other",
+      "label": "Cart, search and other pages",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Logos"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_logos",
+      "label": "Link logos to retailer websites",
+      "info": "Turn off to show the logos as an endorsement only, without sending visitors to other stores.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small text above heading",
+      "default": "Find your local"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Retailer"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Space above and below heading",
+      "info": "Used both above the heading and between the heading and divider, so the text always sits in the middle.",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Divider"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show divider below heading",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_divider",
+      "label": "Show divider below logos",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "divider_space_below",
+      "label": "Space between divider and logos",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Colours and spacing"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#F6F5F3"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Divider line colour (heading and logo rows)",
+      "default": "#c5c4bf"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Country",
+      "type": "column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Country"
+        },
+        {
+          "type": "range",
+          "id": "logo_width",
+          "min": 60,
+          "max": 180,
+          "step": 5,
+          "unit": "px",
+          "label": "Default logo width",
+          "default": 120
+        },
+        {
+          "type": "paragraph",
+          "content": "Individual widths set to 0 use the default above. Logos shrink to fit, with maximum heights of 60px on desktop and 44px on mobile."
+        },
+        {"type": "header", "content": "Dealer 1"},
+        {"type": "image_picker", "id": "image", "label": "Logo"},
+        {"type": "url", "id": "url", "label": "Website"},
+        {"type": "range", "id": "logo_width_1", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 2"},
+        {"type": "image_picker", "id": "image_2", "label": "Logo"},
+        {"type": "url", "id": "url_2", "label": "Website"},
+        {"type": "range", "id": "logo_width_2", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 3"},
+        {"type": "image_picker", "id": "image_3", "label": "Logo"},
+        {"type": "url", "id": "url_3", "label": "Website"},
+        {"type": "range", "id": "logo_width_3", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 4"},
+        {"type": "image_picker", "id": "image_4", "label": "Logo"},
+        {"type": "url", "id": "url_4", "label": "Website"},
+        {"type": "range", "id": "logo_width_4", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 5"},
+        {"type": "image_picker", "id": "image_5", "label": "Logo"},
+        {"type": "url", "id": "url_5", "label": "Website"},
+        {"type": "range", "id": "logo_width_5", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 6"},
+        {"type": "image_picker", "id": "image_6", "label": "Logo"},
+        {"type": "url", "id": "url_6", "label": "Website"},
+        {"type": "range", "id": "logo_width_6", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 7"},
+        {"type": "image_picker", "id": "image_7", "label": "Logo"},
+        {"type": "url", "id": "url_7", "label": "Website"},
+        {"type": "range", "id": "logo_width_7", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0},
+
+        {"type": "header", "content": "Dealer 8"},
+        {"type": "image_picker", "id": "image_8", "label": "Logo"},
+        {"type": "url", "id": "url_8", "label": "Website"},
+        {"type": "range", "id": "logo_width_8", "label": "Logo width", "min": 0, "max": 240, "step": 5, "unit": "px", "default": 0}
+      ]
+    }
+  ],
+  "presets": [
+    {"name": "Resellers Section New"}
+  ]
+}
+{% endschema %}
