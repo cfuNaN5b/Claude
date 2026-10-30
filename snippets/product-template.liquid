@@ -137,25 +137,10 @@
 
             <div data-product-blocks>
               {%- capture form_id -%}AddToCartForm-{{ section_id }}-{{ product.id }}{%- endcapture -%}
-              {%- assign freq_html = '' -%}
               {%- for block in blocks -%}
                 {%- case block.type -%}
                   {%- when '@app' -%}
-                    {%- comment -%}
-                      GSC Product Labels & Badges (blinks) block: only on products
-                      tagged "show-badge". Other app blocks always show.
-                    {%- endcomment -%}
-                    {%- liquid
-                      assign show_app_block = true
-                      if block.id contains 'gsc_product_labels_badges_blinks'
-                        unless product.tags contains 'show-badge'
-                          assign show_app_block = false
-                        endunless
-                      endif
-                    -%}
-                    {%- if show_app_block -%}
-                      {% render block %}
-                    {%- endif -%}
+                    {% render block %}
                   {%- when 'separator' -%}
                     <div class="product-block" {{ block.shopify_attributes }}><hr></div>
                   {%- when 'text' -%}
@@ -346,18 +331,6 @@
 
                   <div class="ultimate-badges"></div>
 
-                    {%- comment -%}
-                      Frequently bought together: if app blocks (the Secure checkout payment
-                      icons) or Custom Liquid blocks (the trust line) come right after Buy
-                      buttons, show it after those blocks, so they sit directly under the buttons.
-                    {%- endcomment -%}
-                    {%- assign next_block = blocks[forloop.index] -%}
-                    {%- if next_block.type == '@app' or next_block.type == 'custom' -%}
-                      {%- capture freq_html -%}{% render 'frequently-buy', product: product %}{%- endcapture -%}
-                    {%- else -%}
-                      {% render 'frequently-buy', product: product %}
-                    {%- endif -%}
-
                   {%- when 'sales_point' -%}
                     {%- unless block.settings.text == blank -%}
                       <div class="product-block product-block--sales-point" {{ block.shopify_attributes }}>
@@ -411,11 +384,6 @@
                       {{ block.settings.code }}
                     </div>
                 {%- endcase -%}
-                {%- assign next_block = blocks[forloop.index] -%}
-                {%- if freq_html != blank and block.type != 'buy_buttons' and next_block.type != '@app' and next_block.type != 'custom' -%}
-                  {{ freq_html }}
-                  {%- assign freq_html = '' -%}
-                {%- endif -%}
               {%- else -%}
                 <div data-blocks-holder
                      data-url="{{ product.url }}"

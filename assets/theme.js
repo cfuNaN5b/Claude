@@ -8270,7 +8270,8 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   $(document).on('change', '.freq__check', updateFreqTotal);
-  $('.freq__add').click(function() {
+  // delegated, so it also works after the theme editor re-renders the section
+  $(document).on('click', '.freq__add', function() {
     ajaxAddToCart(freqItems);
   })
 
