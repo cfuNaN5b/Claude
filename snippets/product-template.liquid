@@ -382,7 +382,15 @@
                     </div>
                   {%- when 'frequently_bought' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
-                      {%- render 'frequently-buy', product: product, title: block.settings.title, visible_count: block.settings.visible_count -%}
+                      {%- render 'frequently-buy',
+                        product: product,
+                        title: block.settings.title,
+                        visible_count: block.settings.visible_count,
+                        visible_count_mobile: block.settings.visible_count_mobile,
+                        show_thumbs_mobile: block.settings.show_thumbs_mobile,
+                        spacing_top: block.settings.spacing_top,
+                        spacing_bottom: block.settings.spacing_bottom
+                      -%}
                     </div>
                   {%- when 'custom' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
