@@ -8,7 +8,7 @@
 {% if product.metafields.custom.extra_products != blank and current_variant.available %}
     {%- comment -%}
       Each row: checkbox, (thumbnail on phones), name, price on the right.
-      Only the first 4 extra products show; "Show all" reveals the rest.
+      Only the first 4 extra products show; "Show N more" reveals the rest.
       Hovering a row shows the image in a popup to the left of the list (only
       on devices with a mouse). `.freq:not(#jalg)` outranks older template
       Custom CSS for .freq__item, so these rules apply everywhere.
