@@ -77,12 +77,19 @@
       .freq:not(#jalg) .freq__name {
         display: block;
         min-width: 0;
+        /* "This item" is a <label>: drop the theme's label margin and heading font */
+        margin: 0;
+        font-family: inherit;
+        font-weight: inherit;
+        letter-spacing: inherit;
+        text-transform: none;
         color: inherit;
         font-size: 15px;
         line-height: 1.35;
         text-decoration: none;
       }
-      .freq:not(#jalg) a.freq__name:hover { text-decoration: underline; text-underline-offset: 3px; }
+      .freq:not(#jalg) a.freq__name,
+      .freq:not(#jalg) a.freq__name:hover { text-decoration: none; background: none; }
       .freq:not(#jalg) .freq__item-price {
         display: block;
         padding: 0;
