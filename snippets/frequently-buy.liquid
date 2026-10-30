@@ -2,14 +2,16 @@
   "This item" uses the selected variant (not product.price, which is the lowest
   price of all variants). theme.js updates it when another variant is picked.
   Extra products also use the price of the variant that gets added to the cart.
-  Rendered by the "Frequently bought together" product block; `title` is optional.
+  Rendered by the "Frequently bought together" product block; `title` and
+  `visible_count` (products shown before "Show more", default 4) are optional.
 {%- endcomment -%}
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 {%- assign main_image = current_variant.featured_image | default: product.featured_image -%}
+{%- assign freq_limit = visible_count | default: 4 -%}
 {% if product.metafields.custom.extra_products != blank and current_variant.available %}
     {%- comment -%}
       Each row: checkbox, (thumbnail on phones), name, price on the right.
-      Only the first 4 extra products show; "Show N more" reveals the rest.
+      Only the first few extra products show (block setting); "Show N more" reveals the rest.
       Hovering a row shows the image in a popup to the left of the list (only
       on devices with a mouse). `.freq:not(#jalg)` outranks older template
       Custom CSS for .freq__item, so these rules apply everywhere.
@@ -149,7 +151,7 @@
                 {%- assign prod_image = prod_variant.featured_image | default: prod.featured_image -%}
                 {% if prod_variant.available %}
                     {%- assign freq_shown = freq_shown | plus: 1 -%}
-                    <div class="freq__item{% if freq_shown > 4 %} freq__item--more{% endif %}">
+                    <div class="freq__item{% if freq_shown > freq_limit %} freq__item--more{% endif %}">
                         <input type="checkbox"
                                class="freq__check"
                                id="freqProd--{{ prod.id }}"
@@ -186,8 +188,8 @@
                 {% endif %}
             {% endfor %}
         </div>
-        {%- if freq_shown > 4 -%}
-          {%- assign freq_hidden = freq_shown | minus: 4 -%}
+        {%- if freq_shown > freq_limit -%}
+          {%- assign freq_hidden = freq_shown | minus: freq_limit -%}
           <button type="button" class="freq__more" aria-expanded="false"
             data-more="Show {{ freq_hidden }} more" data-less="Show fewer"
             onclick="var f=this.closest('.freq'),o=f.classList.toggle('freq--open');this.setAttribute('aria-expanded',o);this.textContent=o?this.dataset.less:this.dataset.more;">Show {{ freq_hidden }} more</button>

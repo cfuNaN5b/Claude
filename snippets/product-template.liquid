@@ -382,7 +382,7 @@
                     </div>
                   {%- when 'frequently_bought' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
-                      {%- render 'frequently-buy', product: product, title: block.settings.title -%}
+                      {%- render 'frequently-buy', product: product, title: block.settings.title, visible_count: block.settings.visible_count -%}
                     </div>
                   {%- when 'custom' -%}
                     <div class="product-block" {{ block.shopify_attributes }}>
