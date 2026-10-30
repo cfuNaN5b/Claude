@@ -7,18 +7,68 @@
 {%- assign main_image = current_variant.featured_image | default: product.featured_image -%}
 {% if product.metafields.custom.extra_products != blank and current_variant.available %}
     {%- comment -%}
-      Hovering an item shows its image in a small popup to the left of the list
-      (only on devices with a mouse; phones and tablets have no hover).
+      Each row: checkbox, (thumbnail on phones), name, price on the right.
+      Only the first 4 extra products show; "Show all" reveals the rest.
+      Hovering a row shows the image in a popup to the left of the list (only
+      on devices with a mouse). `.freq:not(#jalg)` outranks older template
+      Custom CSS for .freq__item, so these rules apply everywhere.
     {%- endcomment -%}
     <style>
-      .freq__item { position: relative; }
+      .freq:not(#jalg) .freq__list { margin: 0; }
+      .freq:not(#jalg) .freq__item {
+        position: relative;
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 12px;
+        margin: 0;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--colorBorder, #e8e8e1);
+      }
+      .freq:not(#jalg):not(.freq--open) .freq__item--more { display: none; }
+      .freq:not(#jalg) .freq__more {
+        display: inline-block;
+        margin: 8px 0 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: #3d5640;
+        font-size: 14px;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+      .freq:not(#jalg) .freq__item:last-child { border-bottom: 0; }
+      .freq:not(#jalg) .freq__check {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        accent-color: #3d5640;
+      }
+      .freq:not(#jalg) .freq__thumb { display: none; }
+      .freq:not(#jalg) .freq__name {
+        display: block;
+        min-width: 0;
+        color: inherit;
+        font-size: 15px;
+        line-height: 1.35;
+        text-decoration: none;
+      }
+      .freq:not(#jalg) a.freq__name:hover { text-decoration: underline; text-underline-offset: 3px; }
+      .freq:not(#jalg) .freq__item-price {
+        display: block;
+        padding: 0;
+        font-size: 15px;
+        line-height: 1.35;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .freq:not(#jalg) .freq__discount-percentage { margin-left: 4px; }
       .freq__preview { display: none; }
       @media (hover: hover) and (pointer: fine) {
         .freq__preview {
           display: block;
           position: absolute;
-          /* to the left of the list, level with the hovered line, so it
-             never covers the other items */
           top: 50%;
           right: calc(100% + 16px);
           z-index: 5;
@@ -34,18 +84,30 @@
           transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
           pointer-events: none;
         }
-        .freq__preview img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
+        .freq__preview img { display: block; width: 100%; height: 100%; object-fit: contain; }
         .freq__item:hover .freq__preview {
           opacity: 1;
           visibility: visible;
           transform: translate(0, -50%);
           transition: opacity .15s ease, transform .15s ease;
         }
+      }
+      @media only screen and (max-width: 589px) {
+        .freq:not(#jalg) .freq__item {
+          grid-template-columns: 18px 36px minmax(0, 1fr) auto;
+          column-gap: 10px;
+          padding: 5px 0;
+        }
+        .freq:not(#jalg) .freq__thumb {
+          display: block;
+          width: 36px;
+          height: 36px;
+          background: #fff;
+        }
+        .freq:not(#jalg) .freq__thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .freq:not(#jalg) .freq__name,
+        .freq:not(#jalg) .freq__item-price { font-size: 14px; line-height: 1.3; }
+        .freq:not(#jalg) .freq__discount-percentage { display: block; margin: 0; font-size: 12px; }
       }
     </style>
     <div class="freq">
@@ -65,24 +127,32 @@
                             data-price-compare="{{ current_variant.price }}"
                         {% endif %}
                        data-id="{{ current_variant.id }}">
-                <label for="freqProd--{{ product.id }}">
+                {%- if main_image -%}
+                  <span class="freq__thumb" aria-hidden="true">
+                    <img src="{{ main_image | image_url: width: 120 }}" alt="" width="40" height="40" loading="lazy" data-freq-thumb>
+                  </span>
+                {%- endif -%}
+                <label class="freq__name" for="freqProd--{{ product.id }}">
                     <span style="font-weight: 600">This item:</span> {{ product.title }}
-                    <span class="freq__item-price">{{ current_variant.price | money }}</span>
-                    {%- if main_image -%}
-                      <span class="freq__preview" aria-hidden="true">
-                        <img src="{{ main_image | image_url: width: 320 }}" alt="" width="160" height="160" loading="lazy" data-freq-preview>
-                      </span>
-                    {%- endif -%}
                 </label>
+                <span class="freq__item-price">{{ current_variant.price | money }}</span>
+                {%- if main_image -%}
+                  <span class="freq__preview" aria-hidden="true">
+                    <img src="{{ main_image | image_url: width: 320 }}" alt="" width="160" height="160" loading="lazy" data-freq-preview>
+                  </span>
+                {%- endif -%}
             </div>
+            {%- assign freq_shown = 0 -%}
             {% for prod in product.metafields.custom.extra_products.value %}
                 {%- assign prod_variant = prod.selected_or_first_available_variant -%}
                 {%- assign prod_image = prod_variant.featured_image | default: prod.featured_image -%}
                 {% if prod_variant.available %}
-                    <div class="freq__item">
+                    {%- assign freq_shown = freq_shown | plus: 1 -%}
+                    <div class="freq__item{% if freq_shown > 4 %} freq__item--more{% endif %}">
                         <input type="checkbox"
                                class="freq__check"
                                id="freqProd--{{ prod.id }}"
+                               aria-label="{{ prod.title | escape }}"
                                data-price="{{ prod_variant.price }}"
                                {% if prod_variant.compare_at_price > prod_variant.price %}
                                    data-price-compare="{{ prod_variant.compare_at_price }}"
@@ -90,31 +160,37 @@
                                    data-price-compare="{{ prod_variant.price }}"
                                {% endif %}
                                data-id="{{ prod_variant.id }}">
-                        <a href="{{ prod.url }}" target="_blank">
-                            {{ prod.title }}
-                            <span class="freq__item-price">
-  {{ prod_variant.price | money }}
-  {% if prod_variant.compare_at_price > prod_variant.price %}
-    {% assign discount_percentage = prod_variant.compare_at_price | minus: prod_variant.price | times: 100.0 | divided_by: prod_variant.compare_at_price | round %}
-    <span class="freq__discount-percentage">-{{ discount_percentage }}%</span>
-  {% endif %}
-</span>
-
-{% if prod_variant.compare_at_price > prod_variant.price %}
-  <span class="freq__item-price-compare">
-    {{ prod_variant.compare_at_price | money }}
-  </span>
-{% endif %}
-                            {%- if prod_image -%}
-                              <span class="freq__preview" aria-hidden="true">
-                                <img src="{{ prod_image | image_url: width: 320 }}" alt="" width="160" height="160" loading="lazy">
-                              </span>
+                        {%- if prod_image -%}
+                          <span class="freq__thumb" aria-hidden="true">
+                            <img src="{{ prod_image | image_url: width: 120 }}" alt="" width="40" height="40" loading="lazy">
+                          </span>
+                        {%- endif -%}
+                        <a class="freq__name" href="{{ prod.url }}" target="_blank">{{ prod.title }}</a>
+                        <span class="freq__item-price">
+                            {{- prod_variant.price | money -}}
+                            {%- if prod_variant.compare_at_price > prod_variant.price -%}
+                              {%- assign discount_percentage = prod_variant.compare_at_price | minus: prod_variant.price | times: 100.0 | divided_by: prod_variant.compare_at_price | round -%}
+                              <span class="freq__discount-percentage">-{{ discount_percentage }}%</span>
                             {%- endif -%}
-                        </a>
+                        </span>
+                        {%- if prod_variant.compare_at_price > prod_variant.price -%}
+                          <span class="freq__item-price-compare">{{ prod_variant.compare_at_price | money }}</span>
+                        {%- endif -%}
+                        {%- if prod_image -%}
+                          <span class="freq__preview" aria-hidden="true">
+                            <img src="{{ prod_image | image_url: width: 320 }}" alt="" width="160" height="160" loading="lazy">
+                          </span>
+                        {%- endif -%}
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
+        {%- if freq_shown > 4 -%}
+          {%- assign freq_hidden = freq_shown | minus: 4 -%}
+          <button type="button" class="freq__more" aria-expanded="false"
+            data-more="Show {{ freq_hidden }} more" data-less="Show fewer"
+            onclick="var f=this.closest('.freq'),o=f.classList.toggle('freq--open');this.setAttribute('aria-expanded',o);this.textContent=o?this.dataset.less:this.dataset.more;">Show {{ freq_hidden }} more</button>
+        {%- endif -%}
 
         <div class="freq__total">
             Total price: <span class="freq__total-price" data-freq-total>{{ current_variant.price | money }}</span>

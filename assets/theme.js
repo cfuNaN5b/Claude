@@ -8257,8 +8257,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // hover preview shows the selected variant's image
     if (variant.featured_image && variant.featured_image.src) {
       const src = variant.featured_image.src;
-      $main.closest('.freq__item').find('[data-freq-preview]')
-        .attr('src', src + (src.indexOf('?') > -1 ? '&' : '?') + 'width=320');
+      const $row = $main.closest('.freq__item');
+      $row.find('[data-freq-preview]').attr('src', src + (src.indexOf('?') > -1 ? '&' : '?') + 'width=320');
+      $row.find('[data-freq-thumb]').attr('src', src + (src.indexOf('?') > -1 ? '&' : '?') + 'width=120');
     }
     updateFreqTotal();
   }
