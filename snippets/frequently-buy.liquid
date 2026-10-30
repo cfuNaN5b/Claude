@@ -2,7 +2,7 @@
   "This item" uses the selected variant (not product.price, which is the lowest
   price of all variants). theme.js updates it when another variant is picked.
   Extra products also use the price of the variant that gets added to the cart.
-  Rendered by the "JALG frequently bought together" section; `title` is optional.
+  Rendered by the "Frequently bought together" product block; `title` is optional.
 {%- endcomment -%}
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 {%- assign main_image = current_variant.featured_image | default: product.featured_image -%}
