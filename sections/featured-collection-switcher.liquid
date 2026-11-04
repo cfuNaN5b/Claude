@@ -34,6 +34,20 @@
   @media only screen and (max-width: 589px) {
     .collection-switcher__description { margin-bottom: 20px; }
   }
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.spacing_top_mobile }}px;
+    margin-bottom: {{ section.settings.spacing_bottom_mobile }}px;
+  }
+  @media only screen and (min-width: 590px) {
+    #shopify-section-{{ section.id }} {
+      margin-top: {{ section.settings.spacing_top }}px;
+      margin-bottom: {{ section.settings.spacing_bottom }}px;
+    }
+  }
+  .index-section + #shopify-section-{{ section.id }} { margin-top: 0; }
+  {%- unless section.settings.view_all %}
+  #CollectionSection-{{ section.id }} .collection-switcher__collection-grid { margin-bottom: 0; }
+  {%- endunless %}
   #CollectionSection-{{ section.id }} .grid-product__meta { display: flex; flex-direction: column; }
   #CollectionSection-{{ section.id }} .grid-product__price { margin-top: auto; }
 </style>
@@ -321,6 +335,50 @@
       "id": "divider",
       "label": "t:sections.featured-collection-switcher.settings.divider.label",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "spacing_top",
+      "label": "Space above (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom",
+      "label": "Space below (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "spacing_top_mobile",
+      "label": "Space above (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom_mobile",
+      "label": "Space below (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 34
     }
   ],
   "presets": [
