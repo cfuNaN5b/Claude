@@ -221,23 +221,34 @@
 <script>
   (function() {
     {%- comment -%}
-      Equal card heights per carousel, so prices and buttons sit in one row
-      when titles wrap differently. Runs when the carousel starts, on resize,
-      when a tab is switched and after images and fonts have loaded.
+      Equal card heights for the products shown together (one carousel
+      slide), so prices and buttons sit in one row when titles wrap
+      differently. Runs when the carousel starts, on resize, when a tab is
+      switched and after images and fonts have loaded.
     {%- endcomment -%}
     var root = document.getElementById('CollectionSection-{{ section.id }}');
     if (!root) return;
+
+    function match(metas) {
+      var shown = metas.filter(function(m) { return m && m.offsetParent !== null; });
+      if (!shown.length) return;
+      var max = Math.max.apply(null, shown.map(function(m) { return m.offsetHeight; }));
+      shown.forEach(function(m) { m.style.minHeight = max + 'px'; });
+    }
 
     function equalize() {
       root.querySelectorAll('.collection-switcher__collection-grid').forEach(function(grid) {
         var metas = Array.prototype.slice.call(grid.querySelectorAll('.grid-product__meta'));
         metas.forEach(function(m) { m.style.minHeight = ''; });
-        var shown = metas.filter(function(m) { return m.offsetParent !== null; });
-        if (!shown.length) return;
-        var max = Math.max.apply(null, shown.map(function(m) { return m.offsetHeight; }));
-        shown.forEach(function(m) { m.style.minHeight = max + 'px'; });
         var flkty = window.Flickity && window.Flickity.data(grid);
-        if (flkty) flkty.resize();
+        if (flkty && flkty.slides && flkty.slides.length) {
+          flkty.slides.forEach(function(slide) {
+            match(slide.cells.map(function(cell) { return cell.element.querySelector('.grid-product__meta'); }));
+          });
+          flkty.resize();
+        } else {
+          match(metas);
+        }
       });
     }
 
