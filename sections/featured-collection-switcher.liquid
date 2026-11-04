@@ -11,6 +11,11 @@
   assign collection1_title = section.settings.collection1_title | default: collection1.title
   assign collection2_title = section.settings.collection2_title | default: collection2.title
 
+  assign hide_atc = false
+  if section.settings.show_atc == false
+    assign hide_atc = true
+  endif
+
   assign emptyState = false
   if collection1.empty? and collection2.empty?
     assign emptyState = true
@@ -29,6 +34,8 @@
   @media only screen and (max-width: 589px) {
     .collection-switcher__description { margin-bottom: 20px; }
   }
+  #CollectionSection-{{ section.id }} .grid-product__meta { display: flex; flex-direction: column; }
+  #CollectionSection-{{ section.id }} .grid-product__price { margin-top: auto; }
 </style>
 
 <div
@@ -98,6 +105,7 @@
               collection: collection,
               per_row: per_row,
               disable_quick_view_output: true,
+              hide_atc: hide_atc,
             -%}
           {%- endfor -%}
         </div>
@@ -125,6 +133,7 @@
               collection: collection,
               per_row: per_row,
               disable_quick_view_output: true,
+              hide_atc: hide_atc,
             -%}
           {%- endfor -%}
         </div>
@@ -195,6 +204,52 @@
 
 {%- if section.settings.divider -%}</div>{%- endif -%}
 
+<script>
+  (function() {
+    {%- comment -%}
+      Equal card heights per carousel, so prices and buttons sit in one row
+      when titles wrap differently. Runs when the carousel starts, on resize,
+      when a tab is switched and after images and fonts have loaded.
+    {%- endcomment -%}
+    var root = document.getElementById('CollectionSection-{{ section.id }}');
+    if (!root) return;
+
+    function equalize() {
+      root.querySelectorAll('.collection-switcher__collection-grid').forEach(function(grid) {
+        var metas = Array.prototype.slice.call(grid.querySelectorAll('.grid-product__meta'));
+        metas.forEach(function(m) { m.style.minHeight = ''; });
+        var shown = metas.filter(function(m) { return m.offsetParent !== null; });
+        if (!shown.length) return;
+        var max = Math.max.apply(null, shown.map(function(m) { return m.offsetHeight; }));
+        shown.forEach(function(m) { m.style.minHeight = max + 'px'; });
+        var flkty = window.Flickity && window.Flickity.data(grid);
+        if (flkty) flkty.resize();
+      });
+    }
+
+    var timer;
+    function later(delay) {
+      clearTimeout(timer);
+      timer = setTimeout(equalize, delay || 100);
+    }
+
+    root.querySelectorAll('.collection-switcher__collection-grid').forEach(function(grid) {
+      new MutationObserver(function() {
+        if (grid.classList.contains('flickity-enabled') && !grid.dataset.equalized) {
+          grid.dataset.equalized = 'true';
+          later(50);
+        }
+      }).observe(grid, { attributes: true, attributeFilter: ['class'] });
+    });
+    root.addEventListener('click', function(evt) {
+      if (evt.target.closest('.collection-switcher__trigger')) later(50);
+    });
+    window.addEventListener('resize', function() { later(150); });
+    window.addEventListener('load', function() { later(50); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function() { later(50); });
+  })();
+</script>
+
 {% schema %}
 {
   "name": "t:sections.featured-collection-switcher.name",
@@ -248,6 +303,12 @@
       "min": 1,
       "max": 5,
       "step": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "show_atc",
+      "label": "Show Add to cart buttons",
+      "default": true
     },
     {
       "type": "checkbox",
