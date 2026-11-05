@@ -421,6 +421,20 @@
   ]
 },
 {
+  "type": "stability_video",
+  "name": "Stability video",
+  "limit": 1,
+  "settings": [
+    {"type": "text", "id": "title", "label": "Title", "default": "Tested for stability"},
+    {"type": "richtext", "id": "text", "label": "Text", "default": "<p>See how the stand holds steady in a seismic shake test.</p>"},
+    {"type": "video", "id": "clip", "label": "Short clip", "info": "A few seconds, plays muted on a loop in the box"},
+    {"type": "header", "content": "Full test video"},
+    {"type": "video", "id": "full_video", "label": "Video file"},
+    {"type": "video_url", "id": "full_video_url", "label": "Or YouTube / Vimeo link", "accept": ["youtube", "vimeo"], "info": "Used when no video file is chosen"},
+    {"type": "text", "id": "link_label", "label": "Link text", "default": "Watch the full test"}
+  ]
+},
+{
   "type": "trust_badge",
   "name": "t:product_block.trust_badge.name",
   "settings": [

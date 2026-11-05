@@ -1,0 +1,192 @@
+{%- comment -%}
+  Stability video (product block): a short muted clip that loops, a title, a
+  short text and a link that opens the full test video in a popup.
+  The full video is a Shopify-hosted video or a YouTube / Vimeo link.
+{%- endcomment -%}
+{%- liquid
+  assign clip = block.settings.clip
+  assign full_video = block.settings.full_video
+  assign full_url = block.settings.full_video_url
+  assign has_full = false
+  if full_video != blank or full_url != blank
+    assign has_full = true
+  endif
+  assign dialog_id = 'JalgStability-' | append: block.id
+-%}
+<style>
+  .jalg-stability {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    background: rgba(61, 86, 64, .05);
+    border-left: 2px solid #3d5640;
+  }
+  .jalg-stability--no-clip { grid-template-columns: minmax(0, 1fr); }
+  .jalg-stability__clip {
+    position: relative;
+    display: block;
+    width: 120px;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: #e8e8e1;
+    cursor: pointer;
+  }
+  .jalg-stability__clip video,
+  .jalg-stability__clip img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .jalg-stability__play {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .9);
+    color: #3d5640;
+  }
+  .jalg-stability__play svg { width: 10px; height: 10px; margin-left: 2px; fill: currentColor; }
+  .jalg-stability__title {
+    display: block;
+    margin: 0 0 4px;
+    color: #3d5640;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .jalg-stability__text { margin: 0; font-size: 14px; line-height: 1.55; }
+  .jalg-stability__text p { margin: 0; }
+  .jalg-stability__link {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #3d5640;
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .jalg-stability__dialog {
+    width: min(960px, calc(100vw - 32px));
+    max-width: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: #000;
+  }
+  .jalg-stability__dialog::backdrop { background: rgba(0, 0, 0, .75); }
+  .jalg-stability__frame { position: relative; aspect-ratio: 16 / 9; }
+  .jalg-stability__frame iframe,
+  .jalg-stability__frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .jalg-stability__close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .jalg-stability__dialog[open] { overflow: visible; }
+  @media only screen and (max-width: 589px) {
+    .jalg-stability { grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 14px 16px; }
+    .jalg-stability__clip { width: 96px; }
+  }
+</style>
+
+<div class="jalg-stability{% if clip == blank %} jalg-stability--no-clip{% endif %}">
+  {%- if clip != blank -%}
+    {%- if has_full -%}
+      <button type="button" class="jalg-stability__clip" data-stability-open="{{ dialog_id }}" aria-label="{{ block.settings.link_label | escape }}">
+    {%- else -%}
+      <div class="jalg-stability__clip">
+    {%- endif -%}
+      {{ clip | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, controls: false, preload: 'metadata', image_size: '240x' }}
+      {%- if has_full -%}
+        <span class="jalg-stability__play" aria-hidden="true"><svg viewBox="0 0 10 12"><path d="M0 0l10 6-10 6z"/></svg></span>
+      {%- endif -%}
+    {%- if has_full -%}</button>{%- else -%}</div>{%- endif -%}
+  {%- endif -%}
+
+  <div>
+    {%- if block.settings.title != blank -%}
+      <span class="jalg-stability__title">{{ block.settings.title | escape }}</span>
+    {%- endif -%}
+    {%- if block.settings.text != blank -%}
+      <div class="jalg-stability__text">{{ block.settings.text }}</div>
+    {%- endif -%}
+    {%- if has_full and block.settings.link_label != blank -%}
+      <button type="button" class="jalg-stability__link" data-stability-open="{{ dialog_id }}">{{ block.settings.link_label | escape }}</button>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if has_full -%}
+  <dialog class="jalg-stability__dialog" id="{{ dialog_id }}" aria-label="{{ block.settings.title | escape }}">
+    <button type="button" class="jalg-stability__close" data-stability-close aria-label="Close">&times;</button>
+    <div class="jalg-stability__frame">
+      {%- if full_video != blank -%}
+        {{ full_video | video_tag: controls: true, playsinline: true, preload: 'none', image_size: '1280x' }}
+      {%- elsif full_url.type == 'youtube' -%}
+        <iframe data-src="https://www.youtube-nocookie.com/embed/{{ full_url.id }}?autoplay=1&rel=0&playsinline=1" title="{{ block.settings.title | escape }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      {%- elsif full_url.type == 'vimeo' -%}
+        <iframe data-src="https://player.vimeo.com/video/{{ full_url.id }}?autoplay=1" title="{{ block.settings.title | escape }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      {%- endif -%}
+    </div>
+  </dialog>
+{%- endif -%}
+
+<script>
+  (function() {
+    if (window.jalgStabilityReady) return;
+    window.jalgStabilityReady = true;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      document.querySelectorAll('.jalg-stability__clip video').forEach(function(v) { v.removeAttribute('autoplay'); v.pause(); });
+    }
+    function stop(dialog) {
+      var frame = dialog.querySelector('iframe');
+      if (frame) frame.src = 'about:blank';
+      var video = dialog.querySelector('video');
+      if (video) video.pause();
+    }
+    document.addEventListener('click', function(evt) {
+      var opener = evt.target.closest('[data-stability-open]');
+      if (opener) {
+        var dialog = document.getElementById(opener.getAttribute('data-stability-open'));
+        if (!dialog || typeof dialog.showModal !== 'function') return;
+        var frame = dialog.querySelector('iframe');
+        if (frame) frame.src = frame.getAttribute('data-src');
+        dialog.showModal();
+        var video = dialog.querySelector('video');
+        if (video) video.play();
+        return;
+      }
+      var dialogOpen = evt.target.closest('.jalg-stability__dialog');
+      if (dialogOpen && (evt.target === dialogOpen || evt.target.closest('[data-stability-close]'))) {
+        dialogOpen.close();
+      }
+    });
+    document.addEventListener('close', function(evt) {
+      if (evt.target.classList && evt.target.classList.contains('jalg-stability__dialog')) stop(evt.target);
+    }, true);
+  })();
+</script>
