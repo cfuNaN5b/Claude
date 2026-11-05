@@ -53,6 +53,11 @@
   {%- endunless %}
   #CollectionSection-{{ section.id }} .grid-product__meta { display: flex; flex-direction: column; }
   #CollectionSection-{{ section.id }} .grid-product__price { margin-top: auto; }
+  {%- unless section.settings.show_price %}
+  #CollectionSection-{{ section.id }} .grid-product__price { display: none; }
+  #CollectionSection-{{ section.id }} .grid-product__meta > .btn,
+  #CollectionSection-{{ section.id }} .grid-product__meta > .btn--full { margin-top: auto; }
+  {%- endunless %}
 </style>
 
 <div
@@ -341,6 +346,12 @@
       "step": 1,
       "default": 0,
       "info": "0 = automatic (products per row × 3)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show prices",
+      "default": true
     },
     {
       "type": "checkbox",
