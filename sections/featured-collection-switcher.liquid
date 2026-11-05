@@ -29,12 +29,35 @@
     assign products1 = collection1.products | where: 'available'
     assign products2 = collection2.products | where: 'available'
   endif
+  comment
+    With "Hide the product being viewed" on, the product of the page is
+    skipped in both tabs.
+  endcomment
+  assign skip_id = 0
+  if section.settings.hide_current and product
+    assign skip_id = product.id
+  endif
+  assign count1 = 0
+  for item in products1
+    if item.id == skip_id
+      continue
+    endif
+    assign count1 = count1 | plus: 1
+  endfor
+  assign count2 = 0
+  for item in products2
+    if item.id == skip_id
+      continue
+    endif
+    assign count2 = count2 | plus: 1
+  endfor
+
   assign show1 = false
   assign show2 = false
-  unless collection1.empty? or products1.size == 0
+  unless collection1.empty? or count1 == 0
     assign show1 = true
   endunless
-  unless collection2.empty? or products2.size == 0
+  unless collection2.empty? or count2 == 0
     assign show2 = true
   endunless
 
@@ -141,9 +164,13 @@
           id="CollectionSwitcher1-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
           data-per-row="{{ per_row }}">
-          {%- for product in products1 limit: product_limit -%}
+          {%- assign shown = 0 -%}
+          {%- for item in products1 -%}
+            {%- if item.id == skip_id -%}{%- continue -%}{%- endif -%}
+            {%- if shown >= product_limit -%}{%- break -%}{%- endif -%}
+            {%- assign shown = shown | plus: 1 -%}
             {%- render 'product-grid-item',
-              product: product,
+              product: item,
               collection: collection,
               per_row: per_row,
               disable_quick_view_output: true,
@@ -169,9 +196,13 @@
           id="CollectionSwitcher2-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
           data-per-row="{{ per_row }}">
-          {%- for product in products2 limit: product_limit -%}
+          {%- assign shown = 0 -%}
+          {%- for item in products2 -%}
+            {%- if item.id == skip_id -%}{%- continue -%}{%- endif -%}
+            {%- if shown >= product_limit -%}{%- break -%}{%- endif -%}
+            {%- assign shown = shown | plus: 1 -%}
             {%- render 'product-grid-item',
-              product: product,
+              product: item,
               collection: collection,
               per_row: per_row,
               disable_quick_view_output: true,
@@ -233,13 +264,21 @@
 {% endcomment %}
 {%- if settings.quick_shop_enable -%}
   {%- if show1 -%}
-    {%- for product in products1 limit: product_limit -%}
-      {%- render 'quick-shop-modal', product: product -%}
+    {%- assign shown = 0 -%}
+    {%- for item in products1 -%}
+      {%- if item.id == skip_id -%}{%- continue -%}{%- endif -%}
+      {%- if shown >= product_limit -%}{%- break -%}{%- endif -%}
+      {%- assign shown = shown | plus: 1 -%}
+      {%- render 'quick-shop-modal', product: item -%}
     {%- endfor -%}
   {%- endif -%}
   {%- if show2 -%}
-    {%- for product in products2 limit: product_limit -%}
-      {%- render 'quick-shop-modal', product: product -%}
+    {%- assign shown = 0 -%}
+    {%- for item in products2 -%}
+      {%- if item.id == skip_id -%}{%- continue -%}{%- endif -%}
+      {%- if shown >= product_limit -%}{%- break -%}{%- endif -%}
+      {%- assign shown = shown | plus: 1 -%}
+      {%- render 'quick-shop-modal', product: item -%}
     {%- endfor -%}
   {%- endif -%}
 {%- endif -%}
@@ -374,6 +413,13 @@
       "label": "Hide sold-out products",
       "info": "Sold-out products are left out. A tab with nothing in stock is hidden.",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_current",
+      "label": "Hide the product being viewed",
+      "info": "On a product page, that product is left out of the carousels.",
+      "default": true
     },
     {
       "type": "checkbox",
