@@ -19,12 +19,32 @@
     assign hide_atc = true
   endif
 
+  comment
+    With "Hide sold-out products" on, only products in stock are shown, and a
+    tab whose collection has none in stock is left out.
+  endcomment
+  assign products1 = collection1.products
+  assign products2 = collection2.products
+  if section.settings.hide_sold_out
+    assign products1 = collection1.products | where: 'available'
+    assign products2 = collection2.products | where: 'available'
+  endif
+  assign show1 = false
+  assign show2 = false
+  unless collection1.empty? or products1.size == 0
+    assign show1 = true
+  endunless
+  unless collection2.empty? or products2.size == 0
+    assign show2 = true
+  endunless
+
   assign emptyState = false
   if collection1.empty? and collection2.empty?
     assign emptyState = true
   endif
 -%}
 
+{%- if show1 or show2 or emptyState -%}
 {%- if section.settings.divider -%}<div class="section--divider">{%- endif -%}
 
 <style>
@@ -71,7 +91,7 @@
         <div class="larger-text">
           <p class="subtitle">{{ section.settings.title }}</p>
         </div>
-        {%- unless collection1.empty? -%}
+        {%- if show1 -%}
           <h3 class="collection-switcher__title">
             <a href="{{ collection1.url }}"
               class="collection-switcher__trigger is-active js-no-transition"
@@ -79,16 +99,16 @@
               {{ collection1_title }}
             </a>
           </h3>
-        {%- endunless -%}
-        {%- unless collection2.empty? -%}
+        {%- endif -%}
+        {%- if show2 -%}
           <h3 class="collection-switcher__title">
             <a href="{{ collection2.url }}"
-              class="collection-switcher__trigger js-no-transition"
+              class="collection-switcher__trigger js-no-transition{% unless show1 %} is-active{% endunless %}"
               aria-controls="collection2-{{ section.id }}">
               {{ collection2_title }}
             </a>
           </h3>
-        {%- endunless -%}
+        {%- endif -%}
 
         {%- if emptyState -%}
           {%- for i in (1..2) -%}
@@ -112,7 +132,7 @@
   -%}
 
   <div class="page-width">
-    {%- unless collection1.empty? -%}
+    {%- if show1 -%}
       <div id="collection1-{{ section.id }}" class="collection-switcher__collection" data-index="0">
         {%- if section.settings.collection1_description != blank -%}
           <div class="collection-switcher__description rte">{{ section.settings.collection1_description }}</div>
@@ -121,7 +141,7 @@
           id="CollectionSwitcher1-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
           data-per-row="{{ per_row }}">
-          {%- for product in collection1.products limit: product_limit -%}
+          {%- for product in products1 limit: product_limit -%}
             {%- render 'product-grid-item',
               product: product,
               collection: collection,
@@ -138,10 +158,10 @@
           </p>
         {%- endif -%}
       </div>
-    {%- endunless -%}
+    {%- endif -%}
 
-    {%- unless collection2.empty? -%}
-      <div id="collection2-{{ section.id }}" class="collection-switcher__collection hide" data-index="1">
+    {%- if show2 -%}
+      <div id="collection2-{{ section.id }}" class="collection-switcher__collection{% if show1 %} hide{% endif %}" data-index="1">
         {%- if section.settings.collection2_description != blank -%}
           <div class="collection-switcher__description rte">{{ section.settings.collection2_description }}</div>
         {%- endif -%}
@@ -149,7 +169,7 @@
           id="CollectionSwitcher2-{{ section.id }}"
           class="grid collection-switcher__collection-grid"
           data-per-row="{{ per_row }}">
-          {%- for product in collection2.products limit: product_limit -%}
+          {%- for product in products2 limit: product_limit -%}
             {%- render 'product-grid-item',
               product: product,
               collection: collection,
@@ -166,7 +186,7 @@
           </p>
         {%- endif -%}
       </div>
-    {%- endunless -%}
+    {%- endif -%}
 
     {%- if emptyState -%}
       {%- for i in (1..2) -%}
@@ -212,16 +232,16 @@
   `disable_quick_view_output: true` to `product-grid-item` above.
 {% endcomment %}
 {%- if settings.quick_shop_enable -%}
-  {%- unless collection1.empty? -%}
-    {%- for product in collection1.products limit: product_limit -%}
+  {%- if show1 -%}
+    {%- for product in products1 limit: product_limit -%}
       {%- render 'quick-shop-modal', product: product -%}
     {%- endfor -%}
-  {%- endunless -%}
-  {%- unless collection2.empty? -%}
-    {%- for product in collection2.products limit: product_limit -%}
+  {%- endif -%}
+  {%- if show2 -%}
+    {%- for product in products2 limit: product_limit -%}
       {%- render 'quick-shop-modal', product: product -%}
     {%- endfor -%}
-  {%- endunless -%}
+  {%- endif -%}
 {%- endif -%}
 
 {%- if section.settings.divider -%}</div>{%- endif -%}
@@ -282,6 +302,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function() { later(50); });
   })();
 </script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -346,6 +367,13 @@
       "step": 1,
       "default": 0,
       "info": "0 = automatic (products per row × 3)"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_sold_out",
+      "label": "Hide sold-out products",
+      "info": "Sold-out products are left out. A tab with nothing in stock is hidden.",
+      "default": false
     },
     {
       "type": "checkbox",
